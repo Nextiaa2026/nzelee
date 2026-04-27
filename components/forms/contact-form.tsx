@@ -1,0 +1,64 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { z } from "zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { contactFormSchema } from "@/lib/validations/marketing-forms";
+import { cn } from "@/lib/utils";
+
+type Values = z.infer<typeof contactFormSchema>;
+
+const textareaClass = cn(
+  "min-h-28 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-[3px] focus-visible:ring-ring/45",
+);
+
+export function ContactForm({ className }: { className?: string }) {
+  const form = useForm<Values>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: { name: "", email: "", message: "" },
+  });
+
+  return (
+    <form
+      className={cn("space-y-4", className)}
+      onSubmit={form.handleSubmit((values) => {
+        toast.success("Thanks — we will get back to you soon.", {
+          description: `${values.name} · ${values.email}`,
+        });
+        form.reset();
+      })}
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="contact-name">Name</Label>
+          <Input id="contact-name" autoComplete="name" {...form.register("name")} />
+          {form.formState.errors.name && (
+            <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="contact-email">Email</Label>
+          <Input id="contact-email" type="email" autoComplete="email" {...form.register("email")} />
+          {form.formState.errors.email && (
+            <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
+          )}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="contact-message">Message</Label>
+        <textarea id="contact-message" className={textareaClass} {...form.register("message")} />
+        {form.formState.errors.message && (
+          <p className="text-xs text-destructive">{form.formState.errors.message.message}</p>
+        )}
+      </div>
+      <Button type="submit" disabled={form.formState.isSubmitting}>
+        Send message
+      </Button>
+    </form>
+  );
+}

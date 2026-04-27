@@ -1,0 +1,201 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { GalleryVerticalEndIcon } from "lucide-react";
+
+import { AuthHeroPanel } from "@/components/auth-hero-panel";
+
+type AuthMeta = {
+  title: string;
+  subtitle?: string;
+  /** Form column on the left on large screens */
+  side?: "left" | "right";
+  footer?: React.ReactNode;
+};
+
+function metaForPath(pathname: string): AuthMeta {
+  if (pathname.startsWith("/register/verification-sent")) {
+    return {
+      title: "Check your email",
+      subtitle:
+        "Enter the 6-digit code we sent you to activate your account before signing in.",
+      side: "right",
+      footer: (
+        <>
+          <Link
+            href="/login"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Go to sign in
+          </Link>
+          {" · "}
+          <Link
+            href="/register"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Use a different email
+          </Link>
+        </>
+      ),
+    };
+  }
+  if (pathname.startsWith("/register")) {
+    return {
+      title: "Create your account",
+      subtitle:
+        "Join Nexiaa to explore offerings and manage your commitments in one place.",
+      side: "right",
+      footer: (
+        <>
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Sign in
+          </Link>
+        </>
+      ),
+    };
+  }
+  if (pathname.startsWith("/forgot-password")) {
+    return {
+      title: "Reset your password",
+      subtitle:
+        "We’ll email you a secure link to choose a new password if an account exists for that address.",
+      side: "right",
+      footer: (
+        <>
+          Remembered it?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Sign in
+          </Link>
+        </>
+      ),
+    };
+  }
+  if (pathname.startsWith("/reset-password")) {
+    return {
+      title: "Choose a new password",
+      subtitle:
+        "Use at least 8 characters and a combination you do not reuse on other sites.",
+      side: "right",
+      footer: (
+        <>
+          <Link
+            href="/login"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Back to sign in
+          </Link>
+        </>
+      ),
+    };
+  }
+  if (pathname.startsWith("/verify-email")) {
+    return {
+      title: "Email verification",
+      subtitle:
+        "We use a short code instead of a link. Open your inbox or resend from the sign-in page.",
+      side: "right",
+      footer: (
+        <>
+          <Link
+            href="/register/verification-sent"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Enter code
+          </Link>
+          {" · "}
+          <Link
+            href="/login"
+            className="font-medium text-deep-green hover:underline hover:opacity-90"
+          >
+            Sign in
+          </Link>
+        </>
+      ),
+    };
+  }
+  return {
+    title: "Welcome back",
+    subtitle:
+      "Continue with Google or your email and password to open your account.",
+    side: "right",
+    footer: (
+      <>
+        New here?{" "}
+        <Link
+          href="/register"
+          className="font-medium text-deep-green hover:underline hover:opacity-90"
+        >
+          Create an account
+        </Link>
+      </>
+    ),
+  };
+}
+
+export function AuthRouteShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname() ?? "/login";
+  const { title, subtitle, side = "right", footer } = metaForPath(pathname);
+
+  const formPanel = (
+    <div className="flex w-full flex-col bg-background px-6 py-10 sm:px-10 lg:w-[46%] lg:px-12 xl:px-16">
+      <div className="mb-10 flex items-center justify-between gap-4">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-medium text-foreground"
+        >
+          <span className="flex size-9 items-center justify-center rounded-full bg-mint text-deep-green">
+            <GalleryVerticalEndIcon className="size-5" aria-hidden />
+          </span>
+          <span className="font-display text-sm sm:text-base">Nexiaa</span>
+        </Link>
+        <Link
+          href="/"
+          className="text-sm text-muted-foreground transition hover:text-deep-green"
+        >
+          Back to site
+        </Link>
+      </div>
+
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
+        <header className="mb-8 space-y-2">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            {title}
+          </h1>
+          {subtitle ? (
+            <p className="text-muted-foreground">{subtitle}</p>
+          ) : null}
+        </header>
+        {children}
+        {footer ? (
+          <p className="mt-8 text-sm text-muted-foreground">{footer}</p>
+        ) : null}
+      </div>
+    </div>
+  );
+
+  const hero = <AuthHeroPanel />;
+
+  return (
+    <div className="flex min-h-svh w-full flex-col bg-background lg:flex-row">
+      {side === "left" ? (
+        <>
+          {hero}
+          {formPanel}
+        </>
+      ) : (
+        <>
+          {formPanel}
+          {hero}
+        </>
+      )}
+    </div>
+  );
+}
