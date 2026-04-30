@@ -165,6 +165,13 @@
   }
 }
 
+/* PWA safe area support for iOS devices */
+@layer utilities {
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
 .font-display {
   font-family: var(--font-display);
   font-weight: 600;

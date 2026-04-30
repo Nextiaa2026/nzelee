@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { GlobalSiteFooter } from "@/components/global-site-footer";
 import { GlobalSiteHeader } from "@/components/global-site-header";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 
 const hiddenPrefixes = ["/admin", "/dashboard"];
 const hiddenExact = [
@@ -33,8 +34,9 @@ export function GlobalSiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <GlobalSiteHeader />
-      {children}
+      <div className="pb-16 md:pb-0">{children}</div>
       <GlobalSiteFooter />
+      <MobileBottomNav />
     </>
   );
 }

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Medal } from "lucide-react";
 
-import { HeroSection } from "@/components/hero-section";
-import { landingImages } from "@/lib/landing-images";
+import { PageHero } from "@/components/page-shell";
 import {
   listTopInvestors,
   type TopInvestorRow,
@@ -24,17 +23,15 @@ const tierStyle: Record<TopInvestorRow["tier"], string> = {
 
 function Header() {
   return (
-    <HeroSection
-      badge={{ text: "Live leaderboard · Updated hourly", pulse: true }}
+    <PageHero
+      eyebrow="Live leaderboard"
       title={
         <>
-          Top investors,
-          <br />
-          ranked by performance
+          Top investors,{" "}
+          <span className="text-mint">ranked by performance</span>
         </>
       }
-      description="Browse the FlowFin community leaderboard. See who is leading by YTD returns, portfolio size, and the projects they are backing."
-      image={landingImages.investorsTeam}
+      subtitle="Browse the community leaderboard. See who is leading by YTD returns, portfolio size, and the projects they are backing."
     />
   );
 }

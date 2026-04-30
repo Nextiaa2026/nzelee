@@ -1,0 +1,37 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0F8261"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="80" fill="#78DDB8" opacity="0.3"/>
+  <circle cx="1100" cy="530" r="100" fill="#78DDB8" opacity="0.2"/>
+  
+  <!-- Main content -->
+  <text 
+    x="600" 
+    y="280" 
+    font-family="Arial, sans-serif" 
+    font-size="72" 
+    font-weight="bold" 
+    fill="#FFFFFF" 
+    text-anchor="middle"
+  >Nzelle</text>
+  
+  <text 
+    x="600" 
+    y="360" 
+    font-family="Arial, sans-serif" 
+    font-size="36" 
+    fill="#E0F2ED" 
+    text-anchor="middle"
+  >Private-Market Investment Platform</text>
+  
+  <text 
+    x="600" 
+    y="450" 
+    font-family="Arial, sans-serif" 
+    font-size="24" 
+    fill="#B8E6D5" 
+    text-anchor="middle"
+  >Structured listings • Transparent fees • Comprehensive dashboards</text>
+</svg>

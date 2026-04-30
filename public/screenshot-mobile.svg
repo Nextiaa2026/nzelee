@@ -1,0 +1,23 @@
+
+<svg width="390" height="844" xmlns="http://www.w3.org/2000/svg">
+  <rect width="390" height="844" fill="#F5F5F5"/>
+  <rect width="390" height="60" fill="#0F8261"/>
+  <text 
+    x="195" 
+    y="35" 
+    font-family="Arial, sans-serif" 
+    font-size="20" 
+    font-weight="bold" 
+    fill="#FFFFFF" 
+    text-anchor="middle"
+  >Nzelle</text>
+  <rect x="20" y="100" width="350" height="200" rx="12" fill="#FFFFFF"/>
+  <text 
+    x="195" 
+    y="210" 
+    font-family="Arial, sans-serif" 
+    font-size="18" 
+    fill="#333333" 
+    text-anchor="middle"
+  >Investment Platform</text>
+</svg>

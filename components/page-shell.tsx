@@ -16,7 +16,7 @@ export function PageHero({
   subtitle?: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden bg-deep-green pb-20 pt-6 text-deep-green-foreground">
+    <section className="relative overflow-hidden bg-deep-green pb-20 pt-6 text-deep-green-foreground mb-24">
       <motion.div
         className="pointer-events-none absolute -left-20 top-20 h-[500px] w-[500px] rounded-full"
         style={{

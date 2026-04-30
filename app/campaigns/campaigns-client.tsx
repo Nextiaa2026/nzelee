@@ -153,7 +153,7 @@ export function CampaignsPageClient({
           viewport={{ once: true }}
           className="flex flex-wrap items-center justify-between gap-4 rounded-full border border-foreground/10 bg-surface p-2 pl-5"
         >
-          <p className="text-sm text-foreground/60">
+          {/* <p className="text-sm text-foreground/60">
             {filteredCampaigns.length} campaign
             {filteredCampaigns.length !== 1 ? "s" : ""} available
           </p>
@@ -172,7 +172,7 @@ export function CampaignsPageClient({
                 {f}
               </button>
             ))}
-          </div>
+          </div> */}
         </motion.div>
       </section>
 
