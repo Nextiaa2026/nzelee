@@ -36,7 +36,7 @@ export function CampaignCard({
   return (
     <Link
       href={href}
-      className="group block overflow-hidden rounded-3xl border border-foreground/10 bg-surface transition-transform hover:-translate-y-2"
+      className="group block active:scale-[0.98] transition-all duration-200 overflow-hidden rounded-[2.5rem] border border-foreground/5 bg-surface md:hover:-translate-y-1.5 md:hover:shadow-xl md:hover:shadow-deep-green/5"
     >
       <div className="relative h-52 overflow-hidden bg-gradient-to-br from-deep-green/10 to-mint/10">
         {coverImageUrl ? (

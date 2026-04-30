@@ -2,20 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { motion } from "framer-motion";
-import { LogOut, Plus, Settings, ShieldCheck } from "lucide-react";
 
 import { dashboardPanelClass } from "@/components/dashboard/dashboard-page-shell";
 import { Button } from "@/components/ui/button";
 import {
-  dashboardAdminConsoleItem,
-  dashboardSettingsItem,
   getDashboardNavItems,
 } from "@/lib/dashboard/dashboard-nav-config";
 import { cn } from "@/lib/utils";
 
-import { useUnreadNotificationCount } from "@/hooks/use-notifications";
+
 
 function navActive(pathname: string, href: string, exact?: boolean) {
   return exact ? pathname === href : pathname.startsWith(href);
@@ -23,12 +19,11 @@ function navActive(pathname: string, href: string, exact?: boolean) {
 
 export function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
-  const { data: unread = 0 } = useUnreadNotificationCount();
   const items = getDashboardNavItems(isAdmin);
 
   return (
-    <aside className="hidden w-full min-w-0 max-w-[240px] shrink-0 lg:block">
-      <div className="sticky top-20 space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto">
+    <aside className="hidden w-full min-w-0 max-w-[240px] shrink-0 lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide">
+      <div className="space-y-4">
         <nav className={cn(dashboardPanelClass, "p-3 shadow-none")}>
           <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-widest text-foreground/45">
             Menu

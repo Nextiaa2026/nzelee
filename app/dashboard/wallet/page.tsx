@@ -56,7 +56,7 @@ export default function DashboardWalletPage() {
               {isPending || !data ? "…" : formatMoney(data.availableCents, data.currency)}
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="text-sm text-foreground/60 font-medium">
             Spendable balance after completed withdrawals. Pending withdrawal requests do not reduce
             this figure until they are processed.
           </CardContent>
@@ -79,7 +79,7 @@ export default function DashboardWalletPage() {
                 {isPending || !data ? "…" : formatMoney(data.lifetimeCreditsCents, data.currency)}
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0 text-xs text-muted-foreground">
+            <CardContent className="pt-0 text-xs text-foreground/60 font-medium">
               Succeeded payouts, refunds, and adjustments credited to you.
             </CardContent>
           </Card>
@@ -102,7 +102,7 @@ export default function DashboardWalletPage() {
               "flex size-9 shrink-0 items-center justify-center rounded-xl bg-background ring-1 ring-border",
             )}
           >
-            <Info className="size-4 text-muted-foreground" aria-hidden />
+            <Info className="size-4 text-foreground/60" aria-hidden />
           </div>
           <div className="space-y-1">
             <CardTitle className="text-base">Add funds</CardTitle>

@@ -3,7 +3,6 @@ import {
   Banknote,
   Bell,
   Bookmark,
-  FolderKanban,
   History,
   LayoutDashboard,
   Settings,
@@ -20,18 +19,11 @@ export type DashboardNavItem = {
   exact?: boolean;
 };
 
-const projectsItem: DashboardNavItem = {
-  href: "/dashboard/projects",
-  label: "Projects",
-  icon: FolderKanban,
-};
-
 /** Primary sidebar / mobile sheet routes (single source of truth). */
-export function getDashboardNavItems(isAdmin: boolean): DashboardNavItem[] {
+export function getDashboardNavItems(_isAdmin: boolean): DashboardNavItem[] {
   return [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/markets", label: "Markets", icon: Store },
-    ...(isAdmin ? [projectsItem] : []),
     { href: "/dashboard/investments", label: "Investments", icon: TrendingUp },
     { href: "/dashboard/transactions", label: "Transactions", icon: History },
     { href: "/dashboard/wallet", label: "Wallet", icon: Wallet2 },

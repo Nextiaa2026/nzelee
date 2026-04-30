@@ -1,18 +1,13 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { signOut } from "next-auth/react";
 import {
   Bell,
   ChevronDown,
   LogOut,
-  Menu,
   Settings,
   ShieldCheck,
-  X,
 } from "lucide-react";
 
 import { DashboardWalletHeaderPill } from "@/components/dashboard/dashboard-wallet-header-pill";
@@ -26,79 +21,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { useUnreadNotificationCount } from "@/hooks/use-notifications";
-import {
-  dashboardAdminConsoleItem,
-  getDashboardNavItems,
-} from "@/lib/dashboard/dashboard-nav-config";
 import { SITE_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
-function SheetNavLink({
-  href,
-  label,
-  icon: Icon,
-  exact,
-  badge,
-  onNavigate,
-}: {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-  exact?: boolean;
-  badge?: number;
-  onNavigate: () => void;
-}) {
-  const pathname = usePathname();
-  const active = exact ? pathname === href : pathname.startsWith(href);
-  return (
-    <SheetClose asChild>
-      <Link
-        href={href}
-        onClick={onNavigate}
-        className={cn(
-          "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-primary-foreground transition-colors",
-          active
-            ? "bg-primary-foreground/15 ring-1 ring-primary-foreground/25"
-            : "hover:bg-primary-foreground/10",
-        )}
-      >
-        <Icon className="size-4 shrink-0 opacity-90" />
-        <span className="flex-1">{label}</span>
-        {badge != null && badge > 0 ? (
-          <span className="rounded-full bg-primary-foreground px-1.5 py-0.5 text-[10px] font-semibold text-primary tabular-nums">
-            {badge > 99 ? "99+" : badge}
-          </span>
-        ) : null}
-      </Link>
-    </SheetClose>
-  );
-}
 
 export function DashboardAccountHeader({
   user,
-  isAdmin,
   kycStatus,
 }: {
   user: { name: string; email: string; avatar?: string };
-  isAdmin: boolean;
   kycStatus?: string | null;
 }) {
-  const pathname = usePathname();
   const { data: unread = 0 } = useUnreadNotificationCount();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuItems = getDashboardNavItems(isAdmin);
-  const currentSectionLabel =
-    menuItems.find((item) =>
-      item.exact ? pathname === item.href : pathname.startsWith(item.href),
-    )?.label ?? "Menu";
 
   const getKycStatusDisplay = (status: string | null | undefined) => {
     switch (status) {
@@ -133,61 +68,11 @@ export function DashboardAccountHeader({
   const kycDisplay = getKycStatusDisplay(kycStatus);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-foreground/8 bg-white shadow-sm">
+    <header className="sticky top-0 z-40 border-b border-foreground/5 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-2.5 md:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon-sm"
-              className="shrink-0 rounded-full border-foreground/15 lg:hidden"
-              aria-label="Open dashboard menu"
-              onClick={() => setMenuOpen(true)}
-            >
-              <Menu className="size-4" />
-            </Button>
-            <SheetContent
-              side="left"
-              showCloseButton={false}
-              className="flex w-[min(100%,20rem)] flex-col border-r border-primary-foreground/15 bg-primary p-0 text-primary-foreground shadow-md"
-            >
-              <div className="flex items-center justify-between border-b border-primary-foreground/15 px-4 py-4 pr-14">
-                <div>
-                  <SheetTitle className="text-base font-semibold text-primary-foreground">
-                    {currentSectionLabel}
-                  </SheetTitle>
-                  <SheetDescription className="text-xs text-primary-foreground/70">
-                    {user.name}
-                  </SheetDescription>
-                </div>
-                <SheetClose asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon-sm"
-                    className="absolute top-3 right-3 text-primary-foreground hover:bg-primary-foreground/10"
-                    aria-label="Close menu"
-                  >
-                    <X className="size-5" />
-                  </Button>
-                </SheetClose>
-              </div>
-              <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3 pb-6">
-                <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-widest text-primary-foreground/60">
-                  Menu
-                </p>
-                {menuItems.map((item) => (
-                  <SheetNavLink
-                    key={item.href}
-                    {...item}
-                    onNavigate={() => setMenuOpen(false)}
-                  />
-                ))}
-              </nav>
-            </SheetContent>
-          </Sheet>
-
+          {/* Removed mobile hamburger menu as we now have bottom nav */}
+          
           <Link
             href="/dashboard"
             className="font-display text-base font-bold tracking-tight text-foreground sm:text-lg"

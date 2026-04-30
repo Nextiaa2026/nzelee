@@ -37,10 +37,9 @@ export default async function UserDashboardLayout({
           email: session.user.email ?? "",
           avatar: session.user.image ?? undefined,
         }}
-        isAdmin={isAdmin}
         kycStatus={eligibility?.kycStatus ?? null}
       />
-      <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-20 pt-4 md:px-6 md:pb-24 md:pt-6 lg:grid-cols-[240px_1fr] lg:items-start">
+      <div className="mx-auto grid w-full max-w-7xl gap-6 px-0 pb-20 pt-0 md:px-6 md:pb-24 md:pt-6 lg:grid-cols-[240px_1fr] lg:items-start">
         <DashboardSidebar isAdmin={isAdmin} />
         <main className="min-w-0">{children}</main>
       </div>

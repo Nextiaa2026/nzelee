@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { GlobalSiteFooter } from "@/components/global-site-footer";
 import { GlobalSiteHeader } from "@/components/global-site-header";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { cn } from "@/lib/utils";
 
 const hiddenPrefixes = ["/admin", "/dashboard"];
 const hiddenExact = [
@@ -27,15 +28,13 @@ export function GlobalSiteChrome({ children }: { children: React.ReactNode }) {
   const hideOnNestedAuth = pathname.startsWith("/register/");
   const isInvestPage = pathname.endsWith("/invest");
 
-  if (hideOnPrefix || hideOnExact || hideOnNestedAuth || isInvestPage) {
-    return <>{children}</>;
-  }
-
   return (
     <>
-      <GlobalSiteHeader />
-      <div className="pb-16 md:pb-0">{children}</div>
-      <GlobalSiteFooter />
+      {!hideOnPrefix && !hideOnExact && !hideOnNestedAuth && !isInvestPage && <GlobalSiteHeader />}
+      <div className={cn("flex-1", !pathname.startsWith("/admin") && "pb-16 md:pb-0")}>
+        {children}
+      </div>
+      {!hideOnPrefix && !hideOnExact && !hideOnNestedAuth && !isInvestPage && <GlobalSiteFooter />}
       <MobileBottomNav />
     </>
   );
