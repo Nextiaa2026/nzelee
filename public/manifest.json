@@ -4,8 +4,8 @@
   "description": "Private-market investment platform with structured listings, transparent fees, and comprehensive dashboards",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0F8261",
-  "theme_color": "#0F8261",
+  "background_color": "#0b2d24",
+  "theme_color": "#0b2d24",
   "orientation": "portrait-primary",
   "icons": [
     {

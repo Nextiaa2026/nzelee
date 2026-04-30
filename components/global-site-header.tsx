@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import { ChevronDownIcon, MenuIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -14,15 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { SITE_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +41,6 @@ export function GlobalSiteHeader() {
   const pathname = usePathname() ?? "/";
   const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () =>
@@ -166,166 +157,7 @@ export function GlobalSiteHeader() {
     </nav>
   );
 
-  const mobileNav = (
-    <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn(
-            "md:hidden",
-            expandedHome
-              ? "text-deep-green-foreground hover:bg-deep-green-foreground/10"
-              : "text-white hover:bg-white/10",
-          )}
-        >
-          <MenuIcon className="h-5 w-5" />
-          <span className="sr-only">Open menu</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] bg-deep-green">
-        <SheetHeader>
-          <SheetTitle className="text-left text-deep-green-foreground">
-            {SITE_NAME}
-          </SheetTitle>
-        </SheetHeader>
-        <nav className="flex flex-col gap-4 pt-6">
-          <div className="flex flex-col gap-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-deep-green-foreground/60">
-              Resources
-            </p>
-            <Link
-              href="/investors"
-              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Investors
-            </Link>
-            <Link
-              href="/help"
-              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Help
-            </Link>
-            <Link
-              href="/careers"
-              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Careers
-            </Link>
-            <Link
-              href="/press"
-              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Press
-            </Link>
-            {session?.user?.role === "ADMIN" ? (
-              <Link
-                href="/dashboard/projects"
-                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Your projects
-              </Link>
-            ) : null}
-          </div>
-          <div className="h-px bg-deep-green-foreground/10" />
-          {navLinks.map((link) => {
-            const active =
-              pathname === link.href ||
-              (link.href !== "/" && pathname.startsWith(link.href));
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "text-sm transition-colors",
-                  active
-                    ? "font-medium text-deep-green-foreground"
-                    : "text-deep-green-foreground/80 hover:text-deep-green-foreground",
-                )}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-          {status === "authenticated" ? (
-            <>
-              <div className="h-px bg-deep-green-foreground/10" />
-              <Link
-                href="/dashboard"
-                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Account
-              </Link>
-              <Link
-                href="/dashboard/markets"
-                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Markets
-              </Link>
-              <Link
-                href="/dashboard/saved"
-                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Saved campaigns
-              </Link>
-              <Link
-                href="/dashboard/notifications"
-                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Notifications
-              </Link>
-              <Link
-                href="/dashboard/settings"
-                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Account settings
-              </Link>
-              {session?.user?.role === "ADMIN" ? (
-                <Link
-                  href="/admin"
-                  className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Admin
-                </Link>
-              ) : null}
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  void signOut({ callbackUrl: "/" });
-                }}
-                className="text-left text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
-              >
-                Sign out
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="h-px bg-deep-green-foreground/10" />
-              <Link
-                href="/login"
-                className="rounded-full bg-mint px-5 py-2.5 text-center text-sm font-medium text-deep-green transition hover:bg-mint/90"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign in
-              </Link>
-            </>
-          )}
-        </nav>
-      </SheetContent>
-    </Sheet>
-  );
+
 
   const sessionMenu = (
     <DropdownMenu modal={false}>
@@ -418,7 +250,7 @@ export function GlobalSiteHeader() {
         )}
       >
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6 md:py-8">
-          {mobileNav}
+
           {brand}
           {nav}
           <div className="flex items-center gap-2 pl-2">{accountControl}</div>
@@ -431,7 +263,7 @@ export function GlobalSiteHeader() {
     <header className="fixed inset-x-0 top-0 z-50 bg-transparent px-4 py-4 transition-[padding] duration-300 md:py-5">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-center">
         <div className="flex min-h-14 w-full max-w-3xl items-center justify-between rounded-full border border-white/10 bg-deep-green px-4 py-3 text-white shadow-xl ring-1 ring-black/10 transition-all duration-300 md:min-h-16 md:px-6 md:py-3.5">
-          {mobileNav}
+
           {brand}
           {nav}
           <div className="flex items-center gap-2 pl-2">{accountControl}</div>

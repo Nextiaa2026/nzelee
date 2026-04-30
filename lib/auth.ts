@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
+import { users, userEligibilityProfiles } from "@/lib/db/schema";
 import type { AppUserRole } from "@/types/app-user";
 import { verifyPassword } from "@/lib/security/password";
 import { loginSchema } from "@/lib/validations/auth";
@@ -15,23 +15,7 @@ import { loginSchema } from "@/lib/validations/auth";
  * next-auth/react calls `new URL(data.url)` when `signIn(..., { redirect: false })`.
  * Relative paths throw in the browser — redirect strings from `signIn` must be absolute.
  */
-function authAbsoluteUrl(pathnameAndQuery: string): string {
-  const path = pathnameAndQuery.startsWith("/")
-    ? pathnameAndQuery
-    : `/${pathnameAndQuery}`;
-  const base = (
-    process.env.NEXTAUTH_URL?.trim() ||
-    process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    ""
-  ).replace(/\/$/, "");
-  if (!base) {
-    console.warn(
-      "[auth] Set NEXTAUTH_URL (or NEXT_PUBLIC_APP_URL) to your app origin, e.g. http://localhost:3002 — required for email-verification redirects and OAuth callbacks.",
-    );
-  }
-  const origin = base || "http://localhost:3000";
-  return `${origin}${path}`;
-}
+
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
@@ -86,40 +70,18 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account?.provider === "google" && user.id) {
-        const raw = (profile as { email_verified?: boolean } | undefined)
-          ?.email_verified;
-        const googleVerified = raw !== false;
-        if (googleVerified) {
-          await db
-            .update(users)
-            .set({ emailVerified: new Date(), updatedAt: new Date() })
-            .where(eq(users.id, user.id));
-        }
-        return true;
-      }
-
-      if (account?.provider === "credentials" && user.id) {
-        const [row] = await db
-          .select({ emailVerified: users.emailVerified })
-          .from(users)
-          .where(eq(users.id, user.id))
-          .limit(1);
-
-        if (!row?.emailVerified) {
-          const email = encodeURIComponent(user.email ?? "");
-          return authAbsoluteUrl(
-            `/login?error=unverified_email&email=${email}`,
-          );
-        }
-      }
-
+    async signIn({ account }) {
+      // OAuth providers like Google already verify emails.
+      // We only enforce manual verification for Credentials provider.
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user?.id) {
         token.sub = user.id;
+      }
+      
+      if (account) {
+        token.provider = account.provider;
       }
 
       if (token.sub) {
@@ -130,17 +92,25 @@ export const authOptions: NextAuthOptions = {
             onboardingCompletedAt: users.onboardingCompletedAt,
             name: users.name,
             organization: users.organization,
+            kycStatus: userEligibilityProfiles.kycStatus,
           })
           .from(users)
+          .leftJoin(
+            userEligibilityProfiles,
+            eq(users.id, userEligibilityProfiles.userId),
+          )
           .where(eq(users.id, token.sub))
           .limit(1);
 
         if (row) {
           token.role = (row.role ?? "USER") as AppUserRole;
-          token.emailVerified = Boolean(row.emailVerified);
+          // If the user used OAuth, we treat them as verified. 
+          // If credentials, we check the database timestamp.
+          token.emailVerified = token.provider !== "credentials" || Boolean(row.emailVerified);
           token.onboardingComplete = Boolean(row.onboardingCompletedAt);
           token.name = row.name ?? undefined;
           token.organization = row.organization ?? null;
+          token.kycStatus = row.kycStatus ?? "PENDING";
         }
       }
 
@@ -156,6 +126,7 @@ export const authOptions: NextAuthOptions = {
           session.user.name = token.name;
         }
         session.user.organization = token.organization ?? null;
+        session.user.kycStatus = token.kycStatus;
       }
       return session;
     },

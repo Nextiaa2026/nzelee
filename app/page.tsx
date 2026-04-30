@@ -106,11 +106,11 @@ function HeroBento() {
               Une seule app
             </p>
             <p className="mt-1 font-display text-lg leading-snug sm:text-xl">
-              Actions, ETFs, crypto &amp; campagnes d&apos;entreprises
+              Immobilier, opportunités &amp; campagnes de financement
             </p>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 sm:mt-0">
-            {["Actions", "Crypto", "Campagnes"].map((tag) => (
+            {["Immobilier", "Financement", "Campagnes"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full border border-deep-green-foreground/20 bg-deep-green/50 px-2.5 py-1 text-[10px] font-medium"
@@ -180,9 +180,10 @@ function Hero() {
               Investir. Grandir. Recommencer.
             </span>
 
-            <h1 className="mt-6 font-display text-5xl leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
-              Dites bonjour à{" "}
-              <span className="inline-flex -translate-y-2 items-center gap-3 rounded-full bg-mint px-5 py-2 text-deep-green">
+            <h1 className="mt-6 font-display text-3xl leading-[1.1] tracking-tight sm:text-5xl lg:text-7xl xl:text-8xl">
+              Dites bonjour à
+              <br className="sm:hidden" />
+              <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-mint px-4 py-1 text-deep-green sm:-translate-y-2 sm:gap-3 sm:px-5 sm:py-2">
                 <motion.span
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
@@ -190,7 +191,7 @@ function Hero() {
                   aria-hidden
                 >
                   <Wallet
-                    className="size-7 shrink-0 sm:size-8"
+                    className="size-5 shrink-0 sm:size-8"
                     strokeWidth={2}
                   />
                 </motion.span>
@@ -201,8 +202,8 @@ function Hero() {
             </h1>
 
             <p className="mx-auto mt-8 max-w-md text-base text-deep-green-foreground/70 lg:mx-0">
-              Créez un portefeuille en quelques minutes. Changez des actions, ETFs, crypto et
-              campagnes sélectionnées — le tout depuis une application magnifiquement simple.
+              Découvrez des opportunités immobilières et des campagnes de financement
+              vétifées — le tout depuis une application magnifiquement simple.
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -437,8 +438,8 @@ function Integrations() {
             Connectez chaque compte pour une vue complète de votre <Blank /> patrimoine
           </h2>
           <p className="mt-5 max-w-md text-foreground/60">
-            Liez vos courtages, comptes de retraite et portefeuilles crypto pour voir
-            votre valeur nette globale croître dans un magnifique tableau de bord.
+            Liez vos comptes bancaires et vos portefeuilles pour voir
+            votre patrimoine croître dans un magnifique tableau de bord.
           </p>
           <Link
             href="/register"
@@ -674,7 +675,7 @@ function FeatureCards() {
                   Vos objectifs
                 </span>
                 <div className="ml-6 mt-3 inline-flex flex-col gap-2">
-                  {["Actions & ETFs", "Panier Crypto", "Plan Retraite"].map(
+                  {["Immobilier", "Financement", "Plan Retraite"].map(
                     (p, i) => (
                       <motion.div
                         key={p}

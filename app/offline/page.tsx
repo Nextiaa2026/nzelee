@@ -11,7 +11,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0F8261",
+  themeColor: "#0b2d24",
 };
 
 export default function OfflinePage() {

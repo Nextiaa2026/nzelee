@@ -15,7 +15,8 @@ import {
   MessageSquare,
   FileText,
   Lock,
-  LogOut
+  LogOut,
+  ShieldCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { 
@@ -27,8 +28,9 @@ import {
   SheetClose
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getDashboardNavItems, dashboardSettingsItem } from "@/lib/dashboard/dashboard-nav-config";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const navItems = [
   {
@@ -55,6 +57,7 @@ const navItems = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   
   // Dashboard items from config
@@ -145,81 +148,137 @@ export function MobileBottomNav() {
               </span>
             </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-[2.5rem] border-t-0 p-0 overflow-hidden bg-white/95 backdrop-blur-2xl">
+          <SheetContent side="bottom" className="h-[90vh] rounded-t-[2.5rem] border-t-0 p-0 overflow-hidden bg-surface/98 backdrop-blur-2xl">
             <div className="flex h-full flex-col">
               <div className="flex justify-center pt-3">
                 <div className="h-1.5 w-12 rounded-full bg-foreground/10" />
               </div>
-              <SheetHeader className="px-6 py-6 text-left">
-                <SheetTitle className="font-display text-2xl font-bold">Navigation</SheetTitle>
-              </SheetHeader>
-              
-              <div className="flex-1 overflow-y-auto px-6 pb-12">
-                {/* Dashboard Section */}
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-1">Tableau de bord</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {dashboardItems.map((item) => (
-                      <SheetClose key={item.href} asChild>
-                        <Link
-                          href={item.href}
-                          className="flex items-center gap-3 rounded-2xl bg-foreground/5 p-4 transition-all hover:bg-foreground/10 active:scale-95"
-                        >
-                          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-black/5">
-                            <item.icon className="h-4 w-4 text-deep-green" />
-                          </div>
-                          <span className="text-xs font-semibold">{item.label}</span>
-                        </Link>
-                      </SheetClose>
-                    ))}
+
+              {/* Profile Header */}
+              <div className="px-6 pt-10 pb-4">
+                <div className="flex items-center gap-4 rounded-3xl bg-foreground/[0.03] p-4 ring-1 ring-foreground/5 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-2">
+                    <div className={cn(
+                      "text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter",
+                      session?.user?.kycStatus === 'APPROVED' ? "bg-mint/20 text-mint border border-mint/30" :
+                      session?.user?.kycStatus === 'REJECTED' ? "bg-destructive/10 text-destructive border border-destructive/20" :
+                      "bg-amber-100/10 text-amber-500 border border-amber-500/20"
+                    )}>
+                      {session?.user?.kycStatus === 'APPROVED' ? "Vérifié" : 
+                       session?.user?.kycStatus === 'REJECTED' ? "Refusé" :
+                       session?.user?.kycStatus === 'UNDER_REVIEW' ? "En cours" : "Non vérifié"}
+                    </div>
+                  </div>
+                  <Avatar className="size-14 border-2 border-background shadow-sm">
+                    <AvatarImage src={session?.user?.image ?? ""} alt={session?.user?.name ?? "Guest"} />
+                    <AvatarFallback className="bg-mint text-lg font-bold text-deep-green">
+                      {(session?.user?.name ?? "G")
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 overflow-hidden">
+                    <h3 className="font-display text-lg truncate font-medium">
+                      {session?.user?.name ?? "Invité"}
+                    </h3>
+                    <div className="flex flex-col">
+                      <p className="text-xs text-foreground/40 truncate font-light">
+                        {session?.user?.email ?? "nzelle@platform.com"}
+                      </p>
+                      {session && (
+                        <SheetClose asChild>
+                          <Link href="/dashboard/settings" className="text-[10px] text-mint font-medium mt-1 hover:underline">
+                            Voir le profil
+                          </Link>
+                        </SheetClose>
+                      )}
+                    </div>
+                  </div>
+                  {session ? (
                     <SheetClose asChild>
-                      <Link
-                        href={dashboardSettingsItem.href}
-                        className="flex items-center gap-3 rounded-2xl bg-foreground/5 p-4 transition-all hover:bg-foreground/10 active:scale-95"
-                      >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-black/5">
-                          <dashboardSettingsItem.icon className="h-4 w-4 text-deep-green" />
-                        </div>
-                        <span className="text-xs font-semibold">Paramètres</span>
+                      <Link href="/dashboard/settings" className="rounded-full bg-foreground/5 p-2 text-foreground/40 active:scale-90 transition-transform">
+                        <dashboardSettingsItem.icon className="size-5" strokeWidth={1.2} />
                       </Link>
                     </SheetClose>
-                  </div>
+                  ) : (
+                    <SheetClose asChild>
+                      <Link href="/login" className="rounded-full bg-deep-green px-4 py-2 text-xs font-semibold text-deep-green-foreground active:scale-95 transition-transform">
+                        Se connecter
+                      </Link>
+                    </SheetClose>
+                  )}
                 </div>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto overscroll-contain px-6 pb-20">
+                {/* Navigation List */}
+                <div className="space-y-4">
+                  {session && (
+                    <div className="space-y-1">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/30 px-4 py-3">Espace Personnel</h4>
+                      <div className="flex flex-col">
+                        {dashboardItems.map((item) => (
+                          <SheetClose key={item.href} asChild>
+                            <Link
+                              href={item.href}
+                              className="flex items-center gap-4 border-b border-foreground/[0.03] px-4 py-4 transition-all active:bg-foreground/5 last:border-0"
+                            >
+                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-deep-green/5">
+                                <item.icon className="h-5 w-5 text-deep-green" strokeWidth={1} />
+                              </div>
+                              <span className="text-sm font-normal text-foreground/80">{item.label}</span>
+                              <div className="ml-auto h-1.5 w-1.5 rounded-full bg-deep-green/10" />
+                            </Link>
+                          </SheetClose>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-                {/* Main Site Section */}
-                <div className="mt-8 space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-1">Découvrir & Support</h4>
-                  <div className="grid gap-2">
-                    {[
-                      { href: "/about", label: "À propos", icon: Info },
-                      { href: "/help", label: "Centre d&apos;aide", icon: HelpCircle },
-                      { href: "/contact", label: "Contactez-nous", icon: MessageSquare },
-                      { href: "/terms-of-service", label: "Conditions d&apos;utilisation", icon: FileText },
-                      { href: "/privacy-policy", label: "Politique de confidentialité", icon: Lock },
-                    ].map((item) => (
-                      <SheetClose key={item.href} asChild>
-                        <Link
-                          href={item.href}
-                          className="flex items-center gap-4 rounded-2xl px-4 py-3 transition-all hover:bg-foreground/5 active:bg-foreground/10"
-                        >
-                          <item.icon className="h-5 w-5 text-foreground/50" />
-                          <span className="text-sm font-medium">{item.label}</span>
-                        </Link>
-                      </SheetClose>
-                    ))}
+                  <div className="space-y-1">
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/30 px-4 py-3">Plateforme</h4>
+                    <div className="flex flex-col">
+                      {[
+                        { href: "/about", label: "À propos", icon: Info },
+                        { href: "/help", label: "Centre d&apos;aide", icon: HelpCircle },
+                        { href: "/contact", label: "Contactez-nous", icon: MessageSquare },
+                        { href: "/campaigns", label: "Parcourir les campagnes", icon: Compass },
+                        { href: "/terms-of-service", label: "Conditions d&apos;utilisation", icon: FileText },
+                        { href: "/privacy-policy", label: "Politique de confidentialité", icon: Lock },
+                        { href: "/legal", label: "Mentions légales", icon: ShieldCheck },
+                      ].map((item) => (
+                        <SheetClose key={item.href} asChild>
+                          <Link
+                            href={item.href}
+                            className="flex items-center gap-4 border-b border-foreground/[0.03] px-4 py-4 transition-all active:bg-foreground/5 last:border-0"
+                          >
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/5">
+                              <item.icon className="h-5 w-5 text-foreground/40" strokeWidth={1} />
+                            </div>
+                            <span className="text-sm font-normal text-foreground/80">{item.label}</span>
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Account / Action Section */}
-                <div className="mt-8 border-t border-foreground/5 pt-6">
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-4 h-12 rounded-2xl text-destructive hover:bg-destructive/5 hover:text-destructive active:bg-destructive/10"
-                    onClick={() => void signOut({ callbackUrl: "/" })}
-                  >
-                    <LogOut className="h-5 w-5" />
-                    <span className="font-semibold">Se déconnecter</span>
-                  </Button>
+                  {session && (
+                    <div className="pt-6">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-4 h-16 rounded-2xl border border-destructive/10 bg-destructive/[0.02] text-destructive hover:bg-destructive/5 hover:text-destructive active:bg-destructive/10"
+                        onClick={() => void signOut({ callbackUrl: "/" })}
+                      >
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/5">
+                          <LogOut className="h-5 w-5" />
+                        </div>
+                        <span className="font-bold">Se déconnecter</span>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

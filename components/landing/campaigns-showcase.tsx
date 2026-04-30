@@ -128,7 +128,7 @@ export function CampaignsShowcase() {
               transition={{ duration: 0.45, delay: 0.05 }}
               className="max-w-sm text-sm text-foreground/60"
             >
-              Zeller focuses on company campaigns and structured offerings — transparent terms and
+              Nzelle focuses on property listings and structured offerings — transparent terms and
               straightforward member tooling.
             </motion.p>
           </div>

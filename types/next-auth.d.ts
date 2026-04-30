@@ -11,6 +11,7 @@ declare module "next-auth" {
       organization?: string | null;
       emailVerified: boolean;
       onboardingComplete: boolean;
+      kycStatus?: "PENDING" | "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "EXPIRED";
     };
   }
 }
@@ -22,5 +23,7 @@ declare module "next-auth/jwt" {
     onboardingComplete?: boolean;
     name?: string | null;
     organization?: string | null;
+    kycStatus?: "PENDING" | "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "EXPIRED";
+    provider?: string;
   }
 }

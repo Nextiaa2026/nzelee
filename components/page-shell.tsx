@@ -16,7 +16,7 @@ export function PageHero({
   subtitle?: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden bg-deep-green pb-20 pt-6 text-deep-green-foreground mb-24">
+    <section className="relative overflow-hidden bg-deep-green pb-12 pt-4 text-deep-green-foreground mb-16 md:pb-20 md:pt-6 md:mb-24">
       <motion.div
         className="pointer-events-none absolute -left-20 top-20 h-[500px] w-[500px] rounded-full"
         style={{
@@ -35,7 +35,7 @@ export function PageHero({
         animate={{ x: [0, -30, 0], y: [0, 30, 0] }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
       />
-      <div className="relative mx-auto mt-12 max-w-4xl px-4 text-center">
+      <div className="relative mx-auto mt-8 max-w-4xl px-4 text-center md:mt-12">
         {eyebrow ? (
           <motion.span
             initial={{ opacity: 0, y: 10 }}
@@ -49,7 +49,7 @@ export function PageHero({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="font-display mt-4 text-4xl leading-[1.05] text-glow md:text-5xl"
+          className="font-display mt-4 text-3xl leading-[1.05] text-glow md:text-5xl"
         >
           {title}
         </motion.h1>

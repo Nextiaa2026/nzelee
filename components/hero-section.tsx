@@ -82,12 +82,12 @@ export function HeroSection({
                         >
                           <stop
                             offset="5%"
-                            stopColor="#0F8261"
+                            stopColor="#78ddb8"
                             stopOpacity={0.3}
                           />
                           <stop
                             offset="95%"
-                            stopColor="#0F8261"
+                            stopColor="#78ddb8"
                             stopOpacity={0}
                           />
                         </linearGradient>
@@ -103,12 +103,12 @@ export function HeroSection({
                           border: "none",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                         }}
-                        itemStyle={{ color: "#0F8261", fontWeight: 600 }}
+                        itemStyle={{ color: "#78ddb8", fontWeight: 600 }}
                       />
                       <Area
                         type="monotone"
                         dataKey="value"
-                        stroke="#0F8261"
+                        stroke="#78ddb8"
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorValue)"

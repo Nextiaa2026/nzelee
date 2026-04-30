@@ -1,6 +1,6 @@
 <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
-  <rect width="1200" height="630" fill="#0F8261"/>
+  <rect width="1200" height="630" fill="#0b2d24"/>
   
   <!-- Decorative circles -->
   <circle cx="100" cy="100" r="80" fill="#78DDB8" opacity="0.3"/>
