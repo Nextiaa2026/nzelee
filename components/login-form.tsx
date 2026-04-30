@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import {
   AuthGoogleButton,
@@ -25,7 +26,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const searchParams = useSearchParams();
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [unverifiedFromSubmit, setUnverifiedFromSubmit] = useState(false);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [resendPending, setResendPending] = useState(false);
 
@@ -54,7 +55,6 @@ export function LoginForm({
   }, [prefilledEmail, setValue]);
 
   const onSubmit = async (values: LoginInput) => {
-    setSubmitError(null);
     const result = await signIn("credentials", {
       email: values.email,
       password: values.password,
@@ -64,14 +64,15 @@ export function LoginForm({
 
     const dest = result?.url ?? "";
     if (dest.includes("error=unverified_email")) {
-      setSubmitError(
+      setUnverifiedFromSubmit(true);
+      toast.error(
         "Please verify your email before signing in. Check your inbox for the code or resend below.",
       );
       return;
     }
 
     if (result?.error) {
-      setSubmitError("Invalid email or password.");
+      toast.error("Invalid email or password.");
       return;
     }
 
@@ -85,7 +86,7 @@ export function LoginForm({
   async function onResend() {
     const email = prefilledEmail || getValues("email");
     if (!email?.trim()) {
-      setSubmitError("Enter your email above, then resend verification.");
+      toast.error("Enter your email above, then resend verification.");
       return;
     }
     setResendMessage(null);
@@ -108,8 +109,7 @@ export function LoginForm({
   }
 
   const showResend =
-    errorCode === "unverified_email" ||
-    (submitError?.toLowerCase().includes("verify your email") ?? false);
+    errorCode === "unverified_email" || unverifiedFromSubmit;
 
   return (
     <div className={cn("flex w-full flex-col gap-6", className)} {...props}>
@@ -119,7 +119,7 @@ export function LoginForm({
             Email verified. You can sign in below.
           </p>
         ) : null}
-        {errorCode === "unverified_email" && !submitError ? (
+        {errorCode === "unverified_email" && !unverifiedFromSubmit ? (
           <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-950 dark:text-amber-100">
             Verify your email to continue. Use the 6-digit code we sent you, or
             resend below.
@@ -133,7 +133,7 @@ export function LoginForm({
         <AuthOAuthDivider />
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -146,11 +146,11 @@ export function LoginForm({
             ) : null}
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
+          <div className="space-y-1.5 sm:space-y-2">
+            <div className="flex items-center justify-between gap-2">
               <Label htmlFor="password">Password</Label>
               <Link
-                className="text-xs font-medium text-deep-green/80 hover:text-deep-green hover:underline"
+                className="shrink-0 text-[11px] font-medium text-deep-green/80 hover:text-deep-green hover:underline sm:text-xs"
                 href="/forgot-password"
               >
                 Forgot password?
@@ -168,11 +168,8 @@ export function LoginForm({
             ) : null}
           </div>
 
-          {submitError ? (
-            <p className="text-sm text-destructive">{submitError}</p>
-          ) : null}
           {resendMessage ? (
-            <p className="text-sm text-muted-foreground">{resendMessage}</p>
+            <p className="text-sm text-black/55 dark:text-white/60">{resendMessage}</p>
           ) : null}
 
           <Button

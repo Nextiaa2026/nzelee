@@ -49,7 +49,7 @@ export function ForgotPasswordForm({
     <div className={cn("flex w-full flex-col gap-6", className)} {...props}>
       <div className="space-y-4">
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" {...register("email")} />
             {errors.email ? (

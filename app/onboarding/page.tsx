@@ -29,5 +29,11 @@ export default async function OnboardingPage() {
     redirect("/dashboard");
   }
 
-  return <OnboardingView />;
+  return (
+    <div className="min-h-svh w-full bg-white">
+      <div className="mx-auto w-full max-w-4xl">
+        <OnboardingView />
+      </div>
+    </div>
+  );
 }

@@ -44,7 +44,7 @@ export function AuthGoogleButton({
     <button
       type="button"
       className={cn(
-        "flex h-11 w-full items-center justify-center gap-3 rounded-full border border-deep-green/15 bg-surface px-4 text-sm font-medium text-foreground shadow-sm transition",
+        "flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-input bg-white px-3 text-sm font-medium text-black/88 shadow-[0_1px_3px_0_rgb(0_0_0_/0.04),0_2px_10px_-4px_rgb(0_0_0_/0.05)] transition dark:bg-card dark:text-white/90",
         "hover:border-mint/60 hover:bg-mint/10 hover:text-deep-green",
         "focus-visible:ring-2 focus-visible:ring-mint/50 focus-visible:ring-offset-2 focus-visible:outline-none",
         "disabled:pointer-events-none disabled:opacity-50",
@@ -68,7 +68,7 @@ export function AuthOAuthDivider({
   return (
     <div className={cn("relative flex items-center py-1", className)}>
       <div className="flex-1 border-t border-deep-green/10" />
-      <span className="bg-background px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <span className="bg-white px-3 text-xs font-medium uppercase tracking-wider text-black/50 dark:bg-card dark:text-white/55">
         {label}
       </span>
       <div className="flex-1 border-t border-deep-green/10" />
@@ -77,5 +77,6 @@ export function AuthOAuthDivider({
 }
 
 /** Primary CTA aligned with hero “Start investing” (mint pill). */
+/** Soft mint-tinted lift — avoids heavy dark drop shadows. */
 export const authHeroCtaClassName =
-  "h-11 w-full rounded-full border-0 !bg-mint font-medium !text-deep-green shadow-none hover:!bg-mint/90";
+  "h-11 w-full rounded-full border-0 !bg-mint font-medium !text-deep-green shadow-[0_2px_10px_-4px_color-mix(in_oklab,var(--mint)_45%,transparent),0_1px_3px_-1px_rgba(0,35,25,0.06)] hover:!bg-mint/90 hover:shadow-[0_4px_18px_-6px_color-mix(in_oklab,var(--mint)_50%,transparent),0_2px_6px_-2px_rgba(0,35,25,0.07)]";

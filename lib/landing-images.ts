@@ -1,6 +1,5 @@
 /** Root-relative URLs for files in `public/landing/`. */
 export const landingImages = {
-  heroMoney: "/landing/hero-money.jpg",
   integrationsWoman: "/landing/integrations-woman.jpg",
   deskFlatlay: "/landing/desk-flatlay.jpg",
   investorsTeam: "/landing/investors-team.jpg",

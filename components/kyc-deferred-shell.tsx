@@ -6,8 +6,7 @@ type KycDeferredShellProps = {
 };
 
 /**
- * Identity verification when the user returns from the dashboard — compact
- * header and single column (no step sidebar), unlike onboarding wizard.
+ * Optional compact chrome for KYC (unused when `/kyc` uses `app/kyc/layout.tsx`).
  */
 export function KycDeferredShell({ children }: KycDeferredShellProps) {
   return (

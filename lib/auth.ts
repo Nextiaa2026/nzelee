@@ -109,7 +109,9 @@ export const authOptions: NextAuthOptions = {
 
         if (!row?.emailVerified) {
           const email = encodeURIComponent(user.email ?? "");
-          return authAbsoluteUrl(`/login?error=unverified_email&email=${email}`);
+          return authAbsoluteUrl(
+            `/login?error=unverified_email&email=${email}`,
+          );
         }
       }
 

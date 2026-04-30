@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "@/lib/db";
@@ -10,6 +10,7 @@ type PledgeRow = InferSelectModel<typeof pledges>;
 export type AdminPledgeListRow = {
   id: string;
   campaignId: string;
+  campaignSlug: string;
   campaignTitle: string;
   backerId: string;
   backerEmail: string;
@@ -19,13 +20,21 @@ export type AdminPledgeListRow = {
   createdAt: Date;
 };
 
-export async function listPledges(): Promise<AdminPledgeListRow[]> {
+export async function listPledges(params: {
+  page: number;
+  pageSize: number;
+}): Promise<{ rows: AdminPledgeListRow[]; total: number; page: number; pageSize: number }> {
   const backer = alias(users, "backer");
+  const offset = (params.page - 1) * params.pageSize;
+  const [countRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(pledges);
 
   const rows = await db
     .select({
       id: pledges.id,
       campaignId: pledges.campaignId,
+      campaignSlug: campaigns.slug,
       campaignTitle: campaigns.title,
       backerId: pledges.backerId,
       backerEmail: backer.email,
@@ -37,9 +46,16 @@ export async function listPledges(): Promise<AdminPledgeListRow[]> {
     .from(pledges)
     .innerJoin(campaigns, eq(pledges.campaignId, campaigns.id))
     .innerJoin(backer, eq(pledges.backerId, backer.id))
-    .orderBy(desc(pledges.createdAt));
+    .orderBy(desc(pledges.createdAt))
+    .limit(params.pageSize)
+    .offset(offset);
 
-  return rows;
+  return {
+    rows,
+    total: countRow?.count ?? 0,
+    page: params.page,
+    pageSize: params.pageSize,
+  };
 }
 
 export async function getPledgeById(id: string) {
@@ -48,6 +64,7 @@ export async function getPledgeById(id: string) {
     .select({
       id: pledges.id,
       campaignId: pledges.campaignId,
+      campaignSlug: campaigns.slug,
       campaignTitle: campaigns.title,
       backerId: pledges.backerId,
       backerEmail: backer.email,

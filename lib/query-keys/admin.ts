@@ -10,10 +10,13 @@ export const adminQueryKeys = {
   pledges: () => [...adminQueryKeys.all, "pledges"] as const,
   transactions: () => [...adminQueryKeys.all, "transactions"] as const,
   withdrawalRequests: () => [...adminQueryKeys.all, "withdrawal-requests"] as const,
-  properties: () => [...adminQueryKeys.all, "properties"] as const,
   kycSubmissions: () => [...adminQueryKeys.all, "kyc-submissions"] as const,
+  notificationTargets: (q: string, limit: number) =>
+    [...adminQueryKeys.all, "notification-targets", { q, limit }] as const,
+  notifications: (page: number, pageSize: number, search: string) =>
+    [...adminQueryKeys.all, "notifications", { page, pageSize, search }] as const,
 } as const;
 
-export const userWithdrawalQueryKeys = {
-  list: () => ["user", "withdrawals"] as const,
+export const userInvestmentQueryKeys = {
+  list: () => ["user", "investments"] as const,
 } as const;

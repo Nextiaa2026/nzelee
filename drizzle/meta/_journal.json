@@ -22,6 +22,62 @@
       "when": 1777260250587,
       "tag": "0002_property_investment_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777340611919,
+      "tag": "0004_ancient_skreet",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1777342249246,
+      "tag": "0004_notifications",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777343008959,
+      "tag": "0005_drop_property_domain",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777352786243,
+      "tag": "0006_campaign_favorites",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1777413200000,
+      "tag": "0008_campaign_is_featured",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1777502379006,
+      "tag": "0008_solid_dreadnoughts",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1777505686108,
+      "tag": "0009_regular_lady_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1777525616015,
+      "tag": "0010_real_natasha_romanoff",
+      "breakpoints": true
     }
   ]
 }

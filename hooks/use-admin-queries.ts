@@ -5,10 +5,11 @@ import { useQuery } from "@tanstack/react-query";
 import { isApiSuccess } from "@/lib/http/api-result";
 import { adminQueryKeys } from "@/lib/query-keys/admin";
 import {
+  adminListNotificationTargets,
+  adminListNotifications,
   adminGetStatsSummary,
   adminGetStatsTimeseries,
   adminListPledges,
-  adminListProperties,
   adminListTransactions,
   adminListUsersQuery,
   adminListWithdrawalRequests,
@@ -51,40 +52,81 @@ export function useAdminUsers(
   });
 }
 
-export function useAdminPledges() {
+export function useAdminPledges(page = 1, pageSize = 20) {
   return useQuery({
-    queryKey: adminQueryKeys.pledges(),
-    queryFn: async () => unwrap(await adminListPledges(), "Failed to load pledges"),
-  });
-}
-
-export function useAdminTransactions() {
-  return useQuery({
-    queryKey: adminQueryKeys.transactions(),
+    queryKey: [...adminQueryKeys.pledges(), { page, pageSize }],
     queryFn: async () =>
-      unwrap(await adminListTransactions(), "Failed to load transactions"),
+      unwrap(await adminListPledges({ page, pageSize }), "Failed to load pledges"),
   });
 }
 
-export function useAdminWithdrawalRequests() {
+export function useAdminTransactions(
+  page = 1,
+  pageSize = 20,
+  search = "",
+  startDate = "",
+  endDate = "",
+) {
   return useQuery({
-    queryKey: adminQueryKeys.withdrawalRequests(),
+    queryKey: [...adminQueryKeys.transactions(), { page, pageSize, search, startDate, endDate }],
     queryFn: async () =>
-      unwrap(await adminListWithdrawalRequests(), "Failed to load withdrawals"),
+      unwrap(
+        await adminListTransactions({
+          page,
+          pageSize,
+          search: search || undefined,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        }),
+        "Failed to load transactions",
+      ),
   });
 }
 
-export function useAdminProperties() {
-  return useQuery({
-    queryKey: adminQueryKeys.properties(),
-    queryFn: async () => unwrap(await adminListProperties(), "Failed to load properties"),
-  });
-}
 
-export function useAdminKycSubmissions() {
+export function useAdminWithdrawalRequests(page = 1, pageSize = 20) {
   return useQuery({
-    queryKey: adminQueryKeys.kycSubmissions(),
+    queryKey: [...adminQueryKeys.withdrawalRequests(), { page, pageSize }],
     queryFn: async () =>
-      unwrap(await adminListKycSubmissions(), "Failed to load KYC submissions"),
+      unwrap(
+        await adminListWithdrawalRequests({ page, pageSize }),
+        "Failed to load withdrawals",
+      ),
+  });
+}
+
+export function useAdminKycSubmissions(page = 1, pageSize = 20) {
+  return useQuery({
+    queryKey: [...adminQueryKeys.kycSubmissions(), { page, pageSize }],
+    queryFn: async () =>
+      unwrap(
+        await adminListKycSubmissions({ page, pageSize }),
+        "Failed to load KYC submissions",
+      ),
+  });
+}
+
+export function useAdminNotificationTargets(q = "", limit = 25) {
+  return useQuery({
+    queryKey: adminQueryKeys.notificationTargets(q, limit),
+    queryFn: async () =>
+      unwrap(
+        await adminListNotificationTargets({
+          q: q.trim() || undefined,
+          limit,
+        }),
+        "Failed to load users",
+      ),
+  });
+}
+
+export function useAdminNotifications(page = 1, pageSize = 20, search = "") {
+  return useQuery({
+    queryKey: adminQueryKeys.notifications(page, pageSize, search),
+    queryFn: async () =>
+      unwrap(
+        await adminListNotifications({ page, pageSize, search: search || undefined }),
+        "Failed to load notifications",
+      ),
   });
 }

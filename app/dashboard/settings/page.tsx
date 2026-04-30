@@ -1,4 +1,5 @@
 import { ProfileSettingsForm } from "@/components/forms/profile-settings-form";
+import { DashboardPageShell } from "@/components/dashboard/dashboard-page-shell";
 import {
   Card,
   CardDescription,
@@ -6,34 +7,49 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function DashboardSettingsPage() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return null;
   }
+  const [user] = await db
+    .select({
+      dateOfBirth: users.dateOfBirth,
+      country: users.country,
+    })
+    .from(users)
+    .where(eq(users.id, session.user.id))
+    .limit(1);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Update how your name appears across Nexiaa.
-        </p>
-      </div>
-      <Card>
+    <DashboardPageShell
+      eyebrow="Account"
+      title="Profile & settings"
+      description="Update your profile details used across your account."
+    >
+      <Card className="border-border/80 shadow-sm">
         <CardHeader>
           <CardTitle>Profile</CardTitle>
-          <CardDescription>Display name and organization are stored on your account.</CardDescription>
+          <CardDescription>
+            Keep your profile current for onboarding, verification, and investor updates.
+          </CardDescription>
         </CardHeader>
         <div className="px-6 pb-6">
           <ProfileSettingsForm
             email={session.user.email ?? ""}
             defaultName={session.user.name ?? ""}
             defaultOrganization={session.user.organization ?? ""}
+            defaultCountry={user?.country ?? ""}
+            defaultDateOfBirth={
+              user?.dateOfBirth ? user.dateOfBirth.toISOString().slice(0, 10) : ""
+            }
           />
         </div>
       </Card>
-    </div>
+    </DashboardPageShell>
   );
 }

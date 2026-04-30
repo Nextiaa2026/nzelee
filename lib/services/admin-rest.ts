@@ -1,12 +1,16 @@
 import type { InferSelectModel } from "drizzle-orm";
 
-import { paymentTransactions, users } from "@/lib/db/schema";
+import { users } from "@/lib/db/schema";
 import type { ApiResult } from "@/lib/http/api-result";
 import { httpClient } from "@/lib/http/client";
 import type {
   AdminKycSubmissionRow,
-  AdminPropertyListRow,
+  AdminNotificationRow,
+  AdminNotificationTarget,
   AdminPledgeListRow,
+  AdminTransactionListRow,
+  PaginatedResponse,
+  AdminSendNotificationResult,
   AdminStatsSummary,
   AdminTimeseriesPoint,
   AdminWithdrawalListRow,
@@ -14,7 +18,6 @@ import type {
 } from "@/types/api/admin";
 
 type TimeseriesResponse = { range: string; points: AdminTimeseriesPoint[] };
-type TxRow = InferSelectModel<typeof paymentTransactions>;
 type UserRow = InferSelectModel<typeof users>;
 
 export async function adminGetStatsSummary(): Promise<ApiResult<AdminStatsSummary>> {
@@ -46,23 +49,38 @@ export async function adminListUsersQuery(params?: {
   return data;
 }
 
-export async function adminListPledges(): Promise<ApiResult<AdminPledgeListRow[]>> {
-  const { data } = await httpClient.get<ApiResult<AdminPledgeListRow[]>>(
+export async function adminListPledges(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ApiResult<PaginatedResponse<AdminPledgeListRow>>> {
+  const { data } = await httpClient.get<ApiResult<PaginatedResponse<AdminPledgeListRow>>>(
     "/admin/pledges",
+    { params },
   );
   return data;
 }
 
-export async function adminListTransactions(): Promise<ApiResult<TxRow[]>> {
-  const { data } = await httpClient.get<ApiResult<TxRow[]>>("/admin/transactions");
+export async function adminListTransactions(params?: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}): Promise<ApiResult<PaginatedResponse<AdminTransactionListRow>>> {
+  const { data } = await httpClient.get<ApiResult<PaginatedResponse<AdminTransactionListRow>>>(
+    "/admin/transactions",
+    { params },
+  );
   return data;
 }
 
-export async function adminListWithdrawalRequests(): Promise<
-  ApiResult<AdminWithdrawalListRow[]>
-> {
-  const { data } = await httpClient.get<ApiResult<AdminWithdrawalListRow[]>>(
+export async function adminListWithdrawalRequests(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ApiResult<PaginatedResponse<AdminWithdrawalListRow>>> {
+  const { data } = await httpClient.get<ApiResult<PaginatedResponse<AdminWithdrawalListRow>>>(
     "/admin/withdrawal-requests",
+    { params },
   );
   return data;
 }
@@ -115,48 +133,13 @@ export async function adminPatchWithdrawalRequest(
   return data;
 }
 
-export async function adminListProperties(): Promise<ApiResult<AdminPropertyListRow[]>> {
-  const { data } = await httpClient.get<ApiResult<AdminPropertyListRow[]>>(
-    "/admin/properties",
-  );
-  return data;
-}
-
-export async function adminCreateProperty(
-  body: Partial<AdminPropertyListRow> & { name: string; country: string },
-): Promise<ApiResult<AdminPropertyListRow>> {
-  const { data } = await httpClient.post<ApiResult<AdminPropertyListRow>>(
-    "/admin/properties",
-    body,
-  );
-  return data;
-}
-
-export async function adminPatchProperty(
-  id: string,
-  body: Partial<AdminPropertyListRow>,
-): Promise<ApiResult<AdminPropertyListRow>> {
-  const { data } = await httpClient.patch<ApiResult<AdminPropertyListRow>>(
-    `/admin/properties/${id}`,
-    body,
-  );
-  return data;
-}
-
-export async function adminDeleteProperty(
-  id: string,
-): Promise<ApiResult<{ deleted: true }>> {
-  const { data } = await httpClient.delete<ApiResult<{ deleted: true }>>(
-    `/admin/properties/${id}`,
-  );
-  return data;
-}
-
-export async function adminListKycSubmissions(): Promise<
-  ApiResult<AdminKycSubmissionRow[]>
-> {
-  const { data } = await httpClient.get<ApiResult<AdminKycSubmissionRow[]>>(
+export async function adminListKycSubmissions(params?: {
+  page?: number;
+  pageSize?: number;
+}): Promise<ApiResult<PaginatedResponse<AdminKycSubmissionRow>>> {
+  const { data } = await httpClient.get<ApiResult<PaginatedResponse<AdminKycSubmissionRow>>>(
     "/admin/kyc-submissions",
+    { params },
   );
   return data;
 }
@@ -170,6 +153,44 @@ export async function adminPatchKycSubmission(
 ): Promise<ApiResult<AdminKycSubmissionRow>> {
   const { data } = await httpClient.patch<ApiResult<AdminKycSubmissionRow>>(
     `/admin/kyc-submissions/${id}`,
+    body,
+  );
+  return data;
+}
+
+export async function adminListNotificationTargets(params?: {
+  q?: string;
+  limit?: number;
+}): Promise<ApiResult<AdminNotificationTarget[]>> {
+  const { data } = await httpClient.get<ApiResult<AdminNotificationTarget[]>>(
+    "/admin/notification-targets",
+    { params },
+  );
+  return data;
+}
+
+export async function adminListNotifications(params?: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}): Promise<ApiResult<PaginatedResponse<AdminNotificationRow>>> {
+  const { data } = await httpClient.get<ApiResult<PaginatedResponse<AdminNotificationRow>>>(
+    "/admin/notifications",
+    { params },
+  );
+  return data;
+}
+
+export async function adminSendNotification(body: {
+  scope: "USER" | "BROADCAST";
+  userId?: string;
+  type: "SYSTEM" | "KYC" | "INVESTMENT" | "WITHDRAWAL" | "GENERAL";
+  title: string;
+  body?: string;
+  href?: string;
+}): Promise<ApiResult<AdminSendNotificationResult>> {
+  const { data } = await httpClient.post<ApiResult<AdminSendNotificationResult>>(
+    "/admin/notifications/send",
     body,
   );
   return data;

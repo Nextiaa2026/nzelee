@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { GalleryVerticalEndIcon } from "lucide-react";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export type WizardStep = { label: string };
 
@@ -7,11 +7,15 @@ type OnboardingWizardShellProps = {
   steps: WizardStep[];
   /** 1-based index of the active step */
   current: number;
-  title: string;
+  /** Optional page heading; omit for label-only flows (headings live in the form). */
+  title?: string;
   subtitle?: string;
   children: React.ReactNode;
-  exitHref?: string;
-  exitLabel?: string;
+  /** Centered single-column layout for focused flows like onboarding/KYC. */
+  centered?: boolean;
+  /** Tighter chrome when nested in another layout. */
+  embedded?: boolean;
+  className?: string;
 };
 
 /**
@@ -24,78 +28,72 @@ export function OnboardingWizardShell({
   title,
   subtitle,
   children,
-  exitHref = "/",
-  exitLabel = "Save & exit",
+  centered = false,
+  embedded = false,
+  className,
 }: OnboardingWizardShellProps) {
-  const progress = (current / steps.length) * 100;
-
+  const showHeading = Boolean(title?.trim());
   return (
-    <div className="min-h-svh bg-background">
-      <header className="border-b border-border bg-card/60 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-medium text-foreground"
-          >
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <GalleryVerticalEndIcon className="size-5" aria-hidden />
-            </span>
-            <span className="font-display text-sm sm:text-base">Nexiaa</span>
-          </Link>
-          <Link
-            href={exitHref}
-            className="text-sm text-muted-foreground transition hover:text-foreground"
-          >
-            {exitLabel}
-          </Link>
-        </div>
-        <div className="h-1 w-full bg-muted">
-          <div
-            className="h-full bg-primary transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </header>
-
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,240px)_1fr] lg:py-12">
-        <aside className="hidden lg:block">
-          <ol className="space-y-1">
+    <div
+      className={cn(
+        "flex min-h-svh flex-col items-center justify-center bg-white p-4",
+        className,
+      )}
+    >
+      <div
+        className={cn(
+          "w-full mx-auto grid gap-10",
+          centered
+            ? "max-w-xl lg:grid-cols-1"
+            : "max-w-6xl lg:grid-cols-[minmax(0,240px)_1fr]",
+        )}
+      >
+        <aside className={cn("hidden lg:block", centered && "lg:hidden")}>
+          <ol className="sticky top-24 space-y-2">
             {steps.map((s, i) => {
               const num = i + 1;
               const state =
                 num < current ? "done" : num === current ? "active" : "todo";
               return (
-                <li key={s.label} className="flex items-start gap-3 rounded-lg p-3">
+                <li
+                  key={s.label}
+                  className={cn(
+                    "flex items-start gap-3 rounded-2xl p-3 transition-colors",
+                    state === "active" ? "border border-black/10 bg-white shadow-sm" : ""
+                  )}
+                >
                   <span
-                    className={
-                      "mt-0.5 grid h-7 w-7 place-items-center rounded-full text-xs font-semibold " +
-                      (state === "done"
+                    className={cn(
+                      "mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-bold transition-all duration-300",
+                      state === "done"
                         ? "bg-primary text-primary-foreground"
                         : state === "active"
-                          ? "bg-mint text-mint-foreground ring-4 ring-mint/30"
-                          : "border border-border bg-card text-muted-foreground")
-                    }
+                          ? "bg-mint text-mint-foreground shadow-lg shadow-mint/20 ring-4 ring-mint/10"
+                          : "border border-black/10 bg-white text-black/45"
+                    )}
                   >
-                    {state === "done" ? "✓" : num}
+                    {state === "done" ? (
+                      <Check className="size-4" strokeWidth={3} aria-hidden />
+                    ) : (
+                      num
+                    )}
                   </span>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <div
-                      className={
-                        "text-xs font-medium uppercase tracking-wider " +
-                        (state === "todo"
-                          ? "text-muted-foreground"
-                          : "text-foreground")
-                      }
+                      className={cn(
+                        "text-[10px] font-bold uppercase tracking-widest",
+                        state === "todo" ? "text-black/40" : "text-primary/70"
+                      )}
                     >
                       Step {num}
                     </div>
                     <div
-                      className={
-                        "text-sm " +
-                        (state === "active"
-                          ? "font-semibold text-foreground"
-                          : "text-muted-foreground")
-                      }
+                      className={cn(
+                        "truncate text-sm transition-colors",
+                        state === "active"
+                          ? "font-semibold text-black"
+                          : "text-black/55"
+                      )}
                     >
                       {s.label}
                     </div>
@@ -106,22 +104,29 @@ export function OnboardingWizardShell({
           </ol>
         </aside>
 
-        <main>
-          <div className="mb-8">
-            <p className="text-sm font-medium uppercase tracking-wider text-primary">
+        <main className={cn("relative w-full")}>
+          <div className={cn("mb-8", !showHeading && !subtitle && "mb-4")}>
+            <p
+              className={cn(
+                "mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-mint",
+              )}
+            >
               Step {current} of {steps.length}
             </p>
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {title}
-            </h1>
+            {showHeading ? (
+              <h1 className="mt-2 font-display text-xl font-bold tracking-tight text-black sm:text-2xl lg:text-3xl">
+                {title}
+              </h1>
+            ) : null}
             {subtitle ? (
-              <p className="mt-3 max-w-2xl text-muted-foreground">{subtitle}</p>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-black/60">{subtitle}</p>
             ) : null}
           </div>
-          <div className="rounded-3xl border border-border bg-card p-6 sm:p-10">
+          <div className="relative">
             {children}
           </div>
         </main>
+
       </div>
     </div>
   );

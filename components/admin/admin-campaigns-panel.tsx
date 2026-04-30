@@ -3,19 +3,30 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
-import { Loader2Icon, MoreHorizontalIcon, PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  MoreHorizontalIcon,
+  PencilIcon,
+  PlusIcon,
+  TrashIcon,
+  UsersIcon,
+  ImageOffIcon,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { AdminDataTable } from "@/components/admin-data-table";
 import { FileDropZone } from "@/components/file-drop-zone";
+import { MockQueryPlaceholder } from "@/components/mock-query-placeholder";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -27,14 +38,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { SearchInput } from "@/components/ui/search-input";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+  FullTopSheet,
+  FullTopSheetCancelButton,
+} from "@/components/ui/full-top-sheet";
+import { openPublicCampaign } from "@/lib/admin/open-links";
 import { isApiSuccess } from "@/lib/http/api-result";
 import {
   adminCreateCampaign,
@@ -43,6 +53,8 @@ import {
   adminUpdateCampaign,
   type AdminCampaignRow,
 } from "@/lib/services/admin";
+import { adminListPledges } from "@/lib/services/admin-rest";
+import type { AdminPledgeListRow } from "@/types/api/admin";
 import { campaignStatusValues } from "@/lib/validations/admin-campaign";
 import { cn } from "@/lib/utils";
 
@@ -57,6 +69,7 @@ const formSchema = z.object({
   description: z.string().trim().min(1),
   goalDollars: z.number().positive("Goal must be greater than zero"),
   currency: z.string().trim().min(1).max(12),
+  isFeatured: z.boolean(),
   status: z.enum(campaignStatusValues),
   coverImageUrl: z.string().optional(),
   startsAt: z.string().optional(),
@@ -80,6 +93,7 @@ const emptyDefaults: FormValues = {
   description: "",
   goalDollars: 1000,
   currency: "USD",
+  isFeatured: false,
   status: "DRAFT",
   coverImageUrl: "",
   startsAt: "",
@@ -94,6 +108,7 @@ function rowToForm(row: AdminCampaignRow): FormValues {
     description: row.description,
     goalDollars: row.goalAmount / 100,
     currency: row.currency,
+    isFeatured: row.isFeatured,
     status: row.status,
     coverImageUrl: row.coverImageUrl ?? "",
     startsAt: toDatetimeLocal(row.startsAt),
@@ -112,19 +127,86 @@ function formatMoney(cents: number, currency: string) {
   }
 }
 
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "2-digit",
+});
+
+function formatDate(value: Date | string | null | undefined) {
+  if (!value) return "—";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return dateFormatter.format(date);
+}
+
+async function copyText(value: string, label: string) {
+  await navigator.clipboard.writeText(value);
+  toast.success(`${label} copied`);
+}
+
 export function AdminCampaignsPanel() {
   const qc = useQueryClient();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetMode, setSheetMode] = useState<"form" | "investors">("form");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(
+    null,
+  );
   const [uploading, setUploading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | (typeof campaignStatusValues)[number]
+  >("ALL");
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const [investorsPage, setInvestorsPage] = useState(1);
+  const investorsPageSize = 20;
 
   const { data, isPending, isError, refetch } = useQuery({
-    queryKey: ["admin", "campaigns"],
-    queryFn: adminListCampaigns,
+    queryKey: ["admin", "campaigns", { page, pageSize, search }],
+    queryFn: () =>
+      adminListCampaigns({ page, pageSize, search: search || undefined }),
   });
 
-  const rows: AdminCampaignRow[] =
-    data && isApiSuccess(data) ? (data.data as AdminCampaignRow[]) : [];
+  const rows = useMemo<AdminCampaignRow[]>(
+    () => (data && isApiSuccess(data) ? data.data.items : []),
+    [data],
+  );
+  const total = data && isApiSuccess(data) ? data.data.total : 0;
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const { data: pledgesRes } = useQuery({
+    queryKey: [
+      "admin",
+      "pledges",
+      { page: investorsPage, pageSize: investorsPageSize },
+    ],
+    queryFn: () =>
+      adminListPledges({ page: investorsPage, pageSize: investorsPageSize }),
+  });
+  const pledgeRows = useMemo<AdminPledgeListRow[]>(
+    () => (pledgesRes && isApiSuccess(pledgesRes) ? pledgesRes.data.items : []),
+    [pledgesRes],
+  );
+  const selectedCampaign = useMemo(
+    () => rows.find((row) => row.id === selectedCampaignId) ?? null,
+    [rows, selectedCampaignId],
+  );
+  const selectedCampaignInvestors = useMemo(
+    () => pledgeRows.filter((row) => row.campaignId === selectedCampaignId),
+    [pledgeRows, selectedCampaignId],
+  );
+  const filteredRows = useMemo(
+    () =>
+      rows.filter(
+        (row) => statusFilter === "ALL" || row.status === statusFilter,
+      ),
+    [rows, statusFilter],
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -132,16 +214,27 @@ export function AdminCampaignsPanel() {
   });
 
   const openCreate = () => {
+    setSheetMode("form");
     setEditingId(null);
     form.reset(emptyDefaults);
     setSheetOpen(true);
   };
 
-  function openEdit(row: AdminCampaignRow) {
-    setEditingId(row.id);
-    form.reset(rowToForm(row));
+  const openEdit = useCallback(
+    (row: AdminCampaignRow) => {
+      setSheetMode("form");
+      setEditingId(row.id);
+      form.reset(rowToForm(row));
+      setSheetOpen(true);
+    },
+    [form],
+  );
+
+  const openInvestors = useCallback((row: AdminCampaignRow) => {
+    setSheetMode("investors");
+    setSelectedCampaignId(row.id);
     setSheetOpen(true);
-  }
+  }, []);
 
   const createMut = useMutation({
     mutationFn: adminCreateCampaign,
@@ -158,8 +251,13 @@ export function AdminCampaignsPanel() {
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, body }: { id: string; body: Parameters<typeof adminUpdateCampaign>[1] }) =>
-      adminUpdateCampaign(id, body),
+    mutationFn: ({
+      id,
+      body,
+    }: {
+      id: string;
+      body: Parameters<typeof adminUpdateCampaign>[1];
+    }) => adminUpdateCampaign(id, body),
     onSuccess: (res) => {
       if (isApiSuccess(res)) {
         toast.success("Listing updated");
@@ -174,7 +272,8 @@ export function AdminCampaignsPanel() {
 
   const deleteRow = useCallback(
     async (id: string) => {
-      if (!globalThis.confirm("Delete this listing? This cannot be undone.")) return;
+      if (!globalThis.confirm("Delete this listing? This cannot be undone."))
+        return;
       const res = await adminDeleteCampaign(id);
       if (isApiSuccess(res)) {
         toast.success("Listing deleted");
@@ -200,7 +299,10 @@ export function AdminCampaignsPanel() {
           description: values.description,
           goalAmount,
           currency: values.currency.trim(),
+          isFeatured: values.isFeatured,
           status: values.status,
+          tags: [],
+          documents: [],
           coverImageUrl: trimmedCover === "" ? null : trimmedCover,
           startsAt: values.startsAt?.trim()
             ? new Date(values.startsAt).toISOString()
@@ -218,7 +320,10 @@ export function AdminCampaignsPanel() {
         description: values.description,
         goalAmount,
         currency: values.currency.trim(),
+        isFeatured: values.isFeatured,
         status: values.status,
+        tags: [],
+        documents: [],
         coverImageUrl: trimmedCover === "" ? undefined : trimmedCover,
         startsAt: values.startsAt?.trim()
           ? new Date(values.startsAt).toISOString()
@@ -232,12 +337,28 @@ export function AdminCampaignsPanel() {
 
   const busy = createMut.isPending || updateMut.isPending;
 
+  const deleteCoverByUrl = async (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    try {
+      await fetch("/api/v1/admin/upload-image", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: trimmed }),
+        credentials: "include",
+      });
+    } catch {
+      // Do not block editing if delete call fails.
+    }
+  };
+
   const uploadCover = async (file: File) => {
     setUploading(true);
     try {
+      const oldCover = form.getValues("coverImageUrl")?.trim();
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/api/admin/upload-image", {
+      const res = await fetch("/api/v1/admin/upload-image", {
         method: "POST",
         body: fd,
         credentials: "include",
@@ -251,7 +372,11 @@ export function AdminCampaignsPanel() {
         "data" in json &&
         typeof (json as { data: { url?: string } }).data?.url === "string"
       ) {
-        form.setValue("coverImageUrl", (json as { data: { url: string } }).data.url);
+        const newUrl = (json as { data: { url: string } }).data.url;
+        form.setValue("coverImageUrl", newUrl);
+        if (oldCover && oldCover !== newUrl) {
+          await deleteCoverByUrl(oldCover);
+        }
         toast.success("Image uploaded");
         return;
       }
@@ -261,7 +386,8 @@ export function AdminCampaignsPanel() {
         "ok" in json &&
         (json as { ok: boolean }).ok === false &&
         "error" in json
-          ? (json as { error?: { message?: string } }).error?.message ?? "Upload failed"
+          ? ((json as { error?: { message?: string } }).error?.message ??
+            "Upload failed")
           : "Upload failed";
       toast.error(msg);
       throw new Error(msg);
@@ -284,7 +410,11 @@ export function AdminCampaignsPanel() {
         cell: ({ row }) => {
           const url = row.original.coverImageUrl;
           if (!url) {
-            return <span className="text-xs text-muted-foreground">—</span>;
+            return (
+              <div className="flex size-10 items-center justify-center rounded-md border bg-black/5">
+                <ImageOffIcon className="size-4 text-black/45" />
+              </div>
+            );
           }
           return (
             // eslint-disable-next-line @next/next/no-img-element
@@ -307,27 +437,74 @@ export function AdminCampaignsPanel() {
         accessorKey: "slug",
         header: "Slug",
         cell: ({ row }) => (
-          <span className="font-mono text-xs text-muted-foreground">{row.original.slug}</span>
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.slug}
+          </span>
         ),
       },
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-          <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium">
-            {row.original.status}
-          </span>
-        ),
+        cell: ({ row }) => {
+          const statusColors: Record<string, string> = {
+            DRAFT: "bg-slate-500/10 text-slate-600 border-slate-500/20",
+            ACTIVE: "bg-green-500/10 text-green-600 border-green-500/20",
+            SUCCESSFUL: "bg-mint/20 text-mint-foreground border-mint/30",
+            FAILED: "bg-red-500/10 text-red-600 border-red-500/20",
+            CANCELLED: "bg-red-500/10 text-red-600 border-red-500/20",
+          };
+          const colorClass =
+            statusColors[row.original.status] ||
+            "bg-secondary text-secondary-foreground";
+          return (
+            <span
+              className={cn(
+                "rounded-md border px-2 py-0.5 text-xs font-medium",
+                colorClass,
+              )}
+            >
+              {row.original.status}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "isFeatured",
+        header: "Featured",
+        cell: ({ row }) =>
+          row.original.isFeatured ? (
+            <span className="rounded-md bg-mint/20 px-2 py-0.5 text-xs font-medium text-mint-foreground">
+              Yes
+            </span>
+          ) : (
+            <span className="text-xs text-muted-foreground">No</span>
+          ),
       },
       {
         id: "goal",
         header: "Goal",
-        cell: ({ row }) => formatMoney(row.original.goalAmount, row.original.currency),
+        cell: ({ row }) =>
+          formatMoney(row.original.goalAmount, row.original.currency),
       },
       {
         id: "raised",
         header: "Raised",
-        cell: ({ row }) => formatMoney(row.original.raisedAmount, row.original.currency),
+        cell: ({ row }) =>
+          formatMoney(row.original.raisedAmount, row.original.currency),
+      },
+      {
+        accessorKey: "currency",
+        header: "Currency",
+      },
+      {
+        id: "window",
+        header: "Window",
+        cell: ({ row }) => (
+          <span className="text-xs text-black/65">
+            {formatDate(row.original.startsAt)} -{" "}
+            {formatDate(row.original.endsAt)}
+          </span>
+        ),
       },
       {
         id: "actions",
@@ -335,15 +512,41 @@ export function AdminCampaignsPanel() {
         cell: ({ row }) => (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="size-8" aria-label="Actions">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                aria-label="Actions"
+              >
                 <MoreHorizontalIcon className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => openPublicCampaign(row.original.slug)}
+              >
+                Open public page
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => void copyText(row.original.slug, "Slug")}
+              >
+                Copy slug
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => void copyText(row.original.id, "Campaign id")}
+              >
+                Copy campaign id
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => openInvestors(row.original)}>
+                <UsersIcon className="mr-2 size-4" />
+                Investors
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => openEdit(row.original)}>
                 <PencilIcon className="mr-2 size-4" />
                 Edit
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => void deleteRow(row.original.id)}
@@ -357,83 +560,241 @@ export function AdminCampaignsPanel() {
         enableSorting: false,
       },
     ],
-    [deleteRow],
+    [deleteRow, openEdit, openInvestors],
+  );
+  const investorColumns = useMemo<ColumnDef<AdminPledgeListRow, unknown>[]>(
+    () => [
+      {
+        accessorKey: "backerName",
+        header: "Investor",
+        cell: ({ row }) => row.original.backerName ?? "—",
+      },
+      {
+        accessorKey: "backerEmail",
+        header: "Email",
+      },
+      {
+        accessorKey: "amount",
+        header: "Amount",
+        cell: ({ row }) => formatMoney(row.original.amount, "USD"),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Date",
+        cell: ({ row }) => formatDate(row.original.createdAt),
+      },
+    ],
+    [],
   );
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-muted-foreground">
-          Only administrators can create or edit investable listings.
-        </p>
-        <Button type="button" size="sm" onClick={openCreate}>
+        <div className="flex flex-wrap items-center gap-2">
+          <SearchInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search title or slug"
+            className="h-9 w-72 rounded-md bg-white"
+          />
+          <Select
+            value={statusFilter}
+            onValueChange={(value) =>
+              setStatusFilter(
+                value as "ALL" | (typeof campaignStatusValues)[number],
+              )
+            }
+          >
+            <SelectTrigger className="h-9 w-36 rounded-md bg-white">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="ALL">All status</SelectItem>
+              {campaignStatusValues.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button
+          type="button"
+          size="sm"
+          className="rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+          onClick={openCreate}
+        >
           <PlusIcon className="size-4" />
           New listing
         </Button>
       </div>
-
-      {isPending ? (
-        <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-          <Loader2Icon className="size-4 animate-spin" />
-          Loading listings…
-        </div>
-      ) : isError ? (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm">
-          Could not load listings.{" "}
-          <Button variant="link" className="h-auto p-0" onClick={() => void refetch()}>
-            Retry
-          </Button>
-        </div>
-      ) : data && !isApiSuccess(data) ? (
+      <MockQueryPlaceholder
+        isPending={isPending}
+        isError={isError}
+        onRetry={() => void refetch()}
+      />
+      {!isPending && !isError && data && !isApiSuccess(data) ? (
         <div className="rounded-lg border p-4 text-sm text-muted-foreground">
           {data.error.message}
         </div>
-      ) : (
-        <AdminDataTable columns={columns} data={rows} />
-      )}
+      ) : !isPending && !isError ? (
+        <>
+          <AdminDataTable columns={columns} data={filteredRows} />
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="size-8"
+              aria-label="Previous page"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
+              <ChevronLeftIcon className="size-4" />
+            </Button>
+            <p className="text-xs text-black/60">
+              Page {page} of {pageCount}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="size-8"
+              aria-label="Next page"
+              disabled={page >= pageCount}
+              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+            >
+              <ChevronRightIcon className="size-4" />
+            </Button>
+          </div>
+        </>
+      ) : null}
 
-      <Sheet
+      <FullTopSheet
         open={sheetOpen}
         onOpenChange={(open) => {
           setSheetOpen(open);
           if (!open) setEditingId(null);
         }}
+        title={
+          sheetMode === "investors"
+            ? `Investors — ${selectedCampaign?.title ?? "Listing"}`
+            : editingId
+              ? "Edit listing"
+              : "New listing"
+        }
+        description={
+          sheetMode === "investors"
+            ? "All investments for this listing, including investor names and amounts."
+            : editingId
+              ? "Update fields and save. Amounts are in major units (e.g. dollars); stored as cents."
+              : "Create a listing investors can browse. Cover image uploads go to Cloudinary."
+        }
+        bodyClassName="gap-4"
+        footer={
+          sheetMode === "investors" ? (
+            <div className="flex w-full flex-wrap items-center justify-between gap-2">
+              <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
+                Close
+              </FullTopSheetCancelButton>
+            </div>
+          ) : (
+            <div className="flex w-full flex-wrap items-center justify-between gap-2">
+              <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
+                Cancel
+              </FullTopSheetCancelButton>
+              <Button type="submit" form="campaign-sheet-form" disabled={busy}>
+                {busy
+                  ? "Saving…"
+                  : editingId
+                    ? "Save changes"
+                    : "Create listing"}
+              </Button>
+            </div>
+          )
+        }
       >
-        <SheetContent side="right" className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-lg">
-          <SheetHeader>
-            <SheetTitle>{editingId ? "Edit listing" : "New listing"}</SheetTitle>
-            <SheetDescription>
-              {editingId
-                ? "Update fields and save. Amounts are in major units (e.g. dollars); stored as cents."
-                : "Create a listing investors can browse. Cover image uploads go to Cloudinary."}
-            </SheetDescription>
-          </SheetHeader>
-
-          <form onSubmit={onSubmit} className="flex flex-1 flex-col gap-4 px-4 pb-4">
+        {sheetMode === "investors" ? (
+          <div className="space-y-4">
+            <p className="text-sm text-black/65">
+              Total investments: {selectedCampaignInvestors.length}
+            </p>
+            <AdminDataTable
+              columns={investorColumns}
+              data={selectedCampaignInvestors}
+            />
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-8"
+                aria-label="Previous investors page"
+                disabled={investorsPage <= 1}
+                onClick={() => setInvestorsPage((p) => Math.max(1, p - 1))}
+              >
+                <ChevronLeftIcon className="size-4" />
+              </Button>
+              <p className="text-xs text-black/60">Page {investorsPage}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-8"
+                aria-label="Next investors page"
+                disabled={pledgeRows.length < investorsPageSize}
+                onClick={() => setInvestorsPage((p) => p + 1)}
+              >
+                <ChevronRightIcon className="size-4" />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <form
+            id="campaign-sheet-form"
+            onSubmit={onSubmit}
+            className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4"
+          >
             <div className="space-y-2">
               <Label htmlFor="camp-title">Title</Label>
               <Input id="camp-title" {...form.register("title")} />
               {form.formState.errors.title && (
-                <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.title.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="camp-slug">Slug (optional)</Label>
-              <Input id="camp-slug" {...form.register("slug")} placeholder="auto-generated if empty" />
+              <Input
+                id="camp-slug"
+                {...form.register("slug")}
+                placeholder="auto-generated if empty"
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="camp-summary">Summary</Label>
               <Input id="camp-summary" {...form.register("summary")} />
               {form.formState.errors.summary && (
-                <p className="text-xs text-destructive">{form.formState.errors.summary.message}</p>
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.summary.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="camp-desc">Description</Label>
-              <textarea id="camp-desc" className={textareaClassName} {...form.register("description")} />
+              <textarea
+                id="camp-desc"
+                className={textareaClassName}
+                {...form.register("description")}
+              />
               {form.formState.errors.description && (
                 <p className="text-xs text-destructive">
                   {form.formState.errors.description.message}
@@ -459,7 +820,11 @@ export function AdminCampaignsPanel() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="camp-currency">Currency</Label>
-                <Input id="camp-currency" maxLength={12} {...form.register("currency")} />
+                <Input
+                  id="camp-currency"
+                  maxLength={12}
+                  {...form.register("currency")}
+                />
               </div>
             </div>
 
@@ -468,7 +833,9 @@ export function AdminCampaignsPanel() {
               <Select
                 value={form.watch("status")}
                 onValueChange={(v) =>
-                  form.setValue("status", v as FormValues["status"], { shouldValidate: true })
+                  form.setValue("status", v as FormValues["status"], {
+                    shouldValidate: true,
+                  })
                 }
               >
                 <SelectTrigger className="w-full">
@@ -484,6 +851,25 @@ export function AdminCampaignsPanel() {
               </Select>
             </div>
 
+            <div className="flex items-start gap-3 rounded-lg border p-3">
+              <Checkbox
+                id="camp-featured"
+                checked={form.watch("isFeatured")}
+                onCheckedChange={(v) =>
+                  form.setValue("isFeatured", v === true, {
+                    shouldValidate: true,
+                  })
+                }
+              />
+              <div className="space-y-1">
+                <Label htmlFor="camp-featured">Featured campaign</Label>
+                <p className="text-xs text-muted-foreground">
+                  Featured campaigns are prioritized in public campaign
+                  showcases.
+                </p>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label>Cover image</Label>
               <FileDropZone
@@ -492,7 +878,13 @@ export function AdminCampaignsPanel() {
                 isUploading={uploading}
                 disabled={busy}
                 onFileSelect={uploadCover}
-                onClear={() => form.setValue("coverImageUrl", "")}
+                onClear={() => {
+                  const current = form.getValues("coverImageUrl")?.trim();
+                  form.setValue("coverImageUrl", "");
+                  if (current) {
+                    void deleteCoverByUrl(current);
+                  }
+                }}
                 hint="Drag an image or click. Files upload to Cloudinary; max size follows NEXT_PUBLIC_MAX_UPLOAD_MB."
               />
               <input type="hidden" {...form.register("coverImageUrl")} />
@@ -501,25 +893,24 @@ export function AdminCampaignsPanel() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label htmlFor="camp-start">Starts (optional)</Label>
-                <Input id="camp-start" type="datetime-local" {...form.register("startsAt")} />
+                <Input
+                  id="camp-start"
+                  type="datetime-local"
+                  {...form.register("startsAt")}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="camp-end">Ends (optional)</Label>
-                <Input id="camp-end" type="datetime-local" {...form.register("endsAt")} />
+                <Input
+                  id="camp-end"
+                  type="datetime-local"
+                  {...form.register("endsAt")}
+                />
               </div>
             </div>
-
-            <SheetFooter className="mt-4 flex-row justify-end gap-2 p-0">
-              <Button type="button" variant="outline" onClick={() => setSheetOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={busy}>
-                {busy ? "Saving…" : editingId ? "Save changes" : "Create listing"}
-              </Button>
-            </SheetFooter>
           </form>
-        </SheetContent>
-      </Sheet>
+        )}
+      </FullTopSheet>
     </div>
   );
 }

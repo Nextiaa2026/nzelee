@@ -1,23 +1,38 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontalIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { AdminDataTable } from "@/components/admin-data-table";
 import { Badge } from "@/components/ui/badge";
-import type { InvestorInvestmentRow } from "@/lib/mocks";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { UserInvestmentListRow } from "@/lib/services/user-investments";
 
-const columns: ColumnDef<InvestorInvestmentRow, unknown>[] = [
+const columns: ColumnDef<UserInvestmentListRow, unknown>[] = [
   {
-    accessorKey: "date",
+    accessorKey: "createdAt",
     header: "Date",
+    cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
   },
   {
-    accessorKey: "listing",
+    accessorKey: "campaignTitle",
     header: "Listing",
   },
   {
     accessorKey: "amount",
     header: "Amount",
+    cell: ({ row }) =>
+      (row.original.amount / 100).toLocaleString(undefined, {
+        style: "currency",
+        currency: row.original.currency,
+      }),
   },
   {
     accessorKey: "status",
@@ -28,12 +43,30 @@ const columns: ColumnDef<InvestorInvestmentRow, unknown>[] = [
       </Badge>
     ),
   },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button type="button" size="icon" variant="ghost" className="size-8">
+            <MoreHorizontalIcon className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => toast.info(`Investment ${row.original.id}`)}>
+            View details
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+  },
 ];
 
 export function InvestorInvestmentsTable({
   data,
 }: {
-  data: InvestorInvestmentRow[];
+  data: UserInvestmentListRow[];
 }) {
   return (
     <AdminDataTable columns={columns} data={data} enableRowSelection={false} />

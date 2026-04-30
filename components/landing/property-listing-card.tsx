@@ -1,19 +1,23 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 export type PropertyListing = {
+  slug: string;
   img: string;
   name: string;
-  location: string;
-  type: string;
-  roi: string;
-  price: string;
+  status: string;
+  currency: string;
+  raised: string;
+  goal: string;
   funded: number;
   tag: string;
 };
 
 const tagAccent: Record<string, string> = {
+  Featured: "bg-mint text-black",
   New: "bg-emerald-400 text-black",
   Hot: "bg-amber-400 text-black",
   Growth: "bg-lime-300 text-black",
@@ -25,7 +29,7 @@ function tagClass(tag: string) {
 }
 
 export function PropertyListingCard({ listing }: { listing: PropertyListing }) {
-  const { img, name, location, type, roi, price, funded, tag } = listing;
+  const { slug, img, name, status, currency, raised, goal, funded, tag } = listing;
 
   return (
     <motion.article
@@ -56,28 +60,28 @@ export function PropertyListingCard({ listing }: { listing: PropertyListing }) {
           {tag}
         </span>
         <span className="absolute right-3 top-3 rounded-full bg-black/85 px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-white backdrop-blur">
-          {type}
+          Campaign
         </span>
       </div>
       <div className="p-5">
         <h3 className="font-semibold leading-tight">{name}</h3>
-        <p className="text-xs text-neutral-500">📍 {location}</p>
+        <p className="text-xs uppercase tracking-wide text-neutral-500">{status}</p>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Est. ROI</div>
-            <div className="font-display text-xl text-neutral-900">{roi}</div>
+            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Raised</div>
+            <div className="font-display text-lg text-neutral-900">{raised}</div>
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Per share</div>
-            <div className="font-display text-xl">{price}</div>
+            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Currency</div>
+            <div className="font-display text-lg">{currency}</div>
           </div>
         </div>
 
         <div className="mt-4">
           <div className="flex items-center justify-between text-[10px] text-neutral-500">
             <span>{funded}% funded</span>
-            <span>Goal $2M</span>
+            <span>Goal {goal}</span>
           </div>
           <div className="mt-1.5 h-1.5 rounded-full bg-neutral-200">
             <motion.div
@@ -90,14 +94,19 @@ export function PropertyListingCard({ listing }: { listing: PropertyListing }) {
           </div>
         </div>
 
-        <motion.button
-          type="button"
+        <motion.div
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          className="mt-5 w-full rounded-full bg-mint py-2.5 text-xs font-medium text-deep-green transition-colors hover:bg-mint/90"
+          className="mt-5"
         >
-          Invest now
-        </motion.button>
+          <Link
+            href={`/campaigns/${slug}`}
+            className="inline-flex w-full items-center justify-center gap-1 rounded-full bg-mint py-2.5 text-xs font-medium text-deep-green transition-colors hover:bg-mint/90"
+          >
+            Invest now
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </motion.div>
       </div>
     </motion.article>
   );

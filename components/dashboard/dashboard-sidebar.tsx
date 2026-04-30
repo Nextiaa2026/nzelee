@@ -1,0 +1,83 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { motion } from "framer-motion";
+import { LogOut, Plus, Settings, ShieldCheck } from "lucide-react";
+
+import { dashboardPanelClass } from "@/components/dashboard/dashboard-page-shell";
+import { Button } from "@/components/ui/button";
+import {
+  dashboardAdminConsoleItem,
+  dashboardSettingsItem,
+  getDashboardNavItems,
+} from "@/lib/dashboard/dashboard-nav-config";
+import { cn } from "@/lib/utils";
+
+import { useUnreadNotificationCount } from "@/hooks/use-notifications";
+
+function navActive(pathname: string, href: string, exact?: boolean) {
+  return exact ? pathname === href : pathname.startsWith(href);
+}
+
+export function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
+  const pathname = usePathname();
+  const { data: unread = 0 } = useUnreadNotificationCount();
+  const items = getDashboardNavItems(isAdmin);
+
+  return (
+    <aside className="hidden w-full min-w-0 max-w-[240px] shrink-0 lg:block">
+      <div className="sticky top-20 space-y-4 max-h-[calc(100vh-6rem)] overflow-y-auto">
+        <nav className={cn(dashboardPanelClass, "p-3 shadow-none")}>
+          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-widest text-foreground/45">
+            Menu
+          </p>
+          <div className="space-y-0.5">
+            {items.map((item) => {
+              const active = navActive(pathname, item.href, item.exact);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-deep-green text-deep-green-foreground shadow-sm"
+                      : "text-foreground/70 hover:bg-surface-muted hover:text-foreground",
+                  )}
+                >
+                  <item.icon className="size-4 shrink-0 opacity-90" />
+                  <span className="flex-1 truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          whileHover={{ y: -2 }}
+          className="overflow-hidden rounded-2xl border border-deep-green-foreground/15 bg-hero-bg p-4 text-deep-green-foreground shadow-none"
+        >
+          <div className="text-[10px] font-bold uppercase tracking-widest text-mint">
+            Tip
+          </div>
+          <p className="mt-2 text-xs leading-snug text-deep-green-foreground/85">
+            Bookmark campaigns you like, then invest when you are ready — wallet
+            and pledges stay in sync.
+          </p>
+          <Button
+            asChild
+            size="sm"
+            className="mt-3 h-8 rounded-full bg-mint px-3 text-xs font-medium text-deep-green hover:bg-mint/90"
+          >
+            <Link href="/dashboard/saved">Saved</Link>
+          </Button>
+        </motion.div>
+      </div>
+    </aside>
+  );
+}

@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  type LucideIcon,
+  ArrowRight,
+  Check,
+  CircleDot,
+  FileText,
+  FolderKanban,
+  Headphones,
+  LayoutDashboard,
+  Mail,
+  MessageCircle,
+  Receipt,
+  Target,
+  Wallet,
+} from "lucide-react";
 
-import { PropertiesShowcase } from "@/components/landing/properties-showcase";
+import { CampaignsShowcase } from "@/components/landing/campaigns-showcase";
 import { landingImages } from "@/lib/landing-images";
 
 const Blank = () => <span className="underline-blank" />;
@@ -22,20 +37,116 @@ const stagger = {
   show: { transition: { staggerChildren: 0.08 } },
 };
 
-function Hero() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+function HeroBento() {
+  const card =
+    "relative overflow-hidden rounded-2xl border border-deep-green-foreground/15 bg-deep-green/35 p-4 text-left text-deep-green-foreground shadow-sm backdrop-blur-md sm:p-5";
 
   return (
-    <section
-      ref={ref}
-      className="relative overflow-hidden bg-hero-bg pt-6 pb-32 text-deep-green-foreground"
+    <motion.div
+      variants={fadeUp}
+      className="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none"
     >
+      <div className="grid auto-rows-[minmax(88px,auto)] grid-cols-2 gap-3 sm:gap-4">
+        {/* Folder-style tab on tall card */}
+        <div
+          className={`${card} row-span-2 flex flex-col justify-between pt-8 sm:pt-9`}
+        >
+          <div
+            className="absolute left-4 top-0 flex h-7 items-center rounded-b-lg bg-mint/90 px-3 text-[10px] font-semibold uppercase tracking-wider text-deep-green"
+            aria-hidden
+          >
+            Portfolio
+          </div>
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-deep-green-foreground/60">
+              All accounts
+            </p>
+            <p className="mt-1 font-display text-3xl sm:text-4xl">+24.6%</p>
+            <p className="mt-1 text-xs text-deep-green-foreground/70">
+              Weighted return, last 12 months
+            </p>
+          </div>
+          <div className="mt-4 flex items-end justify-between gap-2 border-t border-deep-green-foreground/10 pt-4">
+            <div>
+              <p className="text-[10px] uppercase text-deep-green-foreground/50">
+                Net worth
+              </p>
+              <p className="font-display text-lg">$184,320</p>
+            </div>
+            <span className="rounded-full bg-mint/30 px-2.5 py-1 text-[10px] font-medium text-deep-green">
+              Live
+            </span>
+          </div>
+        </div>
+
+        <div className={`${card} flex flex-col justify-center`}>
+          <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
+            Markets
+          </p>
+          <p className="mt-1 font-display text-xl">TSLA</p>
+          <p className="mt-0.5 text-sm text-mint">+3.21%</p>
+          <p className="text-xs text-deep-green-foreground/65">$248.50</p>
+        </div>
+
+        <div className={`${card} flex flex-col justify-center`}>
+          <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
+            Fees
+          </p>
+          <p className="mt-1 font-display text-xl">$0</p>
+          <p className="text-xs text-deep-green-foreground/70">
+            Commissions on stocks &amp; ETFs
+          </p>
+        </div>
+
+        <div
+          className={`${card} col-span-2 sm:flex sm:items-center sm:justify-between sm:gap-4`}
+        >
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
+              One app
+            </p>
+            <p className="mt-1 font-display text-lg leading-snug sm:text-xl">
+              Stocks, ETFs, crypto &amp; company campaigns
+            </p>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2 sm:mt-0">
+            {["Stocks", "Crypto", "Campaigns"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-deep-green-foreground/20 bg-deep-green/50 px-2.5 py-1 text-[10px] font-medium"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className={`${card} col-span-2 grid gap-3 sm:grid-cols-2`}>
+          <div className="rounded-xl bg-deep-green/50 p-3 ring-1 ring-deep-green-foreground/10">
+            <p className="text-[10px] uppercase text-deep-green-foreground/55">
+              Security
+            </p>
+            <p className="mt-1 text-sm font-medium leading-snug">
+              Bank-grade encryption &amp; custody controls
+            </p>
+          </div>
+          <div className="rounded-xl bg-deep-green/50 p-3 ring-1 ring-deep-green-foreground/10">
+            <p className="text-[10px] uppercase text-deep-green-foreground/55">
+              Support
+            </p>
+            <p className="mt-1 text-sm font-medium leading-snug">
+              Real humans, 24/7 when you need answers
+            </p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="relative overflow-hidden bg-hero-bg pb-20 pt-28 text-deep-green-foreground md:pb-28 md:pt-32 lg:pb-32 lg:pt-36">
       {/* Animated glow blobs */}
       <motion.div
         className="pointer-events-none absolute -left-20 top-20 h-[500px] w-[500px] rounded-full"
@@ -61,114 +172,59 @@ function Hero() {
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="mt-14 text-center md:mt-20"
+          className="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-2 lg:items-center lg:gap-14"
         >
-          <motion.span
-            variants={fadeUp}
-            className="inline-flex items-center gap-2 rounded-full border border-deep-green-foreground/20 bg-deep-green/40 px-4 py-1.5 text-xs backdrop-blur"
-          >
-            <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
-            Invest. Grow. Repeat.
-          </motion.span>
-
-          <motion.h1
-            variants={fadeUp}
-            className="mt-6 font-display text-5xl leading-[0.98] tracking-tight sm:text-6xl md:text-8xl"
-          >
-            Say hello to{" "}
-            <span className="inline-flex -translate-y-2 items-center gap-3 rounded-full bg-mint px-5 py-2 text-deep-green">
-              <motion.span
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="inline-block"
-              >
-                💰
-              </motion.span>
-              smarter
+          <motion.div variants={fadeUp} className="text-center lg:text-left">
+            <span className="inline-flex items-center gap-2 rounded-full border border-deep-green-foreground/20 bg-deep-green/40 px-4 py-1.5 text-xs backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
+              Invest. Grow. Repeat.
             </span>
-            <br />
-            investing for everyone
-          </motion.h1>
 
-          <motion.p
-            variants={fadeUp}
-            className="mx-auto mt-8 max-w-md text-base text-deep-green-foreground/70"
-          >
-            Build a portfolio in minutes. Trade stocks, ETFs, crypto and
-            real-world properties — all from one beautifully simple app.
-          </motion.p>
+            <h1 className="mt-6 font-display text-5xl leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
+              Say hello to{" "}
+              <span className="inline-flex -translate-y-2 items-center gap-3 rounded-full bg-mint px-5 py-2 text-deep-green">
+                <motion.span
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  className="inline-flex"
+                  aria-hidden
+                >
+                  <Wallet
+                    className="size-7 shrink-0 sm:size-8"
+                    strokeWidth={2}
+                  />
+                </motion.span>
+                smarter
+              </span>
+              <br />
+              investing for everyone
+            </h1>
 
-          <motion.div
-            variants={fadeUp}
-            className="mt-10 flex flex-wrap justify-center gap-3"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green"
-            >
-              Start investing
-            </motion.button>
-            <motion.a
-              href="#properties"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="rounded-full border border-deep-green-foreground/25 bg-deep-green/30 px-7 py-3.5 text-sm font-medium text-deep-green-foreground backdrop-blur"
-            >
-              Browse properties
-            </motion.a>
+            <p className="mx-auto mt-8 max-w-md text-base text-deep-green-foreground/70 lg:mx-0">
+              Build a portfolio in minutes. Trade stocks, ETFs, crypto and
+              curated campaigns — all from one beautifully simple app.
+            </p>
+
+            <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                className="rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green"
+              >
+                Start investing
+              </motion.button>
+              <motion.a
+                href="#campaigns"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                className="rounded-full border border-deep-green-foreground/25 bg-deep-green/30 px-7 py-3.5 text-sm font-medium text-deep-green-foreground backdrop-blur"
+              >
+                Browse campaigns
+              </motion.a>
+            </div>
           </motion.div>
-        </motion.div>
 
-        {/* Hero image with parallax */}
-        <motion.div
-          style={{ y, scale }}
-          className="relative mt-20 flex justify-center"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 80 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative rounded-3xl bg-mint/10 p-4 backdrop-blur ring-1 ring-deep-green-foreground/10"
-          >
-            <img
-              src={landingImages.heroMoney}
-              alt="Investor holding cash earnings"
-              width={420}
-              height={520}
-              className="h-[500px] w-full max-w-sm rounded-2xl object-cover"
-            />
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -left-12 top-12 hidden gap-3 rounded-2xl bg-surface px-5 py-4 shadow-2xl md:flex"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-mint text-deep-green">
-                ↑
-              </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-foreground/50">
-                  Portfolio
-                </div>
-                <div className="font-display text-xl text-foreground">
-                  +24.6%
-                </div>
-              </div>
-            </motion.div>
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -right-14 bottom-20 hidden rounded-2xl bg-surface px-5 py-4 shadow-2xl md:block"
-            >
-              <div className="text-[10px] uppercase tracking-wider text-foreground/50">
-                TSLA
-              </div>
-              <div className="font-display text-xl text-foreground">
-                $248.50
-              </div>
-              <div className="text-xs text-mint-foreground">+3.21%</div>
-            </motion.div>
-          </motion.div>
+          <HeroBento />
         </motion.div>
       </div>
     </section>
@@ -195,29 +251,83 @@ function Section({
   );
 }
 
+const benefitsViewport = {
+  once: true,
+  amount: 0.28,
+  margin: "0px 0px -48px 0px",
+} as const;
+
+const benefitsRowTop = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.14, delayChildren: 0.04 },
+  },
+};
+
+const benefitsRowBottom = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.14, delayChildren: 0.06 },
+  },
+};
+
+const benefitsCardFromAbove = {
+  hidden: { opacity: 0, y: -52 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.52, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
+
+const benefitsCardFromBelow = {
+  hidden: { opacity: 0, y: 56 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.52, ease: [0.22, 1, 0.36, 1] as const },
+  },
+};
+
 function Benefits() {
-  const items = [
+  const items: {
+    Icon: LucideIcon;
+    surface: string;
+    iconWrap: string;
+    title: string;
+    body: string;
+  }[] = [
     {
-      color: "bg-deep-green text-deep-green-foreground",
-      title: "Zero commissions",
-      body: "Trade stocks, ETFs and crypto with no hidden fees.",
+      Icon: FileText,
+      surface: "bg-deep-green text-deep-green-foreground",
+      iconWrap:
+        "bg-deep-green-foreground/15 ring-1 ring-deep-green-foreground/20",
+      title: "Clear campaign terms",
+      body: "Goals, timelines, and risks are spelled out on each listing so you know what you are backing.",
     },
     {
-      color: "bg-mint text-deep-green",
-      title: "Smart portfolios",
-      body: "AI-powered allocations tailored to your risk profile.",
+      Icon: Receipt,
+      surface: "bg-mint text-deep-green",
+      iconWrap: "bg-deep-green/15 ring-1 ring-deep-green/25",
+      title: "Upfront fees & minimums",
+      body: "Fees and ticket sizes are shown before you pledge so there are no surprises at checkout.",
     },
     {
-      color: "bg-foreground text-background",
-      title: "Bank-grade security",
-      body: "Your assets protected with multi-layer encryption.",
+      Icon: FolderKanban,
+      surface: "bg-foreground text-background",
+      iconWrap: "bg-background/15 ring-1 ring-background/25",
+      title: "Curated project listings",
+      body: "Compare campaigns by sector, stage, and ticket size to find projects that match your plan.",
     },
     {
-      color: "bg-amber-200",
-      title: "Real-time markets",
-      body: "Lightning-fast execution across global exchanges.",
+      Icon: LayoutDashboard,
+      surface: "bg-amber-200 text-foreground",
+      iconWrap: "bg-foreground/10 ring-1 ring-foreground/15",
+      title: "One investor dashboard",
+      body: "Track pledges, campaign updates, and withdrawals in one place as tools continue to ship.",
     },
   ];
+
   return (
     <Section className="bg-background py-24">
       <div className="mx-auto max-w-6xl px-4" id="features">
@@ -233,23 +343,73 @@ function Benefits() {
         >
           Why investors choose <Blank /> us
         </motion.h2>
-        <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {items.map((it) => (
-            <motion.div
-              key={it.title}
-              variants={fadeUp}
-              whileHover={{ y: -6 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <div
-                className={`mb-5 flex h-12 w-12 items-center justify-center rounded-xl ${it.color}`}
-              >
-                <div className="h-5 w-5 rounded-sm bg-current opacity-80" />
-              </div>
-              <h3 className="text-base font-semibold">{it.title}</h3>
-              <p className="mt-2 text-sm text-foreground/60">{it.body}</p>
-            </motion.div>
-          ))}
+
+        <div className="mx-auto mt-16 max-w-5xl space-y-8 sm:space-y-12">
+          {/* First pair: shifted left — reads as the upper “step” of the zig-zag */}
+          <motion.div
+            className="grid gap-6 sm:grid-cols-2 sm:gap-8 sm:-translate-x-2 md:-translate-x-8 lg:-translate-x-14"
+            initial="hidden"
+            whileInView="visible"
+            viewport={benefitsViewport}
+            variants={benefitsRowTop}
+          >
+            {items.slice(0, 2).map((it) => (
+              <motion.div key={it.title} variants={benefitsCardFromAbove}>
+                <div
+                  className={`flex h-full min-h-[200px] flex-col rounded-2xl p-6 shadow-md ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg ${it.surface}`}
+                >
+                  <div
+                    className={`mb-5 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${it.iconWrap}`}
+                  >
+                    <it.Icon
+                      className="size-6 opacity-90"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                  </div>
+                  <h3 className="text-base font-semibold leading-snug">
+                    {it.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed opacity-90">
+                    {it.body}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Second pair: shifted right — completes the zig-zag */}
+          <motion.div
+            className="grid gap-6 sm:grid-cols-2 sm:gap-8 sm:translate-x-6 md:translate-x-14 lg:translate-x-24"
+            initial="hidden"
+            whileInView="visible"
+            viewport={benefitsViewport}
+            variants={benefitsRowBottom}
+          >
+            {items.slice(2, 4).map((it) => (
+              <motion.div key={it.title} variants={benefitsCardFromBelow}>
+                <div
+                  className={`flex h-full min-h-[200px] flex-col rounded-2xl p-6 shadow-md ring-1 ring-black/5 transition-transform duration-300 hover:-translate-y-1 hover:shadow-lg ${it.surface}`}
+                >
+                  <div
+                    className={`mb-5 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${it.iconWrap}`}
+                  >
+                    <it.Icon
+                      className="size-6 opacity-90"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
+                  </div>
+                  <h3 className="text-base font-semibold leading-snug">
+                    {it.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed opacity-90">
+                    {it.body}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
     </Section>
@@ -280,13 +440,12 @@ function Integrations() {
             Link your brokerages, retirement accounts and crypto wallets to see
             your entire net worth grow in one beautiful dashboard.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-            className="mt-8 rounded-full bg-deep-green px-6 py-3 text-sm font-medium text-deep-green-foreground"
+          <Link
+            href="/register"
+            className="mt-8 inline-flex rounded-full bg-deep-green px-6 py-3 text-sm font-medium text-deep-green-foreground transition-transform hover:scale-[1.03] active:scale-[0.98]"
           >
-            Get the app
-          </motion.button>
+            Get started
+          </Link>
         </motion.div>
       </div>
     </Section>
@@ -320,9 +479,14 @@ function Gallery() {
             </h3>
             <Link
               href="/investors"
-              className="mt-6 inline-block rounded-full bg-mint px-5 py-2.5 text-xs font-medium text-deep-green"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 text-xs font-medium text-deep-green"
             >
-              See top investors →
+              See top investors
+              <ArrowRight
+                className="size-4 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
             </Link>
           </motion.div>
           <motion.div variants={fadeUp}>
@@ -373,7 +537,7 @@ function FeatureCards() {
                 className="rounded-2xl bg-surface px-6 py-5 text-center shadow-[0_10px_40px_-15px_rgba(0,0,0,0.15)]"
               >
                 <div className="mx-auto mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-mint text-deep-green">
-                  ✓
+                  <Check className="size-5" strokeWidth={2.5} aria-hidden />
                 </div>
                 <div className="text-[11px] text-foreground/50">
                   Trade executed
@@ -413,8 +577,13 @@ function FeatureCards() {
                   className="absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-4 border-surface bg-deep-green shadow"
                 />
               </div>
-              <span className="rounded-full bg-mint px-3 py-1 text-[11px] font-medium text-deep-green">
-                ● Your goal
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-mint px-3 py-1 text-[11px] font-medium text-deep-green">
+                <CircleDot
+                  className="size-3.5 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                Your goal
               </span>
             </div>
             <h3 className="mt-6 text-base font-semibold">Competitive fees</h3>
@@ -460,7 +629,7 @@ function FeatureCards() {
                 }}
                 className="flex h-16 w-16 items-center justify-center rounded-full bg-mint text-deep-green shadow-[0_10px_30px_-5px_oklch(0.78_0.16_145/0.6)]"
               >
-                <span className="text-2xl">✓</span>
+                <Check className="size-8" strokeWidth={2.5} aria-hidden />
               </motion.div>
               <motion.div
                 animate={{ rotate: [8, 12, 8] }}
@@ -499,8 +668,13 @@ function FeatureCards() {
           >
             <div className="flex h-44 items-center">
               <div className="relative w-full">
-                <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs">
-                  <span>🎯</span> Your goals
+                <span className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs text-foreground">
+                  <Target
+                    className="size-4 shrink-0"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  Your goals
                 </span>
                 <div className="ml-6 mt-3 inline-flex flex-col gap-2">
                   {["Stocks & ETFs", "Crypto basket", "Retirement IRA"].map(
@@ -513,16 +687,25 @@ function FeatureCards() {
                         transition={{ delay: i * 0.15 }}
                         className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${i === 1 ? "border-deep-green bg-mint/30 font-medium" : "border-foreground/10 bg-surface"}`}
                       >
-                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-deep-green text-[10px] text-deep-green-foreground">
-                          ✓
+                        <span className="flex h-4 w-4 items-center justify-center rounded-full bg-deep-green text-deep-green-foreground">
+                          <Check
+                            className="size-2.5"
+                            strokeWidth={3}
+                            aria-hidden
+                          />
                         </span>
                         {p}
                       </motion.div>
                     ),
                   )}
                 </div>
-                <span className="absolute right-0 top-12 rounded-full border border-foreground/10 bg-surface px-3 py-1.5 text-xs">
-                  Auto-invest →
+                <span className="absolute right-0 top-12 inline-flex items-center gap-1 rounded-full border border-foreground/10 bg-surface px-3 py-1.5 text-xs text-foreground">
+                  Auto-invest
+                  <ArrowRight
+                    className="size-3.5 shrink-0"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
                 </span>
               </div>
             </div>
@@ -548,9 +731,9 @@ function FeatureCards() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface text-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
+                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface text-foreground shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
               >
-                ✉️
+                <Mail className="size-6" strokeWidth={2} aria-hidden />
               </motion.div>
               <motion.div
                 animate={{ y: [0, -12, 0] }}
@@ -560,9 +743,9 @@ function FeatureCards() {
                   ease: "easeInOut",
                   delay: 0.3,
                 }}
-                className="flex h-20 w-20 items-center justify-center rounded-3xl bg-mint text-3xl text-deep-green shadow-[0_15px_40px_-10px_oklch(0.78_0.16_145/0.6)]"
+                className="flex h-20 w-20 items-center justify-center rounded-3xl bg-mint text-deep-green shadow-[0_15px_40px_-10px_oklch(0.78_0.16_145/0.6)]"
               >
-                🎧
+                <Headphones className="size-9" strokeWidth={2} aria-hidden />
               </motion.div>
               <motion.div
                 animate={{ y: [0, -8, 0] }}
@@ -572,9 +755,9 @@ function FeatureCards() {
                   ease: "easeInOut",
                   delay: 0.6,
                 }}
-                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface text-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
+                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface text-foreground shadow-[0_10px_30px_-10px_rgba(0,0,0,0.2)]"
               >
-                💬
+                <MessageCircle className="size-6" strokeWidth={2} aria-hidden />
               </motion.div>
             </div>
             <h3 className="mt-6 text-base font-semibold">24/7 support</h3>
@@ -591,7 +774,7 @@ function FeatureCards() {
 
 function GettingStarted() {
   const steps = [
-    "Download the App",
+    "Get started",
     "Sign up and create your account",
     "Start investing",
   ];
@@ -640,9 +823,12 @@ function GettingStarted() {
                 <div>
                   <p className="font-semibold">{s}</p>
                   {i === 0 && (
-                    <button className="mt-3 rounded-full bg-deep-green px-5 py-2 text-xs text-deep-green-foreground">
-                      Get Started
-                    </button>
+                    <Link
+                      href="/register"
+                      className="mt-3 inline-flex rounded-full bg-deep-green px-5 py-2 text-xs font-medium text-deep-green-foreground transition-opacity hover:opacity-90"
+                    >
+                      Get started
+                    </Link>
                   )}
                 </div>
               </motion.li>
@@ -654,61 +840,141 @@ function GettingStarted() {
   );
 }
 
+const TESTIMONIAL_HEADLINE_WORDS = [
+  "early",
+  "smart",
+  "active",
+  "dedicated",
+  "thoughtful",
+] as const;
+
+function TestimonialsHeading() {
+  const [i, setI] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setI((n) => (n + 1) % TESTIMONIAL_HEADLINE_WORDS.length);
+    }, 2800);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <motion.h2
+      variants={fadeUp}
+      className="mx-auto mt-5 max-w-3xl text-center font-display text-4xl font-bold leading-[1.1] tracking-tight text-black sm:text-5xl"
+    >
+      What our{" "}
+      <span className="inline-flex min-w-[6.5ch] justify-center align-bottom">
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={TESTIMONIAL_HEADLINE_WORDS[i]}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="inline-block font-bold text-black"
+          >
+            {TESTIMONIAL_HEADLINE_WORDS[i]}
+          </motion.span>
+        </AnimatePresence>
+      </span>{" "}
+      users are saying
+    </motion.h2>
+  );
+}
+
 function Testimonials() {
-  const quotes = [
+  const quotes: { name: string; role: string; body: string }[] = [
     {
       name: "Jakob Baker",
       role: "Marketing Manager",
-      text: "As someone who's always on the move, this app has become essential. Managing investments has never been smoother.",
+      body: "I split my time between client work and checking on campaign updates. Having pledges, documents, and timelines in one place means I actually read the materials instead of skimming PDFs at midnight. When a question came up about eligibility, support replied with clear steps the same day.",
     },
     {
       name: "Kaitlynn Carder",
       role: "Account Manager",
-      text: "The 24/7 customer support is amazing! It has saved me a few late nights, and they're always thorough.",
+      body: "Our team onboards new members every week, so we needed a flow that feels calm and predictable. The verification checkpoints are explicit, and investors always know what is blocking them from the next step. Campaign pages separate marketing from the facts: minimums, fees, and key dates are easy to scan.",
     },
     {
       name: "Anika Dulhanty",
       role: "Freelance Writer",
-      text: "I used to dread tax time — but FlowFin's reports gave me peace of mind.",
+      body: "I used to lose track of which projects I backed and when distributions were supposed to post. The dashboard finally gives me a single ledger-style view of activity. Exporting a clean history for my accountant used to be a weekend project — now I can pull a straightforward summary and move on.",
     },
     {
       name: "Adryen Vanessa",
       role: "Founder, Atelier",
-      text: "Fast, reliable, and easy to use. Real-time alerts when my trades fill — exactly what I needed.",
+      body: "We back early-stage operators, so speed and clarity matter. I get an alert when a campaign status changes, when a pledge settles, and when a new update is published — without noisy spam. It is the first crowdfunding-adjacent tool my partners did not complain about after week one.",
+    },
+    {
+      name: "Marcus Chen",
+      role: "Operations Lead",
+      body: "We run a small fund; compliance paperwork used to live in three tools. Consolidating subscriptions and cap-table notes in one workflow cut our weekly prep time sharply.",
+    },
+    {
+      name: "Priya Nandakumar",
+      role: "Product Designer",
+      body: "The interface respects cognitive load — I can compare two offerings side by side, then return to my commitments without losing context. That sounds small, but it is rare in this space.",
     },
   ];
+
   return (
-    <Section className="bg-background py-24">
-      <div className="mx-auto max-w-6xl px-4">
-        <motion.p
-          variants={fadeUp}
-          className="text-center text-xs uppercase tracking-widest text-foreground/50"
-        >
-          Testimonials
-        </motion.p>
-        <motion.h2
-          variants={fadeUp}
-          className="mx-auto mt-4 max-w-3xl text-center font-display text-4xl leading-tight sm:text-5xl"
-        >
-          What our <Blank /> users <br /> are saying
-        </motion.h2>
-        <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {quotes.map((q) => (
-            <motion.div
-              key={q.name}
-              variants={fadeUp}
-              whileHover={{ scale: 1.02 }}
-              className="rounded-2xl bg-surface-muted p-6"
-            >
-              <p className="text-sm leading-relaxed text-foreground/80">
-                &ldquo;{q.text}&rdquo;
-              </p>
-              <div className="mt-5 border-t border-foreground/10 pt-4">
-                <p className="text-sm font-semibold">{q.name}</p>
-                <p className="text-xs text-foreground/50">{q.role}</p>
-              </div>
+    <Section className="bg-white py-24 text-black">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="flex flex-col items-center text-center">
+          <motion.div variants={fadeUp}>
+            <span className="inline-flex rounded-full border border-black/15 bg-white px-4 py-1.5 text-xs font-medium text-black/55">
+              Testimonials
+            </span>
+          </motion.div>
+          <TestimonialsHeading />
+        </div>
+
+        <div className="relative mx-auto mt-14 max-w-5xl">
+          <div className="columns-1 gap-6 md:columns-2 md:gap-x-8">
+            {quotes.map((q) => (
+              <motion.div
+                key={q.name}
+                variants={fadeUp}
+                className="mb-6 break-inside-avoid rounded-2xl border border-black/10 bg-white p-6 shadow-none md:mb-8 md:p-8"
+              >
+                <blockquote className="space-y-6">
+                  <p className="text-[15px] font-normal leading-relaxed text-black/90 md:text-base">
+                    <span className="text-black/25" aria-hidden>
+                      &ldquo;
+                    </span>
+                    {q.body}
+                    <span className="text-black/25" aria-hidden>
+                      &rdquo;
+                    </span>
+                  </p>
+                  <footer>
+                    <p className="text-base font-semibold tracking-tight text-black md:text-lg">
+                      {q.name}
+                    </p>
+                    <p className="mt-0.5 text-sm text-black/55 md:text-base">
+                      {q.role}
+                    </p>
+                  </footer>
+                </blockquote>
+              </motion.div>
+            ))}
+          </div>
+
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-36 bg-gradient-to-t from-white via-white/85 to-transparent md:h-44"
+            aria-hidden
+          />
+
+          <div className="relative z-[2] -mt-12 flex justify-center pb-2 md:-mt-14">
+            <motion.div variants={fadeUp}>
+              <Link
+                href="/investors"
+                className="inline-flex rounded-full bg-black px-10 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              >
+                See all
+              </Link>
             </motion.div>
-          ))}
+          </div>
         </div>
       </div>
     </Section>
@@ -729,15 +995,15 @@ function FinalCTA() {
           Ready to grow <Blank /> your <br /> wealth?
         </h2>
         <p className="mx-auto mt-4 max-w-md text-sm opacity-70">
-          Download the app, sign up, and start investing in minutes.
+          Sign up and start investing in minutes — no download required to
+          begin.
         </p>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.97 }}
-          className="mt-8 rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green"
+        <Link
+          href="/register"
+          className="mt-8 inline-flex rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green transition-transform hover:scale-[1.03] active:scale-[0.98]"
         >
-          Download App
-        </motion.button>
+          Get started
+        </Link>
       </motion.div>
     </Section>
   );
@@ -750,7 +1016,7 @@ export default function HomePage() {
       <Benefits />
       <Integrations />
       <Gallery />
-      <PropertiesShowcase />
+      <CampaignsShowcase />
       <FeatureCards />
       <GettingStarted />
       <Testimonials />

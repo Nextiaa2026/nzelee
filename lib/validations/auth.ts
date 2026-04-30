@@ -11,6 +11,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+/** Request body for `POST /auth/register` (no UI-only fields). */
 export const registerSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters"),
@@ -22,6 +23,15 @@ export const registerSchema = z
     path: ["confirmPassword"],
     message: "Passwords do not match",
   });
+
+/** Sign-up form: same fields plus required terms acceptance. */
+export const registerFormSchema = registerSchema.and(
+  z.object({
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: "Please accept the terms to continue.",
+    }),
+  }),
+);
 
 export const forgotPasswordSchema = z.object({
   email,
@@ -52,6 +62,7 @@ export const resetPasswordSchema = z
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type RegisterFormInput = z.infer<typeof registerFormSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
 export type VerifyEmailOtpInput = z.infer<typeof verifyEmailOtpSchema>;

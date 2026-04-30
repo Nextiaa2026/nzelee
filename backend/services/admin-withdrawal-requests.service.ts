@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { users, withdrawalRequests } from "@/lib/db/schema";
@@ -18,9 +18,16 @@ export type AdminWithdrawalListRow = WR & {
   userName: string | null;
 };
 
-export async function listWithdrawalRequestsWithUsers(): Promise<AdminWithdrawalListRow[]> {
+export async function listWithdrawalRequestsWithUsers(params: {
+  page: number;
+  pageSize: number;
+}): Promise<{ rows: AdminWithdrawalListRow[]; total: number; page: number; pageSize: number }> {
   const u = alias(users, "u");
-  return db
+  const offset = (params.page - 1) * params.pageSize;
+  const [countRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(wr);
+  const rows = await db
     .select({
       id: wr.id,
       userId: wr.userId,
@@ -39,7 +46,15 @@ export async function listWithdrawalRequestsWithUsers(): Promise<AdminWithdrawal
     })
     .from(wr)
     .innerJoin(u, eq(wr.userId, u.id))
-    .orderBy(desc(wr.requestedAt));
+    .orderBy(desc(wr.requestedAt))
+    .limit(params.pageSize)
+    .offset(offset);
+  return {
+    rows,
+    total: countRow?.count ?? 0,
+    page: params.page,
+    pageSize: params.pageSize,
+  };
 }
 
 export async function getWithdrawalRequestById(id: string) {
@@ -71,13 +86,14 @@ export async function getWithdrawalRequestById(id: string) {
 export async function createWithdrawalRequest(
   input: AdminCreateWithdrawalRequestBody,
 ): Promise<WR> {
+  /** Only end users may receive non-pending statuses via admin PATCH after review. */
   const [row] = await db
     .insert(wr)
     .values({
       userId: input.userId,
       amount: input.amount,
       currency: input.currency ?? "USD",
-      status: input.status ?? "PENDING",
+      status: "PENDING",
       destination: input.destination,
       adminNote: input.adminNote ?? null,
     })
@@ -91,7 +107,14 @@ export async function createWithdrawalRequest(
 export async function updateWithdrawalRequest(
   id: string,
   input: AdminPatchWithdrawalRequestBody,
+  ctx?: { actorAdminId: string },
 ): Promise<WR | null> {
+  const existing = await getWithdrawalRequestById(id);
+  if (!existing) {
+    return null;
+  }
+  const previousStatus = existing.status;
+
   const updates: Partial<WR> = { updatedAt: new Date() };
   if (input.status !== undefined) updates.status = input.status;
   if (input.adminNote !== undefined) updates.adminNote = input.adminNote;
@@ -103,7 +126,32 @@ export async function updateWithdrawalRequest(
     updates.completedAt = input.completedAt ? new Date(input.completedAt) : null;
   }
   const [row] = await db.update(wr).set(updates).where(eq(wr.id, id)).returning();
-  return row ?? null;
+  if (!row) {
+    return null;
+  }
+
+  if (ctx?.actorAdminId && input.status !== undefined && input.status !== previousStatus) {
+    try {
+      const { onWithdrawalStatusUpdatedByAdmin } = await import(
+        "@/lib/services/flow-notifications"
+      );
+      await onWithdrawalStatusUpdatedByAdmin({
+        requestUserId: row.userId,
+        userEmail: existing.userEmail,
+        actorAdminId: ctx.actorAdminId,
+        withdrawalId: row.id,
+        previousStatus,
+        newStatus: input.status,
+        amountCents: row.amount,
+        currency: row.currency,
+        adminNote: row.adminNote ?? null,
+      });
+    } catch (e) {
+      console.error("[withdrawals] notification side-effect failed", e);
+    }
+  }
+
+  return row;
 }
 
 export async function deleteWithdrawalRequest(id: string): Promise<boolean> {

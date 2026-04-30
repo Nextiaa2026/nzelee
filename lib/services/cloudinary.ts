@@ -44,3 +44,22 @@ export async function uploadImageBuffer(
     stream.end(buffer);
   });
 }
+
+function extractPublicIdFromUrl(url: string): string | null {
+  const marker = "/upload/";
+  const idx = url.indexOf(marker);
+  if (idx < 0) return null;
+  const tail = url.slice(idx + marker.length);
+  const withoutTransforms = tail.includes("/") ? tail.split("/").slice(1).join("/") : tail;
+  if (!withoutTransforms) return null;
+  const dot = withoutTransforms.lastIndexOf(".");
+  return dot > 0 ? withoutTransforms.slice(0, dot) : withoutTransforms;
+}
+
+export async function deleteImageByUrl(url: string): Promise<boolean> {
+  ensureConfigured();
+  const publicId = extractPublicIdFromUrl(url);
+  if (!publicId) return false;
+  const result = await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+  return result.result === "ok" || result.result === "not found";
+}

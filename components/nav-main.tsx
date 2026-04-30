@@ -33,14 +33,14 @@ export function NavMain({
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               tooltip="Quick Create"
-              className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+              className="min-w-8 bg-mint text-mint-foreground duration-200 ease-linear hover:bg-mint/90 hover:text-mint-foreground active:bg-mint/90 active:text-mint-foreground"
             >
-              <Hugeicon icon={Add01Icon} className="text-primary-foreground" />
+              <Hugeicon icon={Add01Icon} className="text-mint-foreground" />
               <span>Quick Create</span>
             </SidebarMenuButton>
             <Button
               size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
+              className="size-8 border-white/25 bg-white/10 text-white hover:bg-white/20 hover:text-white group-data-[collapsible=icon]:opacity-0"
               variant="outline"
             >
               <Hugeicon icon={Mail01Icon} size={18} />
@@ -54,6 +54,7 @@ export function NavMain({
               <SidebarMenuButton
                 tooltip={item.title}
                 asChild
+                  className="text-sidebar-foreground/85 hover:bg-white/12 hover:text-sidebar-foreground data-[active=true]:bg-white/22 data-[active=true]:text-sidebar-foreground data-[active=true]:shadow-[inset_0_0_0_1px_oklch(1_0_0/0.18)]"
                 isActive={
                   item.url !== "#" &&
                   (item.url === "/admin"

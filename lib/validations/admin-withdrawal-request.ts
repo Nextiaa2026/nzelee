@@ -8,12 +8,12 @@ const withdrawalStatuses = [
   "CANCELLED",
 ] as const;
 
+/** Admin-created rows are always `PENDING` until validated via PATCH. */
 export const adminCreateWithdrawalRequestBodySchema = z.object({
   userId: z.string().uuid(),
   amount: z.number().int().positive(),
   currency: z.string().trim().min(1).max(12).default("USD"),
   destination: z.string().trim().min(1).max(2000),
-  status: z.enum(withdrawalStatuses).optional(),
   adminNote: z.string().trim().max(2000).optional().nullable(),
 });
 

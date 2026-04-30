@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 
 export const contactFormSchema = z.object({
   name: z.string().trim().min(2, "Name is too short").max(80),
@@ -23,10 +24,24 @@ export const investmentCommitmentSchema = z.object({
     .min(1, "Listing slug or ID is required")
     .max(220),
   amount: z.number().positive("Amount must be greater than zero"),
+  currency: z.enum(investmentCurrencyCodes).default("XAF"),
+  paymentMethod: z.enum(["MOBILE_MONEY", "ORANGE_MONEY"]).default("MOBILE_MONEY"),
   note: z.string().trim().max(500).optional(),
 });
 
 export const profileSettingsSchema = z.object({
   displayName: z.string().trim().min(2, "Name is too short").max(120),
   organization: z.string().trim().max(120).optional(),
+  country: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z]{2}$/, "Country must be a 2-letter code")
+    .optional()
+    .or(z.literal("")),
+  dateOfBirth: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date of birth must be YYYY-MM-DD")
+    .optional()
+    .or(z.literal("")),
 });

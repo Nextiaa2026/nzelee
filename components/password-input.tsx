@@ -25,7 +25,7 @@ export const PasswordInput = React.forwardRef<
         type="button"
         variant="ghost"
         size="icon-sm"
-        className="absolute right-0.5 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        className="absolute right-1 top-1/2 size-9 -translate-y-1/2 text-black/45 hover:text-black/85 dark:text-white/45 dark:hover:text-white/90"
         onClick={() => setVisible((v) => !v)}
         aria-label={visible ? "Hide password" : "Show password"}
       >

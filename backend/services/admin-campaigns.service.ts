@@ -1,8 +1,11 @@
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 
 import { db } from "../../lib/db";
 import { campaigns } from "../../lib/db/schema";
-import type { AdminCreateCampaignBody, AdminUpdateCampaignBody } from "../../lib/validations/admin-campaign";
+import type {
+  AdminCreateCampaignBody,
+  AdminUpdateCampaignBody,
+} from "../../lib/validations/admin-campaign";
 
 function slugify(title: string) {
   return title
@@ -43,16 +46,52 @@ async function ensureUniqueSlug(baseSlug: string, excludeId?: string) {
   return slug;
 }
 
-export async function listCampaigns() {
-  return db.select().from(campaigns).orderBy(desc(campaigns.createdAt));
+export async function listCampaigns(params: {
+  page: number;
+  pageSize: number;
+  search?: string;
+}) {
+  const offset = (params.page - 1) * params.pageSize;
+  const searchTerm = params.search?.trim();
+  const whereClause =
+    searchTerm && searchTerm.length > 0
+      ? or(
+          ilike(campaigns.title, `%${searchTerm}%`),
+          ilike(campaigns.slug, `%${searchTerm}%`),
+        )
+      : undefined;
+  const [countRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(campaigns)
+    .where(whereClause);
+  const rows = await db
+    .select()
+    .from(campaigns)
+    .where(whereClause)
+    .orderBy(desc(campaigns.createdAt))
+    .limit(params.pageSize)
+    .offset(offset);
+  return {
+    rows,
+    total: countRow?.count ?? 0,
+    page: params.page,
+    pageSize: params.pageSize,
+  };
 }
 
 export async function getCampaignById(id: string) {
-  const [row] = await db.select().from(campaigns).where(eq(campaigns.id, id)).limit(1);
+  const [row] = await db
+    .select()
+    .from(campaigns)
+    .where(eq(campaigns.id, id))
+    .limit(1);
   return row ?? null;
 }
 
-export async function createCampaign(adminUserId: string, input: AdminCreateCampaignBody) {
+export async function createCampaign(
+  adminUserId: string,
+  input: AdminCreateCampaignBody,
+) {
   const rawSlug = input.slug?.trim();
   const baseSlug = rawSlug ? slugify(rawSlug) : slugify(input.title);
   const slug = await ensureUniqueSlug(baseSlug || "listing");
@@ -65,10 +104,15 @@ export async function createCampaign(adminUserId: string, input: AdminCreateCamp
       slug,
       summary: input.summary.trim(),
       description: input.description.trim(),
+      activitySector: input.activitySector?.trim() ?? null,
+      projectOwner: input.projectOwner?.trim() ?? null,
+      tags: input.tags ?? [],
+      documents: input.documents ?? [],
       coverImageUrl: input.coverImageUrl ?? null,
       goalAmount: input.goalAmount,
       raisedAmount: 0,
       currency: input.currency?.trim() || "USD",
+      isFeatured: input.isFeatured ?? false,
       status: input.status ?? "DRAFT",
       startsAt: input.startsAt ? new Date(input.startsAt) : null,
       endsAt: input.endsAt ? new Date(input.endsAt) : null,
@@ -81,7 +125,10 @@ export async function createCampaign(adminUserId: string, input: AdminCreateCamp
   return row;
 }
 
-export async function updateCampaign(id: string, input: AdminUpdateCampaignBody) {
+export async function updateCampaign(
+  id: string,
+  input: AdminUpdateCampaignBody,
+) {
   const existing = await getCampaignById(id);
   if (!existing) {
     return null;
@@ -93,11 +140,20 @@ export async function updateCampaign(id: string, input: AdminUpdateCampaignBody)
 
   if (input.title !== undefined) updates.title = input.title.trim();
   if (input.summary !== undefined) updates.summary = input.summary.trim();
-  if (input.description !== undefined) updates.description = input.description.trim();
+  if (input.description !== undefined)
+    updates.description = input.description.trim();
+  if (input.activitySector !== undefined)
+    updates.activitySector = input.activitySector.trim();
+  if (input.projectOwner !== undefined)
+    updates.projectOwner = input.projectOwner.trim();
+  if (input.tags !== undefined) updates.tags = input.tags;
+  if (input.documents !== undefined) updates.documents = input.documents;
   if (input.goalAmount !== undefined) updates.goalAmount = input.goalAmount;
   if (input.currency !== undefined) updates.currency = input.currency.trim();
+  if (input.isFeatured !== undefined) updates.isFeatured = input.isFeatured;
   if (input.status !== undefined) updates.status = input.status;
-  if (input.coverImageUrl !== undefined) updates.coverImageUrl = input.coverImageUrl;
+  if (input.coverImageUrl !== undefined)
+    updates.coverImageUrl = input.coverImageUrl;
   if (input.startsAt !== undefined) {
     updates.startsAt = input.startsAt ? new Date(input.startsAt) : null;
   }
@@ -108,10 +164,16 @@ export async function updateCampaign(id: string, input: AdminUpdateCampaignBody)
   if (input.slug !== undefined) {
     const candidate = slugify(input.slug) || existing.slug;
     updates.slug =
-      candidate === existing.slug ? existing.slug : await ensureUniqueSlug(candidate, id);
+      candidate === existing.slug
+        ? existing.slug
+        : await ensureUniqueSlug(candidate, id);
   }
 
-  const [row] = await db.update(campaigns).set(updates).where(eq(campaigns.id, id)).returning();
+  const [row] = await db
+    .update(campaigns)
+    .set(updates)
+    .where(eq(campaigns.id, id))
+    .returning();
 
   return row ?? null;
 }

@@ -1,8 +1,4 @@
-import type {
-  InvestorInvestmentRow,
-  InvestorTransactionRow,
-  InvestorWithdrawalRow,
-} from "./types";
+import type { InvestorTransactionRow, InvestorWithdrawalRow } from "./types";
 
 export const investorTransactionsMock: InvestorTransactionRow[] = [
   {
@@ -28,23 +24,6 @@ export const investorTransactionsMock: InvestorTransactionRow[] = [
     amount: "$2.50",
     listing: "Solar kits for rural clinics",
     date: "2026-02-14",
-  },
-];
-
-export const investorInvestmentsMock: InvestorInvestmentRow[] = [
-  {
-    id: "ii1",
-    listing: "Solar kits for rural clinics",
-    amount: "$500",
-    status: "PAID",
-    date: "2026-02-14",
-  },
-  {
-    id: "ii2",
-    listing: "Community recording studio",
-    amount: "$120",
-    status: "PENDING",
-    date: "2026-04-10",
   },
 ];
 

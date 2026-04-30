@@ -19,7 +19,7 @@ export default withAuth(
       return NextResponse.next();
     }
 
-    if (path.startsWith("/dashboard")) {
+    if (path.startsWith("/dashboard") || path.startsWith("/kyc")) {
       if (!token?.emailVerified) {
         return NextResponse.redirect(new URL("/login?error=unverified_email", req.url));
       }
@@ -54,7 +54,7 @@ export default withAuth(
         if (path.startsWith("/admin")) {
           return !!token;
         }
-        if (path.startsWith("/dashboard")) {
+        if (path.startsWith("/dashboard") || path.startsWith("/kyc")) {
           return !!token;
         }
         if (path === "/") {
@@ -67,5 +67,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/admin/:path*", "/onboarding"],
+  matcher: ["/", "/dashboard/:path*", "/kyc", "/kyc/:path*", "/admin/:path*", "/onboarding"],
 };

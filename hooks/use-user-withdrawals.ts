@@ -1,20 +1,18 @@
-"use client";
-
 import { useQuery } from "@tanstack/react-query";
 
 import { isApiSuccess } from "@/lib/http/api-result";
-import { userWithdrawalQueryKeys } from "@/lib/query-keys/admin";
+import { userWithdrawalsQueryKeys } from "@/lib/query-keys/user-withdrawals";
 import { listMyWithdrawals } from "@/lib/services/user-withdrawals";
 
 export function useUserWithdrawals() {
   return useQuery({
-    queryKey: userWithdrawalQueryKeys.list(),
+    queryKey: userWithdrawalsQueryKeys.list(),
     queryFn: async () => {
-      const r = await listMyWithdrawals();
-      if (!isApiSuccess(r)) {
-        throw new Error(r.error?.message ?? "Failed to load withdrawals");
+      const res = await listMyWithdrawals();
+      if (!isApiSuccess(res)) {
+        throw new Error(res.error.message);
       }
-      return r.data;
+      return res.data;
     },
   });
 }

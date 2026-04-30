@@ -21,11 +21,6 @@ const adminSections = [
     href: "/admin/campaigns",
   },
   {
-    title: "Properties",
-    description: "Property assets and visibility status.",
-    href: "/admin/properties",
-  },
-  {
     title: "Investments",
     description: "Investor commitments across listings.",
     href: "/admin/investments",
@@ -45,6 +40,11 @@ const adminSections = [
     description: "Approve or reject investor verification submissions.",
     href: "/admin/kyc",
   },
+  {
+    title: "Notifications",
+    description: "Send in-app notices to one user or all users.",
+    href: "/admin/notifications",
+  },
 ];
 
 export default function AdminOverviewPage() {
@@ -52,6 +52,9 @@ export default function AdminOverviewPage() {
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <div className="px-4 lg:px-6">
+            <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
+          </div>
           <AdminDashboardStats />
           <div className="px-4 lg:px-6">
             <h2 className="mb-3 text-lg font-medium">Admin directories</h2>

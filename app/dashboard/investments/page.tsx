@@ -1,47 +1,33 @@
 "use client";
 
+import Link from "next/link";
+
+import { DashboardPageShell } from "@/components/dashboard/dashboard-page-shell";
 import { InvestorInvestmentsTable } from "@/components/dashboard/tables/investor-investments-table";
-import { InvestmentCommitmentForm } from "@/components/forms/investment-commitment-form";
 import { MockQueryPlaceholder } from "@/components/mock-query-placeholder";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useMockInvestorInvestments } from "@/hooks/use-mock-investor-queries";
+import { Button } from "@/components/ui/button";
+import { useUserInvestments } from "@/hooks/use-user-investments";
 
 export default function DashboardInvestmentsPage() {
-  const { data, isPending, isError, refetch } = useMockInvestorInvestments();
+  const { data, isPending, isError, refetch } = useUserInvestments();
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card className="border-0 shadow-none">
-        <CardHeader className="px-0 pt-0">
-          <CardTitle>Investments</CardTitle>
-          <CardDescription>
-            Your commitments to listings. React Query mock — replace with pledges API when wired.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">New commitment</CardTitle>
-          <CardDescription>
-            Demo form — wire to your investment API when listings are public.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <InvestmentCommitmentForm />
-        </CardContent>
-      </Card>
+    <DashboardPageShell
+      eyebrow="Portfolio"
+      title="Investments"
+      description="Your commitments across live campaigns in your account."
+      actions={
+        <Button className="shrink-0 bg-mint text-mint-foreground hover:bg-mint/90" asChild>
+          <Link href="/campaigns">New investment</Link>
+        </Button>
+      }
+    >
       <MockQueryPlaceholder
         isPending={isPending}
         isError={isError}
         onRetry={() => void refetch()}
       />
       {!isPending && !isError && data ? <InvestorInvestmentsTable data={data} /> : null}
-    </div>
+    </DashboardPageShell>
   );
 }

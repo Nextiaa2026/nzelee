@@ -1,34 +1,39 @@
 "use client";
 
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useState } from "react";
+
 import { AdminInvestmentsTable } from "@/components/admin/tables/admin-investments-table";
 import { MockQueryPlaceholder } from "@/components/mock-query-placeholder";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAdminPledges } from "@/hooks/use-admin-queries";
 
 export default function AdminInvestmentsPage() {
-  const { data, isPending, isError, refetch } = useAdminPledges();
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const { data, isPending, isError, refetch } = useAdminPledges(page, pageSize);
+  const pageCount = Math.max(1, Math.ceil((data?.total ?? 0) / pageSize));
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:py-6 lg:px-6">
-      <Card className="border-0 shadow-none">
-        <CardHeader className="px-0 pt-0">
-          <CardTitle>Investments</CardTitle>
-          <CardDescription>
-            Investor commitments from the live admin API.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <h1 className="text-2xl font-semibold tracking-tight">Investments</h1>
       <MockQueryPlaceholder
         isPending={isPending}
         isError={isError}
         onRetry={() => void refetch()}
       />
-      {!isPending && !isError && data ? <AdminInvestmentsTable data={data} /> : null}
+      {!isPending && !isError && data ? <AdminInvestmentsTable data={data.items} /> : null}
+      {!isPending && !isError && data ? (
+        <div className="flex items-center justify-end gap-2">
+          <Button type="button" variant="outline" size="icon" className="size-8" aria-label="Previous page" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+            <ChevronLeftIcon className="size-4" />
+          </Button>
+          <p className="text-xs text-black/60">Page {page} of {pageCount}</p>
+          <Button type="button" variant="outline" size="icon" className="size-8" aria-label="Next page" disabled={page >= pageCount} onClick={() => setPage((p) => Math.min(pageCount, p + 1))}>
+            <ChevronRightIcon className="size-4" />
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

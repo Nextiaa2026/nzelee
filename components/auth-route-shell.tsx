@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GalleryVerticalEndIcon } from "lucide-react";
-
 import { AuthHeroPanel } from "@/components/auth-hero-panel";
+import { SITE_NAME } from "@/lib/brand";
 
 type AuthMeta = {
   title: string;
@@ -19,7 +18,7 @@ function metaForPath(pathname: string): AuthMeta {
     return {
       title: "Check your email",
       subtitle:
-        "Enter the 6-digit code we sent you to activate your account before signing in.",
+        "Enter the 6-digit code we sent you to finish creating your account.",
       side: "right",
       footer: (
         <>
@@ -43,8 +42,7 @@ function metaForPath(pathname: string): AuthMeta {
   if (pathname.startsWith("/register")) {
     return {
       title: "Create your account",
-      subtitle:
-        "Join Nexiaa to explore offerings and manage your commitments in one place.",
+      subtitle: `Join ${SITE_NAME} to explore offerings and manage your commitments in one place.`,
       side: "right",
       footer: (
         <>
@@ -100,7 +98,7 @@ function metaForPath(pathname: string): AuthMeta {
     return {
       title: "Email verification",
       subtitle:
-        "We use a short code instead of a link. Open your inbox or resend from the sign-in page.",
+        "Enter the code from your inbox, or resend from sign-in with the same email.",
       side: "right",
       footer: (
         <>
@@ -145,37 +143,38 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
   const { title, subtitle, side = "right", footer } = metaForPath(pathname);
 
   const formPanel = (
-    <div className="flex w-full flex-col bg-background px-6 py-10 sm:px-10 lg:w-[46%] lg:px-12 xl:px-16">
+    <div className="flex min-h-svh w-full flex-col bg-white px-6 py-10 sm:px-10 lg:w-[46%] lg:border-r lg:border-border lg:px-12 xl:px-16 dark:bg-card">
       <div className="mb-10 flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="flex items-center gap-2 font-medium text-foreground"
+          className="font-display text-lg font-bold tracking-tight text-foreground"
         >
-          <span className="flex size-9 items-center justify-center rounded-full bg-mint text-deep-green">
-            <GalleryVerticalEndIcon className="size-5" aria-hidden />
-          </span>
-          <span className="font-display text-sm sm:text-base">Nexiaa</span>
+          {SITE_NAME}
         </Link>
         <Link
           href="/"
-          className="text-sm text-muted-foreground transition hover:text-deep-green"
+          className="text-sm text-black/55 transition hover:text-black/90 dark:text-white/55 dark:hover:text-white/90"
         >
           Back to site
         </Link>
       </div>
 
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-        <header className="mb-8 space-y-2">
-          <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        <header className="mb-6 space-y-1.5 sm:mb-8 sm:space-y-2">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
             {title}
           </h1>
           {subtitle ? (
-            <p className="text-muted-foreground">{subtitle}</p>
+            <p className="max-w-prose text-sm leading-relaxed text-black/60 sm:text-[15px] dark:text-white/65">
+              {subtitle}
+            </p>
           ) : null}
         </header>
         {children}
         {footer ? (
-          <p className="mt-8 text-sm text-muted-foreground">{footer}</p>
+          <p className="mt-8 text-sm text-black/55 dark:text-white/60">
+            {footer}
+          </p>
         ) : null}
       </div>
     </div>
@@ -184,7 +183,7 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
   const hero = <AuthHeroPanel />;
 
   return (
-    <div className="flex min-h-svh w-full flex-col bg-background lg:flex-row">
+    <div className="hero-glow relative flex min-h-svh w-full flex-col overflow-hidden bg-hero-bg lg:flex-row">
       {side === "left" ? (
         <>
           {hero}

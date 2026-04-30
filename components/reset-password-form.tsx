@@ -62,7 +62,7 @@ export function ResetPasswordForm({
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <input type="hidden" value={token} {...register("token")} />
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="password">New password</Label>
             <PasswordInput
               id="password"
@@ -73,7 +73,7 @@ export function ResetPasswordForm({
               <p className="text-xs text-destructive">{errors.password.message}</p>
             ) : null}
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="confirmPassword">Confirm new password</Label>
             <PasswordInput
               id="confirmPassword"

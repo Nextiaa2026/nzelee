@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { withdrawalRequests } from "@/lib/db/schema";
+import { users, withdrawalRequests } from "@/lib/db/schema";
 import type { UserCreateWithdrawalBody } from "@/lib/validations/user-withdrawal";
 
 const wr = withdrawalRequests;
@@ -31,5 +31,26 @@ export async function createWithdrawalForUser(userId: string, input: UserCreateW
   if (!row) {
     throw new Error("Failed to create withdrawal request");
   }
+
+  const [u] = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  if (u?.email) {
+    try {
+      const { onUserWithdrawalSubmitted } = await import("@/lib/services/flow-notifications");
+      await onUserWithdrawalSubmitted({
+        userId,
+        userEmail: u.email,
+        withdrawalId: row.id,
+        amountCents: row.amount,
+        currency: row.currency,
+      });
+    } catch (e) {
+      console.error("[withdrawals] notification side-effect failed", e);
+    }
+  }
+
   return row;
 }

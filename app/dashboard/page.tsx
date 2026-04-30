@@ -1,88 +1,82 @@
-import Link from "next/link";
-
 import { auth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SAMPLE_PLEDGE_CAMPAIGNS } from "@/lib/dashboard/sample-pledge-campaigns";
+import { DashboardHomeOverview } from "@/components/dashboard/dashboard-home-overview";
+import { getUserAccountSummary } from "@/lib/services/user-account-summary";
+import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
+import { listBrowseableCampaigns } from "@/lib/services/public-campaigns";
+import { getUserEligibilityProfile } from "@/lib/services/user-eligibility";
 
 export default async function UserDashboardPage() {
   const session = await auth();
   const isAdmin = session?.user?.role === "ADMIN";
+  const [summary, allCampaigns, wallet, eligibility] = await Promise.all([
+    session?.user?.id
+      ? getUserAccountSummary(session.user.id)
+      : {
+          campaigns: 0,
+          investments: 0,
+          investedAmount: 0,
+          unreadNotifications: 0,
+          pendingWithdrawals: 0,
+        },
+    listBrowseableCampaigns(),
+    session?.user?.id
+      ? getUserWalletSnapshot(session.user.id)
+      : {
+          currency: "USD",
+          availableCents: 0,
+          pendingWithdrawalCents: 0,
+          lifetimeCreditsCents: 0,
+          lifetimeWithdrawnCents: 0,
+        },
+    session?.user?.id ? getUserEligibilityProfile(session.user.id) : null,
+  ]);
+
+  const featuredOnly = allCampaigns.filter((c) => c.isFeatured);
+  let displayCampaigns =
+    featuredOnly.length > 0
+      ? featuredOnly.slice(0, 3)
+      : allCampaigns.slice(0, 3);
+  const usingSamplePledges = displayCampaigns.length === 0;
+  if (usingSamplePledges) {
+    displayCampaigns = SAMPLE_PLEDGE_CAMPAIGNS;
+  }
+  const campaignsSectionTitle = featuredOnly.length
+    ? "Featured campaigns"
+    : allCampaigns.length > 0
+      ? "Campaigns for you"
+      : "Sample pledge campaigns";
+
+  const campaignCards = displayCampaigns.map((c) => ({
+    id: c.id,
+    title: c.title,
+    slug: c.slug,
+    summary: c.summary,
+    coverImageUrl: c.coverImageUrl,
+    raisedAmount: c.raisedAmount,
+    goalAmount: c.goalAmount,
+    currency: c.currency,
+    status: c.status,
+    isFeatured: c.isFeatured,
+    isDemo: usingSamplePledges,
+  }));
 
   return (
-    <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Your dashboard</h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Review your activity: transactions, investments in listings, and withdrawal requests.
-          Data below is illustrative until backend endpoints are connected.
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Transactions</CardTitle>
-            <CardDescription>Ledger entries for your wallet.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href="/dashboard/transactions">Open</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Investments</CardTitle>
-            <CardDescription>Amounts you have put into listings.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href="/dashboard/investments">Open</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Withdrawals</CardTitle>
-            <CardDescription>Outbound transfers to your bank or wallet.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href="/dashboard/withdrawals">Open</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Settings</CardTitle>
-            <CardDescription>Profile name and organization.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button variant="secondary" size="sm" asChild>
-              <Link href="/dashboard/settings">Open</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-
-      {isAdmin ? (
-        <p className="text-sm text-muted-foreground">
-          You have admin access:{" "}
-          <Link
-            href="/admin"
-            className="font-medium text-foreground underline-offset-4 hover:underline"
-          >
-            Open admin console
-          </Link>
-          .
-        </p>
-      ) : null}
-    </div>
+    <DashboardHomeOverview
+      userName={session?.user?.name ?? null}
+      isAdmin={isAdmin}
+      kycStatus={eligibility?.kycStatus ?? null}
+      summary={summary}
+      wallet={{
+        currency: wallet.currency,
+        availableCents: wallet.availableCents,
+        pendingWithdrawalCents: wallet.pendingWithdrawalCents,
+        lifetimeWithdrawnCents: wallet.lifetimeWithdrawnCents,
+      }}
+      campaigns={campaignCards}
+      campaignsSectionTitle={campaignsSectionTitle}
+      usingSamplePledges={usingSamplePledges}
+      browseableCampaignCount={allCampaigns.length}
+    />
   );
 }

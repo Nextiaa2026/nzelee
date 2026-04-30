@@ -85,7 +85,7 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
   return (
     <div className="space-y-5">
       {!trimmedInitial ? (
-        <div className="space-y-2 text-left">
+        <div className="space-y-1.5 text-left sm:space-y-2">
           <Label htmlFor="verify-email">Email</Label>
           <Input
             id="verify-email"
@@ -97,13 +97,12 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
           />
         </div>
       ) : (
-        <p className="text-center text-sm text-muted-foreground">
-          Code sent to{" "}
-          <span className="font-medium text-foreground">{trimmedInitial}</span>
+        <p className="text-center text-sm text-black/65">
+          Code sent to <span className="font-medium text-black">{trimmedInitial}</span>
         </p>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         <Label className="block text-center">6-digit code</Label>
         <div className="flex justify-center">
           <InputOTP

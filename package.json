@@ -10,7 +10,8 @@
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "bun run scripts/seed.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.2",
@@ -29,6 +30,7 @@
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
     "elysia": "^1.4.28",
@@ -38,10 +40,10 @@
     "lucide-react": "^1.9.0",
     "next": "16.2.4",
     "next-auth": "^4.24.14",
-    "next-themes": "^0.4.6",
     "postgres": "^3.4.9",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
+    "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.73.1",
     "recharts": "3.8.0",

@@ -87,13 +87,20 @@ export function AdminDataTable<TData extends { id: string }>({
 
   return (
     <div className={cn("space-y-3", className)}>
-      <div className="overflow-hidden rounded-lg border">
-        <Table>
-          <TableHeader className="bg-muted">
+      <div className="overflow-hidden rounded-lg border border-foreground/10 bg-card">
+        <Table className="[&_tr]:border-b [&_tr]:border-border/30">
+          <TableHeader className="bg-white">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className="hover:bg-transparent border-b-2 border-foreground/10"
+              >
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className="h-12 px-4 font-semibold text-foreground/90"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -111,9 +118,10 @@ export function AdminDataTable<TData extends { id: string }>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
+                  className="transition-colors hover:bg-surface-muted/30"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-4 px-4">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -126,7 +134,7 @@ export function AdminDataTable<TData extends { id: string }>({
               <TableRow>
                 <TableCell
                   colSpan={colSpan}
-                  className="h-24 text-center text-muted-foreground"
+                  className="h-32 text-center text-muted-foreground"
                 >
                   No rows.
                 </TableCell>
@@ -136,14 +144,15 @@ export function AdminDataTable<TData extends { id: string }>({
         </Table>
       </div>
       {enableRowSelection ? (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/60">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getRowModel().rows.length} row(s) selected. All rows load on the
-          client (no server-side pagination).
+          {table.getRowModel().rows.length} row(s) selected. All rows load on
+          the client (no server-side pagination).
         </p>
       ) : (
-        <p className="text-sm text-muted-foreground">
-          {table.getRowModel().rows.length} row(s). Client-side list (no server pagination).
+        <p className="text-sm text-foreground/60">
+          {table.getRowModel().rows.length} row(s). Client-side list (no server
+          pagination).
         </p>
       )}
     </div>

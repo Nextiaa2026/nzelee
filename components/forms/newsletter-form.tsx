@@ -67,7 +67,7 @@ export function NewsletterForm({
         form.reset();
       })}
     >
-      <div className="space-y-2">
+      <div className="space-y-1.5 sm:space-y-2">
         <Input
           id={`${fieldId}-inline`}
           type="email"

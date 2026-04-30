@@ -68,6 +68,9 @@
   --font-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  /* Accordion height animations (Radix Accordion + shadcn pattern) */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
 :root {
@@ -95,8 +98,9 @@
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
+  /* Slightly stronger than page bg so fields read clearly on white surfaces. */
+  --border: oklch(0.87 0.014 255);
+  --input: oklch(0.87 0.014 255);
   --ring: oklch(0.704 0.04 256.788);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -231,9 +235,27 @@
   }
 }
 
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
 .neumorph {
   background: var(--surface);
-  border-radius: 2rem;
+  border-radius: 1.25rem;
   box-shadow:
     20px 20px 60px color-mix(in oklab, var(--foreground) 14%, transparent),
     -20px -20px 60px color-mix(in oklab, white 90%, transparent),
@@ -242,7 +264,7 @@
 
 .neumorph-inset {
   background: var(--surface);
-  border-radius: 1.25rem;
+  border-radius: 1rem;
   box-shadow:
     inset 6px 6px 14px color-mix(in oklab, var(--foreground) 10%, transparent),
     inset -6px -6px 14px color-mix(in oklab, white 90%, transparent);
@@ -250,7 +272,7 @@
 
 .neumorph-pop {
   background: var(--surface);
-  border-radius: 1.25rem;
+  border-radius: 1rem;
   box-shadow:
     8px 8px 20px color-mix(in oklab, var(--foreground) 12%, transparent),
     -8px -8px 20px color-mix(in oklab, white 90%, transparent);

@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 
 import {
-  investorInvestmentsMock,
   investorTransactionsMock,
   investorWithdrawalsMock,
   mockNetworkDelay,
@@ -16,16 +15,6 @@ export function useMockInvestorTransactions() {
     queryFn: async () => {
       await mockNetworkDelay();
       return investorTransactionsMock;
-    },
-  });
-}
-
-export function useMockInvestorInvestments() {
-  return useQuery({
-    queryKey: mockQueryKeys.investor.investments,
-    queryFn: async () => {
-      await mockNetworkDelay();
-      return investorInvestmentsMock;
     },
   });
 }

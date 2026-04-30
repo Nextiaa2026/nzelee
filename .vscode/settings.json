@@ -1,1 +1,4 @@
-{}
+{
+  "editor.fontFamily": "JetBrains Mono",
+  "typescript.autoClosingTags": false
+}

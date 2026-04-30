@@ -3,6 +3,7 @@ import { Geist_Mono, Inter } from "next/font/google";
 
 import { GlobalSiteChrome } from "@/components/global-site-chrome";
 import { Providers } from "@/components/providers";
+import { SITE_NAME } from "@/lib/brand";
 import "./globals.css";
 /* Resolved by path so Turbopack can load the built CSS (package root import may not resolve). */
 import "../node_modules/tw-animate-css/dist/tw-animate.css";
@@ -21,11 +22,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Nexiaa — Private-market investing",
-    template: "%s — Nexiaa",
+    default: `${SITE_NAME} — Private-market investing`,
+    template: `%s — ${SITE_NAME}`,
   },
-  description:
-    "Nexiaa is a private-market investment platform—structured listings, transparent fees, and dashboards for investors and administrators.",
+  description: `${SITE_NAME} is a private-market investment platform—structured listings, transparent fees, and dashboards for investors and administrators.`,
 };
 
 export default function RootLayout({

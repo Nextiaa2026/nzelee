@@ -2,17 +2,32 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDownIcon, GalleryVerticalEndIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import { ChevronDownIcon, MenuIcon } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { SITE_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
+  { href: "/campaigns", label: "Campaigns" },
   { href: "/services", label: "What we do" },
   { href: "/about", label: "About us" },
   { href: "/contact", label: "Contact" },
@@ -28,8 +43,21 @@ const hiddenExact = [
   "/onboarding",
 ];
 
+const scrollCompactThreshold = 56;
+
 export function GlobalSiteHeader() {
   const pathname = usePathname() ?? "/";
+  const { data: session, status } = useSession();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () =>
+      setIsScrolled(window.scrollY > scrollCompactThreshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const hideOnPrefix = hiddenPrefixes.some((prefix) =>
     pathname.startsWith(prefix),
@@ -41,61 +69,170 @@ export function GlobalSiteHeader() {
     return null;
   }
 
-  return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-transparent px-4 py-4">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-center">
-        <div className="flex w-full max-w-3xl items-center justify-between rounded-full border border-white/10 bg-[#0a0a0a] px-3 py-2 text-white shadow-xl ring-1 ring-black/10">
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-medium text-white"
-        >
-          <span className="flex size-8 items-center justify-center rounded-full bg-[#f5e800] text-black">
-            <GalleryVerticalEndIcon className="size-4" aria-hidden strokeWidth={2.5} />
-          </span>
-          <span className="font-display text-sm">Nexiaa</span>
-        </Link>
+  const expandedHome = !isScrolled;
 
-        <nav className="hidden items-center gap-5 text-sm md:flex">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={cn(
-                "inline-flex items-center gap-1.5 text-white/80 outline-none transition-colors hover:text-white",
-                (pathname.startsWith("/investors") ||
-                  pathname.startsWith("/help") ||
-                  pathname.startsWith("/careers") ||
-                  pathname.startsWith("/press")) &&
-                  "text-white",
-              )}
-            >
+  const navLinkClass = (active: boolean) =>
+    cn(
+      "transition-colors",
+      expandedHome
+        ? cn(
+            "text-deep-green-foreground/75 hover:text-deep-green-foreground",
+            active && "font-medium text-deep-green-foreground",
+          )
+        : cn(
+            "text-white/80 hover:text-white",
+            active && "font-medium text-white",
+          ),
+    );
+
+  const resourcesTriggerClass = cn(
+    "inline-flex items-center gap-1.5 outline-none transition-colors",
+    expandedHome
+      ? "text-deep-green-foreground/75 hover:text-deep-green-foreground"
+      : "text-white/80 hover:text-white",
+    (pathname.startsWith("/investors") ||
+      pathname.startsWith("/help") ||
+      pathname.startsWith("/careers") ||
+      pathname.startsWith("/press")) &&
+      (expandedHome ? "text-deep-green-foreground" : "text-white"),
+  );
+
+  const brand = (
+    <Link
+      href="/"
+      className={cn(
+        "font-display text-lg font-bold tracking-tight transition-opacity duration-300 hover:opacity-90 md:text-xl",
+        expandedHome ? "text-deep-green-foreground" : "text-white",
+      )}
+    >
+      {SITE_NAME}
+    </Link>
+  );
+
+  const nav = (
+    <nav className="hidden items-center gap-6 text-sm md:flex">
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger className={resourcesTriggerClass}>
+          Resources
+          <ChevronDownIcon className="size-3.5" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="center"
+          className="min-w-44 rounded-xl border-white/10 bg-[#111] text-white"
+        >
+          <DropdownMenuItem asChild>
+            <Link href="/investors" className="cursor-pointer">
+              Investors
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/help" className="cursor-pointer">
+              Help
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/careers" className="cursor-pointer">
+              Careers
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/press" className="cursor-pointer">
+              Press
+            </Link>
+          </DropdownMenuItem>
+          {session?.user?.role === "ADMIN" ? (
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/projects" className="cursor-pointer">
+                Your projects
+              </Link>
+            </DropdownMenuItem>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {navLinks.map((link) => {
+        const active =
+          pathname === link.href ||
+          (link.href !== "/" && pathname.startsWith(link.href));
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={navLinkClass(active)}
+          >
+            {link.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+
+  const mobileNav = (
+    <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            "md:hidden",
+            expandedHome
+              ? "text-deep-green-foreground hover:bg-deep-green-foreground/10"
+              : "text-white hover:bg-white/10",
+          )}
+        >
+          <MenuIcon className="h-5 w-5" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[280px] bg-deep-green">
+        <SheetHeader>
+          <SheetTitle className="text-left text-deep-green-foreground">
+            {SITE_NAME}
+          </SheetTitle>
+        </SheetHeader>
+        <nav className="flex flex-col gap-4 pt-6">
+          <div className="flex flex-col gap-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-deep-green-foreground/60">
               Resources
-              <ChevronDownIcon className="size-3.5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="center"
-              className="min-w-44 rounded-xl border-white/10 bg-[#111] text-white"
+            </p>
+            <Link
+              href="/investors"
+              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+              onClick={() => setMobileMenuOpen(false)}
             >
-              <DropdownMenuItem asChild>
-                <Link href="/investors" className="cursor-pointer">
-                  Investors
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/help" className="cursor-pointer">
-                  Help
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/careers" className="cursor-pointer">
-                  Careers
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/press" className="cursor-pointer">
-                  Press
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              Investors
+            </Link>
+            <Link
+              href="/help"
+              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Help
+            </Link>
+            <Link
+              href="/careers"
+              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Careers
+            </Link>
+            <Link
+              href="/press"
+              className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Press
+            </Link>
+            {session?.user?.role === "ADMIN" ? (
+              <Link
+                href="/dashboard/projects"
+                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Your projects
+              </Link>
+            ) : null}
+          </div>
+          <div className="h-px bg-deep-green-foreground/10" />
           {navLinks.map((link) => {
             const active =
               pathname === link.href ||
@@ -105,25 +242,200 @@ export function GlobalSiteHeader() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-white/80 transition-colors hover:text-white",
-                  active && "font-medium text-white",
+                  "text-sm transition-colors",
+                  active
+                    ? "font-medium text-deep-green-foreground"
+                    : "text-deep-green-foreground/80 hover:text-deep-green-foreground",
                 )}
+                onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
               </Link>
             );
           })}
+          {status === "authenticated" ? (
+            <>
+              <div className="h-px bg-deep-green-foreground/10" />
+              <Link
+                href="/dashboard"
+                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Account
+              </Link>
+              <Link
+                href="/dashboard/markets"
+                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Markets
+              </Link>
+              <Link
+                href="/dashboard/saved"
+                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Saved campaigns
+              </Link>
+              <Link
+                href="/dashboard/notifications"
+                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Notifications
+              </Link>
+              <Link
+                href="/dashboard/settings"
+                className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Account settings
+              </Link>
+              {session?.user?.role === "ADMIN" ? (
+                <Link
+                  href="/admin"
+                  className="text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </Link>
+              ) : null}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  void signOut({ callbackUrl: "/" });
+                }}
+                className="text-left text-sm text-deep-green-foreground/80 transition-colors hover:text-deep-green-foreground"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="h-px bg-deep-green-foreground/10" />
+              <Link
+                href="/login"
+                className="rounded-full bg-mint px-5 py-2.5 text-center text-sm font-medium text-deep-green transition hover:bg-mint/90"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign in
+              </Link>
+            </>
+          )}
         </nav>
+      </SheetContent>
+    </Sheet>
+  );
 
-        <div className="flex items-center gap-2 pl-2">
-          <Link
-            href="/login"
-            className="rounded-full border border-white/20 bg-white px-4 py-1.5 text-xs font-medium text-black transition hover:bg-white/90"
-          >
-            Sign in
-          </Link>
+  const sessionMenu = (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger
+        className={cn(
+          "inline-flex items-center justify-center rounded-full outline-none transition",
+          expandedHome
+            ? "ring-1 ring-deep-green-foreground/15"
+            : "border border-white/20 bg-white/95 p-0.5 hover:bg-white",
+        )}
+      >
+        <Avatar className="size-9">
+          <AvatarImage
+            src={session?.user?.image ?? ""}
+            alt={session?.user?.name ?? "Account"}
+          />
+          <AvatarFallback className="bg-mint text-xs font-semibold text-deep-green">
+            {(session?.user?.name ?? "Account")
+              .split(" ")
+              .map((part) => part[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-56">
+        <DropdownMenuLabel className="truncate">
+          {session?.user?.email ?? "Signed in"}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard">Account</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/markets">Markets</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/saved">Saved campaigns</Link>
+        </DropdownMenuItem>
+        {session?.user?.role === "ADMIN" ? (
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/projects">Your projects</Link>
+          </DropdownMenuItem>
+        ) : null}
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/notifications">Notifications</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/settings">Account settings</Link>
+        </DropdownMenuItem>
+        {session?.user?.role === "ADMIN" ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin">Admin</Link>
+            </DropdownMenuItem>
+          </>
+        ) : null}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => void signOut({ callbackUrl: "/" })}>
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  const signIn = (
+    <Link
+      href="/login"
+      className={cn(
+        "rounded-full px-5 py-2 text-sm font-medium transition",
+        expandedHome
+          ? "bg-mint text-deep-green hover:bg-mint/90"
+          : "border border-white/20 bg-white text-black hover:bg-white/90",
+      )}
+    >
+      Sign in
+    </Link>
+  );
+
+  const accountControl = status === "authenticated" ? sessionMenu : signIn;
+
+  if (expandedHome) {
+    return (
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 bg-deep-green",
+          "transition-[padding,background-color] duration-300 ease-out",
+        )}
+      >
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6 md:py-8">
+          {mobileNav}
+          {brand}
+          {nav}
+          <div className="flex items-center gap-2 pl-2">{accountControl}</div>
         </div>
-      </div>
+      </header>
+    );
+  }
+
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 bg-transparent px-4 py-4 transition-[padding] duration-300 md:py-5">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-center">
+        <div className="flex min-h-14 w-full max-w-3xl items-center justify-between rounded-full border border-white/10 bg-deep-green px-4 py-3 text-white shadow-xl ring-1 ring-black/10 transition-all duration-300 md:min-h-16 md:px-6 md:py-3.5">
+          {mobileNav}
+          {brand}
+          {nav}
+          <div className="flex items-center gap-2 pl-2">{accountControl}</div>
+        </div>
       </div>
     </header>
   );

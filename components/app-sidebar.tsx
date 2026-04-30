@@ -3,18 +3,19 @@
 import * as React from "react";
 import {
   BankIcon,
-  Building03Icon,
-  CommandIcon,
   DashboardSquare01Icon,
   HandCoinsIcon,
   Home09Icon,
+  Notification03Icon,
   SecurityLockIcon,
   Rocket01Icon,
   TransactionIcon,
   UserMultipleIcon,
+  CustomerSupportIcon,
 } from "@hugeicons/core-free-icons";
 
 import { Hugeicon } from "@/components/hugeicon";
+import { SITE_NAME } from "@/lib/brand";
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -51,9 +52,9 @@ const navMain = [
     icon: <Hugeicon icon={Rocket01Icon} />,
   },
   {
-    title: "Properties",
-    url: "/admin/properties",
-    icon: <Hugeicon icon={Building03Icon} />,
+    title: "Tickets",
+    url: "/admin/tickets",
+    icon: <Hugeicon icon={CustomerSupportIcon} />,
   },
   {
     title: "Investments",
@@ -74,6 +75,11 @@ const navMain = [
     title: "KYC Reviews",
     url: "/admin/kyc",
     icon: <Hugeicon icon={SecurityLockIcon} />,
+  },
+  {
+    title: "Notifications",
+    url: "/admin/notifications",
+    icon: <Hugeicon icon={Notification03Icon} />,
   },
 ];
 
@@ -98,9 +104,15 @@ export function AppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <a href="/admin">
-                <Hugeicon icon={CommandIcon} className="size-5" size={20} />
-                <span className="text-base font-semibold">Nexiaa Admin</span>
+              <a href="/admin" title={SITE_NAME}>
+                <span className="flex flex-col gap-0.5 leading-tight">
+                  <span className="text-sm font-bold tracking-tight text-sidebar-foreground">
+                    {SITE_NAME}
+                  </span>
+                  <span className="text-xs font-medium text-sidebar-foreground/70">
+                    Admin
+                  </span>
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

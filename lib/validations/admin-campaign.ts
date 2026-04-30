@@ -18,9 +18,14 @@ export const adminCreateCampaignBodySchema = z.object({
     .transform((s) => (s && s.length > 0 ? s : undefined)),
   summary: z.string().trim().min(1).max(320),
   description: z.string().trim().min(1),
+  activitySector: z.string().trim().max(100).optional(),
+  projectOwner: z.string().trim().max(120).optional(),
+  tags: z.array(z.string().trim().min(1)).default([]),
+  documents: z.array(z.string().url()).default([]),
   /** Goal in smallest currency unit (e.g. cents). */
   goalAmount: z.number().int().positive(),
   currency: z.string().trim().max(12).optional(),
+  isFeatured: z.boolean().optional(),
   status: z.enum(campaignStatusValues).optional(),
   coverImageUrl: z
     .union([z.string().trim().url(), z.literal("")])
@@ -41,17 +46,28 @@ export const adminUpdateCampaignBodySchema = z
       .transform((s) => (s && s.length > 0 ? s : undefined)),
     summary: z.string().trim().min(1).max(320).optional(),
     description: z.string().trim().min(1).optional(),
+    activitySector: z.string().trim().max(100).optional(),
+    projectOwner: z.string().trim().max(120).optional(),
+    tags: z.array(z.string().trim().min(1)).optional(),
+    documents: z.array(z.string().url()).optional(),
     goalAmount: z.number().int().positive().optional(),
     currency: z.string().trim().max(12).optional(),
+    isFeatured: z.boolean().optional(),
     status: z.enum(campaignStatusValues).optional(),
     coverImageUrl: z
       .union([z.string().trim().url(), z.literal(""), z.null()])
       .optional()
-      .transform((s) => (s === undefined ? undefined : s === null || s === "" ? null : s)),
+      .transform((s) =>
+        s === undefined ? undefined : s === null || s === "" ? null : s,
+      ),
     startsAt: z.string().datetime({ offset: true }).optional().nullable(),
     endsAt: z.string().datetime({ offset: true }).optional().nullable(),
   })
   .refine((o) => Object.keys(o).length > 0, { message: "No fields to update" });
 
-export type AdminCreateCampaignBody = z.infer<typeof adminCreateCampaignBodySchema>;
-export type AdminUpdateCampaignBody = z.infer<typeof adminUpdateCampaignBodySchema>;
+export type AdminCreateCampaignBody = z.infer<
+  typeof adminCreateCampaignBodySchema
+>;
+export type AdminUpdateCampaignBody = z.infer<
+  typeof adminUpdateCampaignBodySchema
+>;
