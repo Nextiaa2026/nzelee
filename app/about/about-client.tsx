@@ -11,16 +11,16 @@ import { httpClient } from "@/lib/http/client";
 
 const VALUES = [
   {
-    t: "Transparency",
-    d: "No hidden fees. Every cost, risk, and return shown upfront — always.",
+    t: "Transparence",
+    d: "Pas de frais cachés. Chaque coût, risque et rendement est affiché d&apos;avance — toujours.",
   },
   {
-    t: "Accessibility",
-    d: "Start with $10. We believe wealth-building should never depend on a minimum balance.",
+    t: "Accessibilité",
+    d: "Commencez avec 10 $. Nous pensons que la création de patrimoine ne devrait jamais dépendre d&apos;un solde minimum.",
   },
   {
-    t: "Long-term thinking",
-    d: "We optimize for decades, not days. Our tools nudge you toward compounding wins.",
+    t: "Pensée à long terme",
+    d: "Nous optimisons pour des décennies, pas des jours. Nos outils vous poussent vers des gains cumulés.",
   },
 ];
 
@@ -52,33 +52,33 @@ export function AboutPageClient() {
     ? [
         {
           v: `${(stats.totalRaised / 100 / 1000000).toFixed(1)}M XAF`,
-          l: "Assets invested",
+          l: "Actifs investis",
         },
         {
           v: `${(stats.totalInvestors / 1000).toFixed(0)}k+`,
-          l: "Active investors",
+          l: "Investisseurs actifs",
         },
-        { v: stats.activeCampaigns.toString(), l: "Active campaigns" },
-        { v: `${stats.averageRating.toFixed(1)}★`, l: "Average rating" },
+        { v: stats.activeCampaigns.toString(), l: "Campagnes actives" },
+        { v: `${stats.averageRating.toFixed(1)}★`, l: "Note moyenne" },
       ]
     : [
-        { v: "...", l: "Assets invested" },
-        { v: "...", l: "Active investors" },
-        { v: "...", l: "Active campaigns" },
-        { v: "...", l: "Average rating" },
+        { v: "...", l: "Actifs investis" },
+        { v: "...", l: "Investisseurs actifs" },
+        { v: "...", l: "Campagnes actives" },
+        { v: "...", l: "Note moyenne" },
       ];
 
   return (
     <main>
       <PageHero
-        eyebrow="About us"
+        eyebrow="À propos"
         title={
           <>
-            Building the future of{" "}
-            <span className="text-mint">everyday investing</span>
+            Bâtir l&apos;avenir de{" "}
+            <span className="text-mint">l&apos;investissement quotidien</span>
           </>
         }
-        subtitle="We started Nzelle to tear down the walls between people and the markets — making serious investing feel as simple as sending a text."
+        subtitle="Nous avons lancé Nzelle pour abattre les murs entre les gens et les marchés — rendant l&apos;investissement sérieux aussi simple que l&apos;envoi d&apos;un texte."
       />
 
       <section className="mx-auto -mt-16 max-w-6xl px-4">
@@ -123,22 +123,16 @@ export function AboutPageClient() {
             transition={{ duration: 0.7 }}
           >
             <p className="text-xs uppercase tracking-widest text-deep-green">
-              Our story
+              Notre histoire
             </p>
             <h2 className="font-display mt-3 text-4xl">
-              From a kitchen table to a movement.
+              D&apos;une table de cuisine à un mouvement.
             </h2>
             <p className="mt-5 text-foreground/70">
-              In 2021, our founders watched friends and family struggle to
-              access the same opportunities institutions enjoyed every day. We
-              built Nzelle to flip that script — pooling capital, slashing fees,
-              and bringing institutional-grade investments to anyone with a
-              phone.
+              En 2021, nos fondateurs ont vu leurs amis et leur famille lutter pour accéder aux mêmes opportunités dont les institutions profitaient chaque jour. Nous avons construit Nzelle pour renverser la situation — en regroupant le capital, en réduisant les frais et en apportant des investissements de qualité institutionnelle à toute personne disposant d&apos;un téléphone.
             </p>
             <p className="mt-3 text-foreground/70">
-              Today, hundreds of thousands of investors trust Nzelle to grow
-              their wealth across stocks, ETFs, crypto, and tokenized real
-              estate.
+              Aujourd&apos;hui, des centaines de milliers d&apos;investisseurs font confiance à Nzelle pour faire fructifier leur patrimoine à travers les actions, les ETFs, la crypto et l&apos;immobilier tokenisé.
             </p>
           </motion.div>
         </div>
@@ -147,7 +141,7 @@ export function AboutPageClient() {
       <section className="bg-surface-muted py-24">
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="font-display text-center text-4xl">
-            What we stand for
+            Ce que nous défendons
           </h2>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {VALUES.map((v, i) => (
@@ -171,29 +165,28 @@ export function AboutPageClient() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-24">
-        <h2 className="font-display text-center text-4xl">Explore</h2>
+        <h2 className="font-display text-center text-4xl">Explorer</h2>
         <p className="mt-3 text-center text-foreground/60">
-          See live listings on the campaigns directory, or open your dashboard
-          after sign-in.
+          Consultez les annonces en direct sur le répertoire des campagnes, ou ouvrez votre tableau de bord après vous être connecté.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button asChild>
-            <Link href="/campaigns">View campaigns</Link>
+            <Link href="/campaigns">Voir les campagnes</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/register">Register</Link>
+            <Link href="/register">S&apos;inscrire</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/login">Log in</Link>
+            <Link href="/login">Se connecter</Link>
           </Button>
         </div>
         <p className="mt-6 text-center text-sm text-foreground/50">
           <Link href="/terms-of-service" className="hover:text-foreground">
-            Terms of Service
+            Conditions d&apos;utilisation
           </Link>
           {" · "}
           <Link href="/privacy-policy" className="hover:text-foreground">
-            Privacy Policy
+            Politique de confidentialité
           </Link>
         </p>
       </section>

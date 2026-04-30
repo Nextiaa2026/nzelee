@@ -75,7 +75,7 @@ export function CampaignCard({
         </div>
         {isFeatured && (
           <span className="absolute right-3 top-3 rounded-full bg-mint px-3 py-1 text-xs font-semibold text-mint-foreground">
-            Featured
+            À la une
           </span>
         )}
       </div>
@@ -88,7 +88,7 @@ export function CampaignCard({
 
         <div className="mt-4">
           <div className="flex justify-between text-xs text-foreground/60">
-            <span>{pct}% funded</span>
+            <span>{pct}% financé</span>
             <span>
               {(goalAmount / 100).toLocaleString(undefined, {
                 style: "currency",
@@ -107,7 +107,7 @@ export function CampaignCard({
 
         <div className="mt-5 flex items-center justify-between border-t border-foreground/10 pt-4">
           <div>
-            <p className="text-xs text-foreground/55">Raised</p>
+            <p className="text-xs text-foreground/55">Récolté</p>
             <p className="font-display text-lg">
               {(raisedAmount / 100).toLocaleString(undefined, {
                 style: "currency",
@@ -117,7 +117,7 @@ export function CampaignCard({
             </p>
           </div>
           <button className="inline-flex items-center gap-1.5 rounded-full bg-deep-green px-4 py-2 text-xs font-medium text-deep-green-foreground transition hover:opacity-90">
-            Invest
+            Investir
             <ArrowRightIcon className="h-3.5 w-3.5" />
           </button>
         </div>

@@ -107,32 +107,32 @@ export function ProfileDashboardView({
           icon: CheckCircle2, 
           color: "text-emerald-500", 
           bg: "bg-emerald-500/10", 
-          label: "Verified Identity",
-          desc: "Full access to investment features"
+          label: "Identité Vérifiée",
+          desc: "Accès complet aux investissements"
         };
       case "UNDER_REVIEW":
         return { 
           icon: Clock, 
           color: "text-amber-500", 
           bg: "bg-amber-500/10", 
-          label: "Identity Under Review",
-          desc: "Usually processed within 24 hours"
+          label: "Identité en examen",
+          desc: "Généralement traité sous 24h"
         };
       case "REJECTED":
         return { 
           icon: XCircle, 
           color: "text-red-500", 
           bg: "bg-red-500/10", 
-          label: "Identity Rejected",
-          desc: "Please check your email for details"
+          label: "Identité Rejetée",
+          desc: "Veuillez vérifier vos emails"
         };
       default:
         return { 
           icon: AlertCircle, 
           color: "text-blue-500", 
           bg: "bg-blue-500/10", 
-          label: "Pending Verification",
-          desc: "Required for investing"
+          label: "Vérification en attente",
+          desc: "Requis pour investir"
         };
     }
   };
@@ -153,14 +153,14 @@ export function ProfileDashboardView({
       const result = await res.json();
 
       if (res.ok) {
-        toast.success("Profile updated successfully");
+        toast.success("Profil mis à jour avec succès");
         setIsEditing(false);
         router.refresh();
       } else {
-        toast.error(result.message || "Failed to update profile");
+        toast.error(result.message || "Échec de la mise à jour");
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      toast.error("Une erreur est survenue.");
     } finally {
       setIsUpdating(false);
     }
@@ -195,7 +195,7 @@ export function ProfileDashboardView({
                     {user.name}
                   </h1>
                   {kycStatus === "APPROVED" && (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm" title="Verified">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm" title="Vérifié">
                       <CheckCircle2 className="h-3 w-3 fill-white text-emerald-500" />
                     </div>
                   )}
@@ -224,7 +224,7 @@ export function ProfileDashboardView({
                 onClick={() => setIsEditing(true)}
                 className="h-12 rounded-2xl bg-deep-green px-8 font-bold text-white shadow-lg shadow-deep-green/10 hover:bg-deep-green/90 active:scale-95 transition-all"
               >
-                Edit Profile
+                Modifier le profil
               </Button>
             </div>
           </div>
@@ -245,7 +245,7 @@ export function ProfileDashboardView({
                     <Wallet className="h-4 w-4 text-mint" />
                   </div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
-                    Account Balance
+                    Solde du compte
                   </p>
                 </div>
               </div>
@@ -256,14 +256,14 @@ export function ProfileDashboardView({
                 </p>
                 <div className="flex items-center gap-2 text-xs font-semibold text-mint">
                   <TrendingUp className="h-3 w-3" />
-                  <span>+12.5% this month</span>
+                  <span>+12.5% ce mois</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6 border-t border-white/10 pt-6">
                 <div className="space-y-1">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-white/40">
-                    Invested
+                    Investi
                   </p>
                   <p className="text-sm font-bold tracking-tight">
                     {formatCurrency(summary.investedAmount)}
@@ -271,15 +271,15 @@ export function ProfileDashboardView({
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-white/40">
-                    Projects
+                    Projets
                   </p>
-                  <p className="text-sm font-bold tracking-tight">{summary.investments} Assets</p>
+                  <p className="text-sm font-bold tracking-tight">{summary.investments} Actifs</p>
                 </div>
               </div>
 
               <Button className="h-12 w-full rounded-2xl bg-[#FFB300] font-bold text-[#004D40] shadow-lg shadow-black/5 hover:bg-[#FFC107] active:scale-95 transition-all">
                 <Plus className="mr-2 h-4 w-4 stroke-[3]" />
-                Deposit Funds
+                Déposer des fonds
               </Button>
             </div>
             
@@ -304,7 +304,7 @@ export function ProfileDashboardView({
               <kycConfig.icon className="h-6 w-6" />
             </div>
             <div className="space-y-0.5">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-0.5">Compliance</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-0.5">Conformité</p>
               <h4 className={cn("font-display text-base font-bold", kycConfig.color)}>{kycConfig.label}</h4>
               <p className="text-[10px] font-medium text-foreground/50">{kycConfig.desc}</p>
             </div>
@@ -323,8 +323,8 @@ export function ProfileDashboardView({
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-0.5">Performance</p>
-              <h4 className="font-display text-lg font-bold">Active Projects</h4>
-              <p className="text-[10px] font-medium text-foreground/50">{summary.campaigns} campaigns currently live</p>
+              <h4 className="font-display text-lg font-bold">Projets Actifs</h4>
+              <p className="text-[10px] font-medium text-foreground/50">{summary.campaigns} campagnes en cours</p>
             </div>
             <div className="ml-auto text-2xl font-bold font-display text-deep-green">{summary.campaigns}</div>
           </div>
@@ -341,9 +341,9 @@ export function ProfileDashboardView({
               <History className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-0.5">Activity</p>
-              <h4 className="font-display text-lg font-bold">Transaction Count</h4>
-              <p className="text-[10px] font-medium text-foreground/50">Last activity 2 days ago</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-0.5">Activité</p>
+              <h4 className="font-display text-lg font-bold">Transactions</h4>
+              <p className="text-[10px] font-medium text-foreground/50">Dernière activité il y a 2 jours</p>
             </div>
             <div className="ml-auto text-2xl font-bold font-display text-foreground/60">{transactions.length}</div>
           </div>
@@ -364,16 +364,16 @@ export function ProfileDashboardView({
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-deep-green text-white shadow-lg shadow-deep-green/10">
                 <Shield className="h-5 w-5" />
               </div>
-              <h2 className="font-display text-xl font-bold">Security</h2>
+              <h2 className="font-display text-xl font-bold">Sécurité</h2>
             </div>
           </div>
 
           <div className="space-y-4">
             <button className="group flex w-full items-center justify-between rounded-2xl bg-foreground/5 p-5 text-left transition-all hover:bg-foreground/[0.08] active:scale-[0.99]">
               <div className="space-y-1">
-                <p className="text-sm font-bold">Account Password</p>
+                <p className="text-sm font-bold">Mot de passe</p>
                 <p className="text-[11px] font-medium text-foreground/40">
-                  Last changed 3 months ago
+                  Modifié il y a 3 mois
                 </p>
               </div>
               <ChevronRight className="h-5 w-5 text-foreground/20 group-hover:translate-x-1 transition-transform" />
@@ -381,9 +381,9 @@ export function ProfileDashboardView({
 
             <div className="flex items-center justify-between rounded-2xl bg-foreground/5 p-5">
               <div className="space-y-1">
-                <p className="text-sm font-bold">Two-Factor Auth</p>
+                <p className="text-sm font-bold">Double Authentification</p>
                 <p className="text-[11px] font-medium text-foreground/40">
-                  Verify logins via SMS or App
+                  Vérifier les connexions via SMS ou App
                 </p>
               </div>
               <div className="h-6 w-11 cursor-pointer rounded-full bg-mint p-1 flex items-center justify-end shadow-inner">
@@ -412,9 +412,9 @@ export function ProfileDashboardView({
           <div className="space-y-4">
             <div className="flex items-center justify-between rounded-2xl p-2 px-4">
               <div className="space-y-1">
-                <p className="text-sm font-bold">New Project Alerts</p>
+                <p className="text-sm font-bold">Alertes Nouveaux Projets</p>
                 <p className="text-[11px] font-medium text-foreground/40">
-                  Notify me of new opportunities
+                  Me notifier des opportunités
                 </p>
               </div>
               <div className="h-6 w-11 cursor-pointer rounded-full bg-mint p-1 flex items-center justify-end shadow-inner">
@@ -426,9 +426,9 @@ export function ProfileDashboardView({
             
             <div className="flex items-center justify-between rounded-2xl p-2 px-4">
               <div className="space-y-1">
-                <p className="text-sm font-bold">Market Reports</p>
+                <p className="text-sm font-bold">Rapports de Marché</p>
                 <p className="text-[11px] font-medium text-foreground/40">
-                  Monthly investment summaries
+                  Résumés mensuels d&apos;investissement
                 </p>
               </div>
               <div className="h-6 w-11 cursor-pointer rounded-full bg-mint p-1 flex items-center justify-end shadow-inner">
@@ -453,14 +453,14 @@ export function ProfileDashboardView({
                 <History className="h-5 w-5" />
               </div>
               <h2 className="font-display text-xl font-bold">
-                Activity History
+                Historique d&apos;activité
               </h2>
             </div>
             <Link
               href="/dashboard/transactions"
               className="group flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-mint hover:text-deep-green transition-colors"
             >
-              See everything
+              Voir tout
               <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
@@ -471,9 +471,9 @@ export function ProfileDashboardView({
                 <TableRow className="hover:bg-transparent border-foreground/5">
                   <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest">Date</TableHead>
                   <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest">Description</TableHead>
-                  <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest">Asset</TableHead>
-                  <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest">Amount</TableHead>
-                  <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest text-right">Status</TableHead>
+                  <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest">Actif</TableHead>
+                  <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest">Montant</TableHead>
+                  <TableHead className="h-12 px-6 font-bold text-foreground/40 text-[10px] uppercase tracking-widest text-right">Statut</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -484,18 +484,18 @@ export function ProfileDashboardView({
                       className="border-foreground/5 hover:bg-foreground/[0.01] transition-colors"
                     >
                       <TableCell className="px-6 py-4 text-xs font-semibold text-foreground/70">
-                        {tx.createdAt.toLocaleDateString("en-US", {
+                        {tx.createdAt.toLocaleDateString("fr-FR", {
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
                         })}
                       </TableCell>
                       <TableCell className="px-6 py-4">
-                        <span className="text-sm font-bold">Investment Deposit</span>
+                        <span className="text-sm font-bold">Dépôt d&apos;investissement</span>
                       </TableCell>
                       <TableCell className="px-6 py-4">
                         <Badge variant="outline" className="rounded-lg border-foreground/10 text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider text-foreground/50 bg-foreground/[0.02]">
-                          Asset {tx.id.slice(0, 4)}
+                          Actif {tx.id.slice(0, 4)}
                         </Badge>
                       </TableCell>
                       <TableCell className={cn("px-6 py-4 font-display font-bold tabular-nums", tx.amount < 0 ? "text-red-500" : "text-emerald-600")}>
@@ -504,7 +504,7 @@ export function ProfileDashboardView({
                       <TableCell className="px-6 py-4 text-right">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold uppercase tracking-wider">
                           <CheckCircle2 className="h-3 w-3" />
-                          Settled
+                          Terminé
                         </div>
                       </TableCell>
                     </TableRow>
@@ -515,7 +515,7 @@ export function ProfileDashboardView({
                       colSpan={5}
                       className="py-16 text-center text-foreground/30 font-medium italic"
                     >
-                      No activity to display yet.
+                      Aucune activité à afficher pour le moment.
                     </TableCell>
                   </TableRow>
                 )}
@@ -536,9 +536,9 @@ export function ProfileDashboardView({
             <SheetHeader className="text-left mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <SheetTitle className="font-display text-3xl font-bold">Edit Profile</SheetTitle>
+                  <SheetTitle className="font-display text-3xl font-bold">Modifier le Profil</SheetTitle>
                   <SheetDescription className="text-sm text-foreground/50 font-medium mt-1">
-                    Keep your personal information up to date.
+                    Gardez vos informations personnelles à jour.
                   </SheetDescription>
                 </div>
                 <SheetClose asChild>
@@ -552,30 +552,30 @@ export function ProfileDashboardView({
             <form onSubmit={handleUpdateProfile} className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar">
               <div className="space-y-6">
                 <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Display Name</Label>
+                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Nom d&apos;affichage</Label>
                   <Input 
                     value={formData.displayName}
                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                     className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="Full Name"
+                    placeholder="Nom complet"
                     required
                   />
                 </div>
 
                 <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Email Address</Label>
+                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Adresse Email</Label>
                   <Input 
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="name@example.com"
+                    placeholder="nom@exemple.com"
                     required
                   />
                 </div>
 
                 <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Phone Number</Label>
+                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Numéro de téléphone</Label>
                   <Input 
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -585,12 +585,12 @@ export function ProfileDashboardView({
                 </div>
 
                 <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Organization</Label>
+                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Organisation</Label>
                   <Input 
                     value={formData.organization}
                     onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
                     className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="Company or Individual"
+                    placeholder="Entreprise ou Individu"
                   />
                 </div>
               </div>
@@ -604,12 +604,12 @@ export function ProfileDashboardView({
                   {isUpdating ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Saving...
+                      Enregistrement...
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
                       <Save className="h-5 w-5" />
-                      Save Changes
+                      Enregistrer
                     </div>
                   )}
                 </Button>

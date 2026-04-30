@@ -58,18 +58,17 @@ export function DashboardSidebar() {
           className="overflow-hidden rounded-2xl border border-deep-green-foreground/15 bg-hero-bg p-4 text-deep-green-foreground shadow-none"
         >
           <div className="text-[10px] font-bold uppercase tracking-widest text-mint">
-            Tip
+            Conseil
           </div>
           <p className="mt-2 text-xs leading-snug text-deep-green-foreground/85">
-            Bookmark campaigns you like, then invest when you are ready — wallet
-            and pledges stay in sync.
+            Enregistrez les campagnes qui vous plaisent, puis investissez quand vous êtes prêt — votre portefeuille et vos promesses restent synchronisés.
           </p>
           <Button
             asChild
             size="sm"
             className="mt-3 h-8 rounded-full bg-mint px-3 text-xs font-medium text-deep-green hover:bg-mint/90"
           >
-            <Link href="/dashboard/saved">Saved</Link>
+            <Link href="/dashboard/saved">Favoris</Link>
           </Button>
         </motion.div>
       </div>

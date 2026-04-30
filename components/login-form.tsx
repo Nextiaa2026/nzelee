@@ -66,13 +66,13 @@ export function LoginForm({
     if (dest.includes("error=unverified_email")) {
       setUnverifiedFromSubmit(true);
       toast.error(
-        "Please verify your email before signing in. Check your inbox for the code or resend below.",
+        "Veuillez vérifier votre email avant de vous connecter. Vérifiez votre boîte de réception pour le code ou renvoyez-le ci-dessous.",
       );
       return;
     }
 
     if (result?.error) {
-      toast.error("Invalid email or password.");
+      toast.error("Email ou mot de passe invalide.");
       return;
     }
 
@@ -86,7 +86,7 @@ export function LoginForm({
   async function onResend() {
     const email = prefilledEmail || getValues("email");
     if (!email?.trim()) {
-      toast.error("Enter your email above, then resend verification.");
+      toast.error("Entrez votre email ci-dessus, puis renvoyez la vérification.");
       return;
     }
     setResendMessage(null);
@@ -102,7 +102,7 @@ export function LoginForm({
         setResendMessage(out.error.message);
       }
     } catch {
-      setResendMessage("Could not send email. Try again later.");
+      setResendMessage("Impossible d&apos;envoyer l&apos;email. Réessayez plus tard.");
     } finally {
       setResendPending(false);
     }
@@ -116,13 +116,13 @@ export function LoginForm({
       <div className="space-y-5">
         {verifiedBanner ? (
           <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-800 dark:text-emerald-200">
-            Email verified. You can sign in below.
+            Email vérifié. Vous pouvez vous connecter ci-dessous.
           </p>
         ) : null}
         {errorCode === "unverified_email" && !unverifiedFromSubmit ? (
           <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-950 dark:text-amber-100">
-            Verify your email to continue. Use the 6-digit code we sent you, or
-            resend below.
+            Vérifiez votre email pour continuer. Utilisez le code à 6 chiffres que nous vous avons envoyé, ou
+            renvoyez-le ci-dessous.
           </p>
         ) : null}
 
@@ -148,12 +148,12 @@ export function LoginForm({
 
           <div className="space-y-1.5 sm:space-y-2">
             <div className="flex items-center justify-between gap-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Mot de passe</Label>
               <Link
                 className="shrink-0 text-[11px] font-medium text-deep-green/80 hover:text-deep-green hover:underline sm:text-xs"
                 href="/forgot-password"
               >
-                Forgot password?
+                Mot de passe oublié ?
               </Link>
             </div>
             <PasswordInput
@@ -177,7 +177,7 @@ export function LoginForm({
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Signing in..." : "Sign in"}
+            {isSubmitting ? "Connexion..." : "Se connecter"}
           </Button>
         </form>
 
@@ -189,7 +189,7 @@ export function LoginForm({
             disabled={resendPending}
             onClick={() => void onResend()}
           >
-            {resendPending ? "Sending…" : "Resend verification code"}
+            {resendPending ? "Envoi…" : "Renvoyer le code de vérification"}
           </Button>
         ) : null}
       </div>

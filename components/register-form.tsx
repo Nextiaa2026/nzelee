@@ -48,7 +48,8 @@ export function RegisterForm({
     setSubmitError(null);
 
     try {
-      const { acceptTerms: _, ...payload } = values;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { acceptTerms, ...payload } = values;
       const result = await registerAccount(payload);
       if (!isApiSuccess(result)) {
         setSubmitError(result.error.message);
@@ -56,14 +57,14 @@ export function RegisterForm({
         return;
       }
       if (result.data.devVerificationCode) {
-        toast.success(`Dev: your code is ${result.data.devVerificationCode}`);
+        toast.success(`Dev: votre code est ${result.data.devVerificationCode}`);
       } else {
-        toast.success("Verification code sent. Check your inbox.");
+        toast.success("Code de vérification envoyé. Vérifiez votre boîte de réception.");
       }
       const q = new URLSearchParams({ email: values.email });
       router.push(`/register/verification-sent?${q.toString()}`);
     } catch (err) {
-      const message = getApiErrorMessage(err, "Unable to create account.");
+      const message = getApiErrorMessage(err, "Impossible de créer le compte.");
       setSubmitError(message);
       toast.error(message);
     }
@@ -80,7 +81,7 @@ export function RegisterForm({
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nom</Label>
             <Input id="name" placeholder="Jane Founder" {...register("name")} />
             {errors.name ? (
               <p className="text-xs text-destructive">{errors.name.message}</p>
@@ -94,7 +95,7 @@ export function RegisterForm({
             ) : null}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Mot de passe</Label>
             <PasswordInput
               id="password"
               autoComplete="new-password"
@@ -105,7 +106,7 @@ export function RegisterForm({
             ) : null}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="confirmPassword">Confirm password</Label>
+            <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
             <PasswordInput
               id="confirmPassword"
               autoComplete="new-password"
@@ -133,7 +134,7 @@ export function RegisterForm({
                   aria-invalid={errors.acceptTerms ? true : undefined}
                 />
                 <span className="text-[11px] leading-snug text-black/75 sm:text-xs md:text-[13px] dark:text-white/75">
-                  I agree to the{" "}
+                  J&apos;accepte les{" "}
                   <Link
                     href="/terms-of-service"
                     className="font-medium text-deep-green underline hover:opacity-90"
@@ -141,9 +142,9 @@ export function RegisterForm({
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    Terms of Service
+                    Conditions d&apos;utilisation
                   </Link>{" "}
-                  and{" "}
+                  et la{" "}
                   <Link
                     href="/privacy-policy"
                     className="font-medium text-deep-green underline hover:opacity-90"
@@ -151,7 +152,7 @@ export function RegisterForm({
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    Privacy Policy
+                    Politique de confidentialité
                   </Link>
                   .
                 </span>
@@ -171,7 +172,7 @@ export function RegisterForm({
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Creating account..." : "Create account"}
+            {isSubmitting ? "Création du compte..." : "Créer un compte"}
           </Button>
         </form>
 

@@ -45,7 +45,7 @@ export function ContactForm({ className }: { className?: string }) {
             throw new Error(result.message || "Failed to submit message");
           }
 
-          toast.success("Thanks — we will get back to you soon.", {
+          toast.success("Merci — nous reviendrons vers vous bientôt.", {
             description: `${values.name} · ${values.email}`,
           });
           form.reset();
@@ -53,7 +53,7 @@ export function ContactForm({ className }: { className?: string }) {
           toast.error(
             error instanceof Error
               ? error.message
-              : "Failed to send message. Please try again.",
+              : "Échec de l&apos;envoi du message. Veuillez réessayer.",
           );
         } finally {
           setLoading(false);
@@ -62,7 +62,7 @@ export function ContactForm({ className }: { className?: string }) {
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5 sm:space-y-2">
-          <Label htmlFor="contact-name">Name</Label>
+          <Label htmlFor="contact-name">Nom</Label>
           <Input
             id="contact-name"
             autoComplete="name"
@@ -103,7 +103,7 @@ export function ContactForm({ className }: { className?: string }) {
         )}
       </div>
       <Button type="submit" disabled={loading || form.formState.isSubmitting}>
-        {loading ? "Sending..." : "Send message"}
+        {loading ? "Envoi..." : "Envoyer le message"}
       </Button>
     </form>
   );

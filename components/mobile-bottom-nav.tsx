@@ -33,22 +33,22 @@ import { signOut } from "next-auth/react";
 const navItems = [
   {
     href: "/",
-    label: "Home",
+    label: "Accueil",
     icon: Home,
   },
   {
     href: "/campaigns",
-    label: "Explore",
+    label: "Explorer",
     icon: Compass,
   },
   {
     href: "/dashboard/markets",
-    label: "Markets",
+    label: "Marchés",
     icon: LayoutGrid,
   },
   {
     href: "/dashboard/saved",
-    label: "Saved",
+    label: "Favoris",
     icon: Heart,
   },
 ];
@@ -141,7 +141,7 @@ export function MobileBottomNav() {
                   isOpen ? "font-bold opacity-100" : "opacity-80",
                 )}
               >
-                More
+                Plus
               </span>
             </button>
           </SheetTrigger>
@@ -157,7 +157,7 @@ export function MobileBottomNav() {
               <div className="flex-1 overflow-y-auto px-6 pb-12">
                 {/* Dashboard Section */}
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-1">Dashboard</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-1">Tableau de bord</h4>
                   <div className="grid grid-cols-2 gap-3">
                     {dashboardItems.map((item) => (
                       <SheetClose key={item.href} asChild>
@@ -180,7 +180,7 @@ export function MobileBottomNav() {
                         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-black/5">
                           <dashboardSettingsItem.icon className="h-4 w-4 text-deep-green" />
                         </div>
-                        <span className="text-xs font-semibold">Settings</span>
+                        <span className="text-xs font-semibold">Paramètres</span>
                       </Link>
                     </SheetClose>
                   </div>
@@ -188,14 +188,14 @@ export function MobileBottomNav() {
 
                 {/* Main Site Section */}
                 <div className="mt-8 space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-1">Discover & Support</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 px-1">Découvrir & Support</h4>
                   <div className="grid gap-2">
                     {[
-                      { href: "/about", label: "About Us", icon: Info },
-                      { href: "/help", label: "Help Center", icon: HelpCircle },
-                      { href: "/contact", label: "Contact Us", icon: MessageSquare },
-                      { href: "/terms-of-service", label: "Terms of Service", icon: FileText },
-                      { href: "/privacy-policy", label: "Privacy Policy", icon: Lock },
+                      { href: "/about", label: "À propos", icon: Info },
+                      { href: "/help", label: "Centre d&apos;aide", icon: HelpCircle },
+                      { href: "/contact", label: "Contactez-nous", icon: MessageSquare },
+                      { href: "/terms-of-service", label: "Conditions d&apos;utilisation", icon: FileText },
+                      { href: "/privacy-policy", label: "Politique de confidentialité", icon: Lock },
                     ].map((item) => (
                       <SheetClose key={item.href} asChild>
                         <Link
@@ -218,7 +218,7 @@ export function MobileBottomNav() {
                     onClick={() => void signOut({ callbackUrl: "/" })}
                   >
                     <LogOut className="h-5 w-5" />
-                    <span className="font-semibold">Sign Out</span>
+                    <span className="font-semibold">Se déconnecter</span>
                   </Button>
                 </div>
               </div>

@@ -3,21 +3,7 @@ import { PageHero } from "@/components/page-shell";
 import { listBrowseableCampaigns } from "@/lib/services/public-campaigns";
 import { CampaignsPageClient } from "@/app/campaigns/campaigns-client";
 
-type SearchParams = {
-  page?: string;
-  search?: string;
-  filter?: string;
-};
-
-export default async function CampaignsBrowsePage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const page = Number(searchParams.page) || 1;
-  const search = searchParams.search || "";
-  const filter = searchParams.filter || "All";
-
+export default async function CampaignsBrowsePage() {
   const campaigns = await listBrowseableCampaigns();
 
   return (
@@ -37,9 +23,6 @@ export default async function CampaignsBrowsePage({
       >
         <CampaignsPageClient
           campaigns={campaigns}
-          initialPage={page}
-          initialSearch={search}
-          initialFilter={filter}
         />
       </Suspense>
     </main>

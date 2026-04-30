@@ -1,15 +1,14 @@
 "use client";
 
-import type { Metadata } from "next";
 import { motion } from "framer-motion";
 
 import { PageHero } from "@/components/page-shell";
 import { ContactForm } from "@/components/forms/contact-form";
 
 const CHANNELS = [
-  { t: "Support", d: "Account, app, transactions", v: "support@zeller.app" },
-  { t: "Investors", d: "Tier upgrades, advisor calls", v: "invest@zeller.app" },
-  { t: "Press & partnerships", d: "Media kit, collabs", v: "press@zeller.app" },
+  { t: "Assistance", d: "Compte, app, transactions", v: "support@zeller.app" },
+  { t: "Investisseurs", d: "Mise à niveau, appels conseillers", v: "invest@zeller.app" },
+  { t: "Presse & partenariats", d: "Dossier de presse, collabs", v: "press@zeller.app" },
 ];
 
 export default function ContactPage() {
@@ -19,10 +18,10 @@ export default function ContactPage() {
         eyebrow="Contact"
         title={
           <>
-            Let&apos;s <span className="text-mint">talk.</span>
+            Parlons-<span className="text-mint">en.</span>
           </>
         }
-        subtitle="Whether you're sizing up your first investment or scaling a $10M portfolio — our team is here for you."
+        subtitle="Que vous prépariez votre premier investissement ou que vous développiez un portefeuille de 10M — notre équipe est là pour vous."
       />
 
       <section className="mx-auto -mt-16 max-w-6xl px-4 pb-24">
@@ -58,10 +57,10 @@ export default function ContactPage() {
             viewport={{ once: true }}
             className="neumorph space-y-5 p-8 md:col-span-3"
           >
-            <h2 className="font-display text-3xl">Send us a message</h2>
+            <h2 className="font-display text-3xl">Envoyez-nous un message</h2>
             <p className="text-sm text-foreground/60">
-              For legal notices related to the Terms or Privacy Policy, include
-              &quot;Legal&quot; in the subject line.
+              Pour les avis juridiques liés aux conditions ou à la politique de confidentialité, incluez
+              &quot;Légal&quot; dans la ligne d&apos;objet.
             </p>
             <ContactForm />
           </motion.div>

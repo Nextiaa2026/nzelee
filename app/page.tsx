@@ -59,29 +59,29 @@ function HeroBento() {
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-deep-green-foreground/60">
-              All accounts
+              Tous les comptes
             </p>
             <p className="mt-1 font-display text-3xl sm:text-4xl">+24.6%</p>
             <p className="mt-1 text-xs text-deep-green-foreground/70">
-              Weighted return, last 12 months
+              Rendement pondéré, 12 derniers mois
             </p>
           </div>
           <div className="mt-4 flex items-end justify-between gap-2 border-t border-deep-green-foreground/10 pt-4">
             <div>
               <p className="text-[10px] uppercase text-deep-green-foreground/50">
-                Net worth
+                Valeur nette
               </p>
               <p className="font-display text-lg">$184,320</p>
             </div>
             <span className="rounded-full bg-mint/30 px-2.5 py-1 text-[10px] font-medium text-deep-green">
-              Live
+              En direct
             </span>
           </div>
         </div>
 
         <div className={`${card} flex flex-col justify-center`}>
           <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
-            Markets
+            Marchés
           </p>
           <p className="mt-1 font-display text-xl">TSLA</p>
           <p className="mt-0.5 text-sm text-mint">+3.21%</p>
@@ -90,11 +90,11 @@ function HeroBento() {
 
         <div className={`${card} flex flex-col justify-center`}>
           <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
-            Fees
+            Frais
           </p>
           <p className="mt-1 font-display text-xl">$0</p>
           <p className="text-xs text-deep-green-foreground/70">
-            Commissions on stocks &amp; ETFs
+            Commissions sur actions &amp; ETFs
           </p>
         </div>
 
@@ -103,14 +103,14 @@ function HeroBento() {
         >
           <div>
             <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
-              One app
+              Une seule app
             </p>
             <p className="mt-1 font-display text-lg leading-snug sm:text-xl">
-              Stocks, ETFs, crypto &amp; company campaigns
+              Actions, ETFs, crypto &amp; campagnes d&apos;entreprises
             </p>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 sm:mt-0">
-            {["Stocks", "Crypto", "Campaigns"].map((tag) => (
+            {["Actions", "Crypto", "Campagnes"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full border border-deep-green-foreground/20 bg-deep-green/50 px-2.5 py-1 text-[10px] font-medium"
@@ -124,18 +124,18 @@ function HeroBento() {
         <div className={`${card} col-span-2 grid gap-3 sm:grid-cols-2`}>
           <div className="rounded-xl bg-deep-green/50 p-3 ring-1 ring-deep-green-foreground/10">
             <p className="text-[10px] uppercase text-deep-green-foreground/55">
-              Security
+              Sécurité
             </p>
             <p className="mt-1 text-sm font-medium leading-snug">
-              Bank-grade encryption &amp; custody controls
+              Chiffrement bancaire &amp; contrôles de garde
             </p>
           </div>
           <div className="rounded-xl bg-deep-green/50 p-3 ring-1 ring-deep-green-foreground/10">
             <p className="text-[10px] uppercase text-deep-green-foreground/55">
-              Support
+              Assistance
             </p>
             <p className="mt-1 text-sm font-medium leading-snug">
-              Real humans, 24/7 when you need answers
+              Des humains, 24/7 quand vous avez besoin de réponses
             </p>
           </div>
         </div>
@@ -177,11 +177,11 @@ function Hero() {
           <motion.div variants={fadeUp} className="text-center lg:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-deep-green-foreground/20 bg-deep-green/40 px-4 py-1.5 text-xs backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
-              Invest. Grow. Repeat.
+              Investir. Grandir. Recommencer.
             </span>
 
             <h1 className="mt-6 font-display text-5xl leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
-              Say hello to{" "}
+              Dites bonjour à{" "}
               <span className="inline-flex -translate-y-2 items-center gap-3 rounded-full bg-mint px-5 py-2 text-deep-green">
                 <motion.span
                   animate={{ rotate: [0, 360] }}
@@ -194,15 +194,15 @@ function Hero() {
                     strokeWidth={2}
                   />
                 </motion.span>
-                smarter
+                l&apos;investissement
               </span>
               <br />
-              investing for everyone
+              plus intelligent pour tous
             </h1>
 
             <p className="mx-auto mt-8 max-w-md text-base text-deep-green-foreground/70 lg:mx-0">
-              Build a portfolio in minutes. Trade stocks, ETFs, crypto and
-              curated campaigns — all from one beautifully simple app.
+              Créez un portefeuille en quelques minutes. Changez des actions, ETFs, crypto et
+              campagnes sélectionnées — le tout depuis une application magnifiquement simple.
             </p>
 
             <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
@@ -211,7 +211,7 @@ function Hero() {
                 whileTap={{ scale: 0.97 }}
                 className="rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green"
               >
-                Start investing
+                Commencer à investir
               </motion.button>
               <motion.a
                 href="#campaigns"
@@ -219,7 +219,7 @@ function Hero() {
                 whileTap={{ scale: 0.97 }}
                 className="rounded-full border border-deep-green-foreground/25 bg-deep-green/30 px-7 py-3.5 text-sm font-medium text-deep-green-foreground backdrop-blur"
               >
-                Browse campaigns
+                Parcourir les campagnes
               </motion.a>
             </div>
           </motion.div>
@@ -302,29 +302,29 @@ function Benefits() {
       surface: "bg-deep-green text-deep-green-foreground",
       iconWrap:
         "bg-deep-green-foreground/15 ring-1 ring-deep-green-foreground/20",
-      title: "Clear campaign terms",
-      body: "Goals, timelines, and risks are spelled out on each listing so you know what you are backing.",
+      title: "Conditions de campagne claires",
+      body: "Les objectifs, les délais et les risques sont détaillés sur chaque annonce afin que vous sachiez ce que vous soutenez.",
     },
     {
       Icon: Receipt,
       surface: "bg-mint text-deep-green",
       iconWrap: "bg-deep-green/15 ring-1 ring-deep-green/25",
-      title: "Upfront fees & minimums",
-      body: "Fees and ticket sizes are shown before you pledge so there are no surprises at checkout.",
+      title: "Frais & minimums transparents",
+      body: "Les frais et les montants minimums sont affichés avant votre engagement pour éviter toute surprise lors du paiement.",
     },
     {
       Icon: FolderKanban,
       surface: "bg-foreground text-background",
       iconWrap: "bg-background/15 ring-1 ring-background/25",
-      title: "Curated project listings",
-      body: "Compare campaigns by sector, stage, and ticket size to find projects that match your plan.",
+      title: "Listes de projets sélectionnées",
+      body: "Comparez les campagnes par secteur, stade et taille de ticket pour trouver des projets qui correspondent à votre plan.",
     },
     {
       Icon: LayoutDashboard,
       surface: "bg-amber-200 text-foreground",
       iconWrap: "bg-foreground/10 ring-1 ring-foreground/15",
-      title: "One investor dashboard",
-      body: "Track pledges, campaign updates, and withdrawals in one place as tools continue to ship.",
+      title: "Un tableau de bord investisseur unique",
+      body: "Suivez vos engagements, les mises à jour des campagnes et vos retraits en un seul endroit.",
     },
   ];
 
@@ -335,13 +335,13 @@ function Benefits() {
           variants={fadeUp}
           className="text-center text-xs uppercase tracking-widest text-foreground/50"
         >
-          Benefits
+          Avantages
         </motion.p>
         <motion.h2
           variants={fadeUp}
           className="mx-auto mt-4 max-w-2xl text-center font-display text-4xl leading-tight sm:text-5xl"
         >
-          Why investors choose <Blank /> us
+          Pourquoi les investisseurs nous choisissent <Blank />
         </motion.h2>
 
         <div className="mx-auto mt-16 max-w-5xl space-y-8 sm:space-y-12">
@@ -423,7 +423,7 @@ function Integrations() {
         <motion.img
           variants={fadeUp}
           src={landingImages.integrationsWoman}
-          alt="Investor checking her portfolio on the go"
+          alt="Investisseuse vérifiant son portefeuille"
           loading="lazy"
           width={800}
           height={640}
@@ -431,20 +431,20 @@ function Integrations() {
         />
         <motion.div variants={fadeUp}>
           <p className="text-xs uppercase tracking-widest text-foreground/50">
-            Integrated
+            Intégré
           </p>
           <h2 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-            Connect every account for a complete <Blank /> wealth view
+            Connectez chaque compte pour une vue complète de votre <Blank /> patrimoine
           </h2>
           <p className="mt-5 max-w-md text-foreground/60">
-            Link your brokerages, retirement accounts and crypto wallets to see
-            your entire net worth grow in one beautiful dashboard.
+            Liez vos courtages, comptes de retraite et portefeuilles crypto pour voir
+            votre valeur nette globale croître dans un magnifique tableau de bord.
           </p>
           <Link
             href="/register"
             className="mt-8 inline-flex rounded-full bg-deep-green px-6 py-3 text-sm font-medium text-deep-green-foreground transition-transform hover:scale-[1.03] active:scale-[0.98]"
           >
-            Get started
+            Commencer
           </Link>
         </motion.div>
       </div>
@@ -472,16 +472,16 @@ function Gallery() {
             className="rounded-3xl bg-deep-green p-8 text-deep-green-foreground"
           >
             <p className="text-xs uppercase tracking-widest opacity-70">
-              Community
+              Communauté
             </p>
             <h3 className="mt-3 font-display text-3xl leading-tight">
-              Join 200k+ investors building wealth together
+              Rejoignez plus de 200k investisseurs bâtissant leur patrimoine ensemble
             </h3>
             <Link
               href="/investors"
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 text-xs font-medium text-deep-green"
             >
-              See top investors
+              Voir les meilleurs investisseurs
               <ArrowRight
                 className="size-4 shrink-0"
                 strokeWidth={2}
@@ -511,14 +511,13 @@ function FeatureCards() {
       <div className="mx-auto max-w-6xl px-4">
         <motion.div variants={fadeUp} className="text-center">
           <span className="inline-block rounded-full border border-foreground/15 bg-surface px-4 py-1.5 text-xs text-foreground/70">
-            Features
+            Fonctionnalités
           </span>
           <h2 className="mx-auto mt-6 max-w-3xl font-display text-4xl leading-[1.1] tracking-tight sm:text-5xl">
-            Investing made simple, smart, and rewarding.
+            L&apos;investissement rendu simple, intelligent et gratifiant.
           </h2>
           <p className="mx-auto mt-4 max-w-md text-sm text-foreground/60">
-            Empowering you to grow your wealth with flexible, reliable, and
-            stress-free investing tools.
+            Vous donner les moyens de faire croître votre patrimoine avec des outils d&apos;investissement flexibles, fiables et sans stress.
           </p>
         </motion.div>
 
@@ -540,14 +539,14 @@ function FeatureCards() {
                   <Check className="size-5" strokeWidth={2.5} aria-hidden />
                 </div>
                 <div className="text-[11px] text-foreground/50">
-                  Trade executed
+                  Transaction exécutée
                 </div>
                 <div className="font-display text-2xl">$1,200</div>
               </motion.div>
             </div>
-            <h3 className="mt-6 text-base font-semibold">Instant trades</h3>
+            <h3 className="mt-6 text-base font-semibold">Transactions instantanées</h3>
             <p className="mt-2 text-sm text-foreground/60">
-              Execute trades in seconds — because in markets, time is money.
+              Exécutez vos transactions en quelques secondes — car sur les marchés, le temps c&apos;est de l&apos;argent.
             </p>
           </motion.article>
 
@@ -583,13 +582,12 @@ function FeatureCards() {
                   strokeWidth={2}
                   aria-hidden
                 />
-                Your goal
+                Votre objectif
               </span>
             </div>
-            <h3 className="mt-6 text-base font-semibold">Competitive fees</h3>
+            <h3 className="mt-6 text-base font-semibold">Frais compétitifs</h3>
             <p className="mt-2 text-sm text-foreground/60">
-              Low, transparent pricing designed to fit your strategy and grow
-              your gains.
+              Une tarification basse et transparente conçue pour s&apos;adapter à votre stratégie et maximiser vos gains.
             </p>
           </motion.article>
 
@@ -654,10 +652,9 @@ function FeatureCards() {
                 </span>
               </motion.div>
             </div>
-            <h3 className="mt-6 text-base font-semibold">Transparent terms</h3>
+            <h3 className="mt-6 text-base font-semibold">Conditions transparentes</h3>
             <p className="mt-2 text-sm text-foreground/60">
-              No hidden fees, no surprises. Understand exactly what you own from
-              day one.
+              Pas de frais cachés, pas de surprises. Comprenez exactement ce que vous possédez dès le premier jour.
             </p>
           </motion.article>
 
@@ -674,10 +671,10 @@ function FeatureCards() {
                     strokeWidth={2}
                     aria-hidden
                   />
-                  Your goals
+                  Vos objectifs
                 </span>
                 <div className="ml-6 mt-3 inline-flex flex-col gap-2">
-                  {["Stocks & ETFs", "Crypto basket", "Retirement IRA"].map(
+                  {["Actions & ETFs", "Panier Crypto", "Plan Retraite"].map(
                     (p, i) => (
                       <motion.div
                         key={p}
@@ -700,7 +697,7 @@ function FeatureCards() {
                   )}
                 </div>
                 <span className="absolute right-0 top-12 inline-flex items-center gap-1 rounded-full border border-foreground/10 bg-surface px-3 py-1.5 text-xs text-foreground">
-                  Auto-invest
+                  Auto-investir
                   <ArrowRight
                     className="size-3.5 shrink-0"
                     strokeWidth={2}
@@ -710,11 +707,10 @@ function FeatureCards() {
               </div>
             </div>
             <h3 className="mt-6 text-base font-semibold">
-              Flexible portfolios
+              Portefeuilles flexibles
             </h3>
             <p className="mt-2 max-w-md text-sm text-foreground/60">
-              Choose from personalized strategies tailored to your goals —
-              whether income, growth, or long-term retirement planning.
+              Choisissez parmi des stratégies personnalisées adaptées à vos objectifs — qu&apos;il s&apos;agisse de revenus, de croissance ou de planification de retraite à long terme.
             </p>
           </motion.article>
 
@@ -760,10 +756,9 @@ function FeatureCards() {
                 <MessageCircle className="size-6" strokeWidth={2} aria-hidden />
               </motion.div>
             </div>
-            <h3 className="mt-6 text-base font-semibold">24/7 support</h3>
+            <h3 className="mt-6 text-base font-semibold">Assistance 24/7</h3>
             <p className="mt-2 text-sm text-foreground/60">
-              Our dedicated team is here to guide you at every step, anytime you
-              need us.
+              Notre équipe dédiée est là pour vous guider à chaque étape, dès que vous en avez besoin.
             </p>
           </motion.article>
         </div>
@@ -774,9 +769,9 @@ function FeatureCards() {
 
 function GettingStarted() {
   const steps = [
-    "Get started",
-    "Sign up and create your account",
-    "Start investing",
+    "Commencez",
+    "Inscrivez-vous et créez votre compte",
+    "Commencez à investir",
   ];
   return (
     <Section className="bg-background py-24">
@@ -785,13 +780,13 @@ function GettingStarted() {
           variants={fadeUp}
           className="text-center text-xs uppercase tracking-widest text-foreground/50"
         >
-          How it works
+          Comment ça marche
         </motion.p>
         <motion.h2
           variants={fadeUp}
           className="mx-auto mt-4 max-w-3xl text-center font-display text-4xl leading-tight sm:text-5xl"
         >
-          Getting started is <br /> <Blank /> simple
+          Commencer est <br /> <Blank /> simple
         </motion.h2>
         <motion.div
           variants={fadeUp}
@@ -827,7 +822,7 @@ function GettingStarted() {
                       href="/register"
                       className="mt-3 inline-flex rounded-full bg-deep-green px-5 py-2 text-xs font-medium text-deep-green-foreground transition-opacity hover:opacity-90"
                     >
-                      Get started
+                      Commencer
                     </Link>
                   )}
                 </div>
@@ -841,11 +836,11 @@ function GettingStarted() {
 }
 
 const TESTIMONIAL_HEADLINE_WORDS = [
-  "early",
-  "smart",
-  "active",
-  "dedicated",
-  "thoughtful",
+  "précoces",
+  "intelligents",
+  "actifs",
+  "dévoués",
+  "réfléchis",
 ] as const;
 
 function TestimonialsHeading() {
@@ -863,7 +858,7 @@ function TestimonialsHeading() {
       variants={fadeUp}
       className="mx-auto mt-5 max-w-3xl text-center font-display text-4xl font-bold leading-[1.1] tracking-tight text-black sm:text-5xl"
     >
-      What our{" "}
+      Ce que disent nos utilisateurs{" "}
       <span className="inline-flex min-w-[6.5ch] justify-center align-bottom">
         <AnimatePresence mode="wait">
           <motion.span
@@ -877,8 +872,7 @@ function TestimonialsHeading() {
             {TESTIMONIAL_HEADLINE_WORDS[i]}
           </motion.span>
         </AnimatePresence>
-      </span>{" "}
-      users are saying
+      </span>
     </motion.h2>
   );
 }
@@ -887,33 +881,33 @@ function Testimonials() {
   const quotes: { name: string; role: string; body: string }[] = [
     {
       name: "Jakob Baker",
-      role: "Marketing Manager",
-      body: "I split my time between client work and checking on campaign updates. Having pledges, documents, and timelines in one place means I actually read the materials instead of skimming PDFs at midnight. When a question came up about eligibility, support replied with clear steps the same day.",
+      role: "Responsable Marketing",
+      body: "Je partage mon temps entre le travail client et le suivi des mises à jour des campagnes. Avoir les promesses, les documents et les délais en un seul endroit signifie que je lis vraiment les documents au lieu de parcourir des PDF à minuit. Lorsqu&apos;une question est apparue sur l&apos;éligibilité, le support a répondu avec des étapes claires le jour même.",
     },
     {
       name: "Kaitlynn Carder",
-      role: "Account Manager",
-      body: "Our team onboards new members every week, so we needed a flow that feels calm and predictable. The verification checkpoints are explicit, and investors always know what is blocking them from the next step. Campaign pages separate marketing from the facts: minimums, fees, and key dates are easy to scan.",
+      role: "Gestionnaire de compte",
+      body: "Notre équipe intègre de nouveaux membres chaque semaine, nous avions donc besoin d&apos;un flux qui semble calme et prévisible. Les points de contrôle de vérification sont explicites et les investisseurs savent toujours ce qui les bloque de l&apos;étape suivante.",
     },
     {
       name: "Anika Dulhanty",
-      role: "Freelance Writer",
-      body: "I used to lose track of which projects I backed and when distributions were supposed to post. The dashboard finally gives me a single ledger-style view of activity. Exporting a clean history for my accountant used to be a weekend project — now I can pull a straightforward summary and move on.",
+      role: "Rédactrice Freelance",
+      body: "J&apos;avais l&apos;habitude de perdre le fil des projets que je soutenais. Le tableau de bord me donne enfin une vue unique de l&apos;activité. Exporter un historique propre pour mon comptable était un projet de week-end — maintenant je peux tirer un résumé simple et passer à autre chose.",
     },
     {
       name: "Adryen Vanessa",
-      role: "Founder, Atelier",
-      body: "We back early-stage operators, so speed and clarity matter. I get an alert when a campaign status changes, when a pledge settles, and when a new update is published — without noisy spam. It is the first crowdfunding-adjacent tool my partners did not complain about after week one.",
+      role: "Fondatrice, Atelier",
+      body: "Nous soutenons des opérateurs en démarrage, donc la rapidité et la clarté comptent. Je reçois une alerte quand le statut d&apos;une campagne change, quand une promesse est réglée et quand une nouvelle mise à jour est publiée — sans spam bruyant.",
     },
     {
       name: "Marcus Chen",
-      role: "Operations Lead",
-      body: "We run a small fund; compliance paperwork used to live in three tools. Consolidating subscriptions and cap-table notes in one workflow cut our weekly prep time sharply.",
+      role: "Responsable des opérations",
+      body: "Nous gérons un petit fonds ; la paperasse de conformité vivait auparavant dans trois outils. Consolider les souscriptions et les notes de table de capitalisation dans un seul flux a considérablement réduit notre temps de préparation hebdomadaire.",
     },
     {
       name: "Priya Nandakumar",
-      role: "Product Designer",
-      body: "The interface respects cognitive load — I can compare two offerings side by side, then return to my commitments without losing context. That sounds small, but it is rare in this space.",
+      role: "Designer Produit",
+      body: "L&apos;interface respecte la charge cognitive — je peux comparer deux offres côte à côte, puis revenir à mes engagements sans perdre le contexte. Cela semble minime, mais c&apos;est rare dans ce domaine.",
     },
   ];
 
@@ -923,7 +917,7 @@ function Testimonials() {
         <div className="flex flex-col items-center text-center">
           <motion.div variants={fadeUp}>
             <span className="inline-flex rounded-full border border-black/15 bg-white px-4 py-1.5 text-xs font-medium text-black/55">
-              Testimonials
+              Témoignages
             </span>
           </motion.div>
           <TestimonialsHeading />
@@ -971,7 +965,7 @@ function Testimonials() {
                 href="/investors"
                 className="inline-flex rounded-full bg-black px-10 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
               >
-                See all
+                Voir tout
               </Link>
             </motion.div>
           </div>
@@ -989,20 +983,19 @@ function FinalCTA() {
         className="mx-auto max-w-6xl rounded-3xl bg-deep-green p-12 text-center text-deep-green-foreground"
       >
         <p className="text-xs uppercase tracking-widest opacity-70">
-          Get started
+          Commencer
         </p>
         <h2 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
-          Ready to grow <Blank /> your <br /> wealth?
+          Prêt à faire croître <Blank /> votre <br /> patrimoine ?
         </h2>
         <p className="mx-auto mt-4 max-w-md text-sm opacity-70">
-          Sign up and start investing in minutes — no download required to
-          begin.
+          Inscrivez-vous et commencez à investir en quelques minutes — aucun téléchargement requis pour commencer.
         </p>
         <Link
           href="/register"
           className="mt-8 inline-flex rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green transition-transform hover:scale-[1.03] active:scale-[0.98]"
         >
-          Get started
+          Commencer
         </Link>
       </motion.div>
     </Section>

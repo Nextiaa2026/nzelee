@@ -39,27 +39,27 @@ export function DashboardAccountHeader({
     switch (status) {
       case "APPROVED":
         return {
-          label: "Verified",
+          label: "Vérifié",
           color: "bg-green-100 text-green-700 border-green-200",
         };
       case "UNDER_REVIEW":
         return {
-          label: "Under Review",
+          label: "En examen",
           color: "bg-yellow-100 text-yellow-700 border-yellow-200",
         };
       case "REJECTED":
         return {
-          label: "Rejected",
+          label: "Rejeté",
           color: "bg-red-100 text-red-700 border-red-200",
         };
       case "EXPIRED":
         return {
-          label: "Expired",
+          label: "Expiré",
           color: "bg-gray-100 text-gray-700 border-gray-200",
         };
       default:
         return {
-          label: "Pending",
+          label: "En attente",
           color: "bg-gray-100 text-gray-700 border-gray-200",
         };
     }
@@ -145,7 +145,7 @@ export function DashboardAccountHeader({
                   className="flex cursor-pointer items-center gap-2"
                 >
                   <Settings className="size-4 opacity-70" />
-                  Settings
+                  Paramètres
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -154,7 +154,7 @@ export function DashboardAccountHeader({
                 onClick={() => void signOut({ callbackUrl: "/" })}
               >
                 <LogOut className="size-4 opacity-70" />
-                Sign out
+                Se déconnecter
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

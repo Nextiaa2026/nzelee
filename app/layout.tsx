@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 
 import { GlobalSiteChrome } from "@/components/global-site-chrome";
@@ -96,12 +96,14 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: SITE_NAME,
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#0F8261",
 };
 
 export default async function RootLayout({
@@ -118,14 +120,9 @@ export default async function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon-192.svg" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Nzelle" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#0F8261" />
-        {/* @ts-expect-error Async Server Component */}
         <OrganizationStructuredData />
-        {/* @ts-expect-error Async Server Component */}
         <WebsiteStructuredData />
       </head>
       <body className={`flex min-h-full flex-col font-sans ${inter.className}`}>

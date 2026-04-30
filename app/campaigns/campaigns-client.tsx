@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -39,16 +38,14 @@ export function CampaignsPageClient({
   initialSearch?: string;
   initialFilter?: string;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [filter, setFilter] = useState<CampaignFilter>(
+    initialFilter as CampaignFilter,
+  );
+  const [currencyFilter, setCurrencyFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("featured");
   const [isPending, startTransition] = useTransition();
-
-  const currentPage = Number(searchParams.get("page")) || initialPage;
-  const searchQuery = searchParams.get("search") || initialSearch;
-  const filter = (searchParams.get("filter") ||
-    initialFilter) as CampaignFilter;
-  const currencyFilter = searchParams.get("currency") || "all";
-  const sortBy = searchParams.get("sort") || "featured";
 
   // Extract unique currencies from campaigns
   const currencies = useMemo(() => {
@@ -109,38 +106,28 @@ export function CampaignsPageClient({
     currentPage * ITEMS_PER_PAGE,
   );
 
-  const updateURL = (params: Record<string, string | number>) => {
-    const newParams = new URLSearchParams(searchParams.toString());
-    Object.entries(params).forEach(([key, value]) => {
-      if (value && value !== "all" && value !== "All") {
-        newParams.set(key, String(value));
-      } else {
-        newParams.delete(key);
-      }
-    });
-    startTransition(() => {
-      router.push(`/campaigns?${newParams.toString()}`, { scroll: false });
-    });
-  };
-
   const handleFilterChange = (newFilter: CampaignFilter) => {
-    updateURL({ filter: newFilter === "All" ? "" : newFilter, page: 1 });
+    setFilter(newFilter);
+    setCurrentPage(1);
   };
 
   const handleSearchChange = (value: string) => {
-    updateURL({ search: value, page: 1 });
+    setSearchQuery(value);
+    setCurrentPage(1);
   };
 
   const handleCurrencyChange = (value: string) => {
-    updateURL({ currency: value, page: 1 });
+    setCurrencyFilter(value);
+    setCurrentPage(1);
   };
 
   const handleSortChange = (value: string) => {
-    updateURL({ sort: value, page: 1 });
+    setSortBy(value);
+    setCurrentPage(1);
   };
 
   const handlePageChange = (newPage: number) => {
-    updateURL({ page: newPage });
+    setCurrentPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
