@@ -4,6 +4,7 @@ import { users, pledges } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { getUserAccountSummary } from "@/lib/services/user-account-summary";
 import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
+import { getUserEligibilityProfile } from "@/lib/services/user-eligibility";
 import { ProfileDashboardView } from "@/components/profile/profile-dashboard-view";
 import { redirect } from "next/navigation";
 
@@ -23,7 +24,7 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [summary, wallet, latestTransactions] = await Promise.all([
+  const [summary, wallet, latestTransactions, eligibility] = await Promise.all([
     getUserAccountSummary(user.id),
     getUserWalletSnapshot(user.id),
     db
@@ -32,6 +33,7 @@ export default async function ProfilePage() {
       .where(eq(pledges.backerId, user.id))
       .orderBy(desc(pledges.createdAt))
       .limit(5),
+    getUserEligibilityProfile(user.id),
   ]);
 
   return (
@@ -40,7 +42,7 @@ export default async function ProfilePage() {
         name: user.name ?? "User",
         email: user.email ?? "",
         image: user.image ?? null,
-        phone: (user as { phone?: string }).phone ?? "+221 77 123 45 67",
+        phone: (user as { phone?: string }).phone ?? "",
       }}
       summary={summary}
       wallet={wallet}
@@ -52,6 +54,7 @@ export default async function ProfilePage() {
           createdAt: Date;
         }>
       }
+      kycStatus={eligibility?.kycStatus ?? "PENDING"}
     />
   );
 }

@@ -24,7 +24,6 @@ export default async function UserDashboardLayout({
     redirect("/onboarding");
   }
 
-  const isAdmin = session.user.role === "ADMIN";
   const eligibility = session.user.id
     ? await getUserEligibilityProfile(session.user.id)
     : null;
@@ -40,7 +39,7 @@ export default async function UserDashboardLayout({
         kycStatus={eligibility?.kycStatus ?? null}
       />
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-0 pb-20 pt-0 md:px-6 md:pb-24 md:pt-6 lg:grid-cols-[240px_1fr] lg:items-start">
-        <DashboardSidebar isAdmin={isAdmin} />
+        <DashboardSidebar />
         <main className="min-w-0">{children}</main>
       </div>
     </div>

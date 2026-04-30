@@ -17,9 +17,9 @@ function navActive(pathname: string, href: string, exact?: boolean) {
   return exact ? pathname === href : pathname.startsWith(href);
 }
 
-export function DashboardSidebar({ isAdmin }: { isAdmin: boolean }) {
+export function DashboardSidebar() {
   const pathname = usePathname();
-  const items = getDashboardNavItems(isAdmin);
+  const items = getDashboardNavItems();
 
   return (
     <aside className="hidden w-full min-w-0 max-w-[240px] shrink-0 lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide">

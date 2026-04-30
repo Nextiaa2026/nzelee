@@ -31,6 +31,8 @@ export const investmentCommitmentSchema = z.object({
 
 export const profileSettingsSchema = z.object({
   displayName: z.string().trim().min(2, "Name is too short").max(120),
+  email: z.string().trim().email("Enter a valid email"),
+  phone: z.string().trim().max(20).optional().or(z.literal("")),
   organization: z.string().trim().max(120).optional(),
   country: z
     .string()

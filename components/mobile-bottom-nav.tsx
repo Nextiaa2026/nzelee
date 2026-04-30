@@ -58,7 +58,7 @@ export function MobileBottomNav() {
   const [isOpen, setIsOpen] = useState(false);
   
   // Dashboard items from config
-  const dashboardItems = getDashboardNavItems(false); // isAdmin doesn't matter for the list
+  const dashboardItems = getDashboardNavItems(); // isAdmin doesn't matter for the list
 
   // Don't show on auth pages, admin, or onboarding
   if (

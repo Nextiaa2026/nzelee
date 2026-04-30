@@ -39,12 +39,14 @@ export const userProfileController = new Elysia()
     }
 
     try {
-      const { displayName, organization, country, dateOfBirth } = parsed.data;
+      const { displayName, email, phone, organization, country, dateOfBirth } = parsed.data;
 
       await db
         .update(users)
         .set({
           name: displayName,
+          email,
+          phone: phone?.trim() ? phone.trim() : null,
           organization: organization?.trim() ? organization.trim() : null,
           country: country?.trim() ? country.trim().toUpperCase() : null,
           dateOfBirth: dateOfBirth?.trim() ? new Date(dateOfBirth) : null,

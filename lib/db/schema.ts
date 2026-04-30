@@ -74,6 +74,7 @@ export const users = pgTable("users", {
   /** Collected at onboarding for eligibility; must match ID at KYC. */
   dateOfBirth: date("date_of_birth", { mode: "date" }),
   organization: varchar("organization", { length: 120 }),
+  phone: varchar("phone", { length: 20 }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });

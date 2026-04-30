@@ -20,7 +20,7 @@ export type DashboardNavItem = {
 };
 
 /** Primary sidebar / mobile sheet routes (single source of truth). */
-export function getDashboardNavItems(_isAdmin: boolean): DashboardNavItem[] {
+export function getDashboardNavItems(): DashboardNavItem[] {
   return [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
     { href: "/dashboard/markets", label: "Markets", icon: Store },
