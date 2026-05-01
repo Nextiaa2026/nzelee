@@ -13,9 +13,8 @@ type OnboardingWizardShellProps = {
   children: React.ReactNode;
   /** Centered single-column layout for focused flows like onboarding/KYC. */
   centered?: boolean;
-  /** Tighter chrome when nested in another layout. */
-  embedded?: boolean;
   className?: string;
+  topRightAction?: React.ReactNode;
 };
 
 /**
@@ -29,8 +28,8 @@ export function OnboardingWizardShell({
   subtitle,
   children,
   centered = false,
-  embedded = false,
   className,
+  topRightAction,
 }: OnboardingWizardShellProps) {
   const showHeading = Boolean(title?.trim());
   return (
@@ -106,13 +105,16 @@ export function OnboardingWizardShell({
 
         <main className={cn("relative w-full")}>
           <div className={cn("mb-8", !showHeading && !subtitle && "mb-4")}>
-            <p
-              className={cn(
-                "mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-mint",
-              )}
-            >
-              Step {current} of {steps.length}
-            </p>
+            <div className="flex items-start justify-between">
+              <p
+                className={cn(
+                  "mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-mint",
+                )}
+              >
+                Step {current} of {steps.length}
+              </p>
+              {topRightAction}
+            </div>
             {showHeading ? (
               <h1 className="mt-2 font-display text-xl font-bold tracking-tight text-black sm:text-2xl lg:text-3xl">
                 {title}

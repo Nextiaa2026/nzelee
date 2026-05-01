@@ -154,8 +154,8 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
   );
 
   return (
-    <div className="w-full max-w-sm space-y-8 text-left">
-      <div className="relative min-h-[320px]">
+    <div className="w-full max-w-sm space-y-6 text-left">
+      <div className="relative min-h-[140px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -175,7 +175,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                     setValue("idType", val as KycData["idType"], { shouldValidate: true })
                   }
                 >
-                  <SelectTrigger className="h-11 border-0 bg-black/4 shadow-none transition-colors hover:bg-black/6">
+                  <SelectTrigger className="h-11 w-full rounded-md border-0 bg-black/4 px-3 py-2 text-sm text-foreground shadow-none transition-colors outline-none hover:bg-black/6 focus:ring-2 focus:ring-ring/25">
                     <SelectValue placeholder="Select ID type" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border border-black/5 shadow-xl">
@@ -342,8 +342,8 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
       </div>
 
 
-      <div className="space-y-8 border-t border-black/5 pt-8">
-        <div className="flex flex-col items-center gap-6">
+      <div className="space-y-4 border-t border-black/5 pt-6">
+        <div className="flex flex-col items-center gap-4">
           <div className="flex items-center justify-center gap-3">
             {Array.from({ length: KYC_STEP_COUNT }).map((_, i) => (
               <button
@@ -377,7 +377,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
 
             <Button
               type="button"
-              className="rounded-full bg-mint px-10 font-semibold text-mint-foreground shadow-[0_10px_20px_-5px_rgba(15,130,97,0.25)] hover:bg-mint/90 active:scale-95 transition-all"
+              className="rounded-full bg-mint px-6 font-semibold text-mint-foreground shadow-[0_10px_20px_-5px_rgba(15,130,97,0.25)] hover:bg-mint/90 active:scale-95 transition-all sm:px-10"
               disabled={!stepValid || pending}
               onClick={
                 step === KYC_STEP_COUNT - 1

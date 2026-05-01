@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { COUNTRY_OPTIONS } from "@/lib/country-options";
+import { cn } from "@/lib/utils";
 
 type Props = {
   id?: string;
@@ -28,7 +29,14 @@ export function CountrySelect({
 }: Props) {
   return (
     <Select value={value || undefined} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger id={id} data-slot="country-select" className={className}>
+      <SelectTrigger
+        id={id}
+        data-slot="country-select"
+        className={cn(
+          "h-11 w-full rounded-md border-0 bg-black/4 px-3 py-2 text-sm text-foreground shadow-none transition-colors outline-none hover:bg-black/6 focus:ring-2 focus:ring-ring/25 disabled:cursor-not-allowed disabled:opacity-50",
+          className,
+        )}
+      >
         <SelectValue placeholder="Select country" />
       </SelectTrigger>
       <SelectContent

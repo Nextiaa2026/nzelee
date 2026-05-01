@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -32,7 +31,6 @@ type OnboardingFormProps = {
 import { AnimatePresence, motion } from "framer-motion";
 
 export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
-  const router = useRouter();
   const { data: session, update } = useSession();
   const [error, setError] = useState<string | null>(null);
   const completeOnboardingMutation = useCompleteOnboarding();
@@ -107,7 +105,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
 
   return (
     <div className="w-full max-w-sm space-y-6 text-left">
-      <div className="relative min-h-[200px]">
+      <div className="relative min-h-[140px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -336,8 +334,8 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
         </AnimatePresence>
       </div>
 
-      <div className="space-y-8 border-t border-black/5 pt-8">
-        <div className="flex flex-col items-center gap-6">
+      <div className="space-y-4 border-t border-black/5 pt-6">
+        <div className="flex flex-col items-center gap-4">
           <div className="flex items-center justify-center gap-3">
             {Array.from({ length: ONBOARDING_STEP_COUNT }).map((_, i) => (
               <button
@@ -358,7 +356,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
             ))}
           </div>
 
-          <div className="flex w-full items-center justify-between">
+          <div className="flex w-full flex-wrap items-center justify-between gap-3 sm:flex-nowrap">
             <Button
               type="button"
               variant="ghost"
@@ -382,7 +380,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                 </Button>
                 <Button
                   type="button"
-                  className="rounded-full bg-mint px-8 font-semibold text-mint-foreground shadow-[0_10px_20px_-5px_rgba(15,130,97,0.25)] hover:bg-mint/90 active:scale-95 transition-all"
+                  className="rounded-full bg-mint px-5 font-semibold text-mint-foreground shadow-[0_10px_20px_-5px_rgba(15,130,97,0.25)] hover:bg-mint/90 active:scale-95 transition-all sm:px-8"
                   disabled={completeOnboardingMutation.isPending}
                   onClick={handleSubmit((data) =>
                     onSubmit(data, { thenNavigate: "/kyc" }),

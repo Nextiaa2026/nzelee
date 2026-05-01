@@ -7,6 +7,8 @@ import {
   OnboardingWizardShell,
   type WizardStep,
 } from "@/components/onboarding-wizard-shell";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const STEPS: WizardStep[] = [
   { label: "Document Type" },
@@ -36,17 +38,27 @@ const SUBTITLES = [
 ];
 
 export function KycView() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const current = Math.min(step + 1, KYC_STEP_COUNT);
 
   return (
     <OnboardingWizardShell
-      embedded
       centered
       steps={STEPS}
       current={current}
       title={TITLES[step] ?? TITLES[TITLES.length - 1]!}
       subtitle={SUBTITLES[step] ?? SUBTITLES[SUBTITLES.length - 1]!}
+      topRightAction={
+        <Button
+          type="button"
+          variant="ghost"
+          className="h-auto p-0 text-[11px] font-bold uppercase tracking-widest text-black/40 underline-offset-4 hover:bg-transparent hover:text-black hover:underline transition-colors"
+          onClick={() => router.push("/dashboard")}
+        >
+          Skip for now
+        </Button>
+      }
     >
       <KycForm step={step} onStepChange={setStep} />
     </OnboardingWizardShell>
