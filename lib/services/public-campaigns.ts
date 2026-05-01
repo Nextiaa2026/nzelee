@@ -37,6 +37,8 @@ export type PublicCampaignInvestorRow = {
 export type PublicCampaignDetails = PublicCampaignBrowseRow & {
   description: string;
   locationLabel: string | null;
+  activitySector: string | null;
+  projectOwner: string | null;
   isVerified: boolean;
   minimumInvestmentAmount: number | null;
   targetReturnRate: number | null;
@@ -117,6 +119,8 @@ export async function getPublicCampaignBySlug(
         summary: string;
         description: string;
         locationLabel: string | null;
+        activitySector: string | null;
+        projectOwner: string | null;
         isVerified: boolean;
         minimumInvestmentAmount: number | null;
         targetReturnRate: number | null;
@@ -142,6 +146,8 @@ export async function getPublicCampaignBySlug(
         summary: campaigns.summary,
         description: campaigns.description,
         locationLabel: campaigns.locationLabel,
+        activitySector: campaigns.activitySector,
+        projectOwner: campaigns.projectOwner,
         isVerified: campaigns.isVerified,
         minimumInvestmentAmount: campaigns.minimumInvestmentAmount,
         targetReturnRate: campaigns.targetReturnRate,
@@ -170,6 +176,8 @@ export async function getPublicCampaignBySlug(
         summary: campaigns.summary,
         description: campaigns.description,
         locationLabel: campaigns.locationLabel,
+        activitySector: campaigns.activitySector,
+        projectOwner: campaigns.projectOwner,
         isVerified: campaigns.isVerified,
         minimumInvestmentAmount: campaigns.minimumInvestmentAmount,
         targetReturnRate: campaigns.targetReturnRate,

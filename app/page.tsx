@@ -180,10 +180,10 @@ function Hero() {
               Investir. Grandir. Recommencer.
             </span>
 
-            <h1 className="mt-6 font-display text-2xl leading-[1.1] tracking-tight sm:text-4xl lg:text-6xl xl:text-7xl">
+            <h1 className="mt-6 font-display text-xl leading-[1.12] tracking-tight sm:text-3xl lg:text-5xl xl:text-6xl">
               Dites bonjour à
               <br className="sm:hidden" />
-              <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-mint px-4 py-1 text-deep-green sm:-translate-y-2 sm:gap-3 sm:px-5 sm:py-2">
+              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-mint px-3 py-0.5 text-deep-green sm:-translate-y-1 sm:gap-2 sm:px-4 sm:py-1.5">
                 <motion.span
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
@@ -191,7 +191,7 @@ function Hero() {
                   aria-hidden
                 >
                   <Wallet
-                    className="size-5 shrink-0 sm:size-8"
+                    className="size-4 shrink-0 sm:size-6"
                     strokeWidth={2}
                   />
                 </motion.span>

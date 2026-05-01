@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -11,6 +11,10 @@ import { userKycSubmitBodySchema } from "@/lib/validations/user-kyc";
 import { userCreateInvestmentBodySchema } from "@/lib/validations/user-investment";
 import { userCreateWithdrawalBodySchema } from "@/lib/validations/user-withdrawal";
 import { submitUserKyc } from "./services/user-kyc.service";
+import {
+  reverseInvestmentCheckoutFailure,
+  startNotchCheckoutForPledge,
+} from "./services/investment-checkout.service";
 import {
   createInvestmentForUser,
   listInvestmentsForUser,
@@ -121,13 +125,56 @@ export const userController = new Elysia()
       return apiFail("VALIDATION", parsed.error.issues[0]?.message ?? "Invalid body");
     }
     try {
-      set.status = 201;
-      return apiOk(await createInvestmentForUser(id, parsed.data));
+      const pledge = await createInvestmentForUser(id, parsed.data);
+      try {
+        const notch = await startNotchCheckoutForPledge(id, pledge.id, {
+          callbackUrl: parsed.data.checkoutCallbackUrl,
+        });
+        set.status = 201;
+        return apiOk({ pledge, notch });
+      } catch (checkoutErr) {
+        await reverseInvestmentCheckoutFailure(pledge.id);
+        set.status = 502;
+        return apiFail(
+          "CHECKOUT",
+          checkoutErr instanceof Error
+            ? checkoutErr.message
+            : "Could not start payment checkout.",
+        );
+      }
     } catch (error) {
       set.status = 400;
       return apiFail("VALIDATION", error instanceof Error ? error.message : "Failed to invest");
     }
   })
+  .post(
+    "/investments/:pledgeId/checkout",
+    async ({ params, body, set }) => {
+      const session = await auth();
+      const id = session?.user?.id;
+      if (!id) {
+        set.status = 401;
+        return apiFail("UNAUTHORIZED", "Sign in required.");
+      }
+      try {
+        const notch = await startNotchCheckoutForPledge(id, params.pledgeId, {
+          callbackUrl: body?.callbackUrl,
+        });
+        return apiOk({ notch });
+      } catch (error) {
+        set.status = 400;
+        return apiFail(
+          "VALIDATION",
+          error instanceof Error ? error.message : "Could not start checkout.",
+        );
+      }
+    },
+    {
+      body: t.Object({
+        callbackUrl: t.Optional(t.String({ maxLength: 2048 })),
+      }),
+    },
+  )
   .post("/campaigns/:slug/reviews", async ({ params, body, set }) => {
     const session = await auth();
     const userId = session?.user?.id;

@@ -1,5 +1,5 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import * as schema from "@/lib/db/schema";
 
@@ -9,10 +9,15 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not configured.");
 }
 
-const sql = neon(connectionString);
+const pool = new Pool({
+  connectionString,
+  max: Number(process.env.PG_POOL_MAX ?? 10),
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 10_000,
+});
 
-export const db = drizzle(sql, { schema });
+export const db = drizzle(pool, { schema });
 
 export async function disconnectDb() {
-  // No-op for neon-http as it's stateless
+  await pool.end();
 }

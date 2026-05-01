@@ -21,6 +21,8 @@ export const userCreateInvestmentBodySchema = z.object({
   sourceCurrency: z.enum(investmentCurrencyCodes).default("XAF"),
   paymentMethod: z.enum(["MOBILE_MONEY", "ORANGE_MONEY"]).default("MOBILE_MONEY"),
   note: z.string().trim().max(500).optional(),
+  /** Optional full URL Notch Pay redirects to after checkout (defaults to app investments page). */
+  checkoutCallbackUrl: z.string().trim().max(2048).optional(),
 });
 
 export type UserCreateInvestmentBody = z.infer<typeof userCreateInvestmentBodySchema>;

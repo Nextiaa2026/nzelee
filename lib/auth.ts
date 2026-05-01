@@ -34,6 +34,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      /**
+       * If this email already exists (e.g. email/password signup) but no Google
+       * row is in `accounts`, link the Google account to that user instead of
+       * OAuthAccountNotLinked. Safe here because Google verifies email ownership.
+       */
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "Email and Password",

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Star } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { CampaignReviewForm } from "@/components/campaigns/campaign-review-form";
 import { CampaignDetailsPublicBlock } from "@/components/campaigns/campaign-details-public-block";
 import {
@@ -48,6 +47,8 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
     summary: campaign.summary,
     description: campaign.description,
     locationLabel: campaign.locationLabel,
+    activitySector: campaign.activitySector,
+    projectOwner: campaign.projectOwner,
     isVerified: campaign.isVerified,
     status: campaign.status,
     coverImageUrl: campaign.coverImageUrl,
@@ -65,12 +66,11 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
   };
 
   return (
-    <main className="mx-auto min-h-svh max-w-6xl px-4 pb-20 pt-28 md:px-6 md:pt-32">
-      <AppBreadcrumb className="mb-6 text-sm" />
-
+    <main className="min-h-svh pb-20 pt-0">
       <CampaignDetailsPublicBlock campaign={clientPayload} rates={rates} />
 
-      <section className="mt-6 grid gap-6 md:grid-cols-[1fr_.95fr]">
+      <div className="mx-auto max-w-6xl px-4 md:px-6">
+      <section className="mt-10 grid gap-6 md:grid-cols-[1fr_.95fr]">
         <Card className="border-0 shadow-none">
           <CardHeader>
             <CardTitle>Investor reviews</CardTitle>
@@ -143,6 +143,7 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
           </CardContent>
         </Card>
       </section>
+      </div>
     </main>
   );
 }

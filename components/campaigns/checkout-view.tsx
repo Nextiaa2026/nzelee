@@ -20,7 +20,10 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SITE_NAME } from "@/lib/brand";
-import { createMyInvestment } from "@/lib/services/user-investments";
+import {
+  buildInvestmentCheckoutCallbackUrl,
+  createMyInvestment,
+} from "@/lib/services/user-investments";
 import { currencyMinorExponent } from "@/lib/services/exchange-rate";
 import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 
@@ -144,18 +147,25 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
         sourceCurrency: safeSourceCurrency,
         paymentMethod,
         note: undefined,
+        checkoutCallbackUrl: buildInvestmentCheckoutCallbackUrl(),
       });
       if (!response.ok) {
         toast.error(response.error?.message ?? "Payment failed");
         return;
       }
 
-      toast.success("Payment initiated", {
-        description:
-          "You will receive a prompt on your phone to confirm the payment",
-      });
+      const checkoutUrl = response.data.notch?.authorizationUrl;
+      if (checkoutUrl) {
+        toast.success("Redirecting to Notch Pay", {
+          description: "Complete checkout on the secure payment page.",
+        });
+        window.location.assign(checkoutUrl);
+        return;
+      }
 
-      // Redirect to success page or dashboard
+      toast.success("Payment recorded", {
+        description: "You can follow status from your investments list.",
+      });
       router.push(`/dashboard/investments`);
     } catch (error) {
       toast.error("Payment failed", {

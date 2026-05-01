@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/select";
 import { userInvestmentQueryKeys } from "@/lib/query-keys/admin";
 import { currencyMinorExponent } from "@/lib/services/exchange-rate";
-import { createMyInvestment } from "@/lib/services/user-investments";
+import {
+  buildInvestmentCheckoutCallbackUrl,
+  createMyInvestment,
+} from "@/lib/services/user-investments";
 import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 import type { UserCreateInvestmentBody } from "@/lib/validations/user-investment";
 import { investmentCommitmentSchema } from "@/lib/validations/marketing-forms";
@@ -98,12 +101,23 @@ export function InvestmentCommitmentForm({
         sourceCurrency: values.currency,
         paymentMethod: values.paymentMethod,
         note: values.note?.trim() || undefined,
+        checkoutCallbackUrl: buildInvestmentCheckoutCallbackUrl(),
       };
       return createMyInvestment(body);
     },
     onSuccess: async (res, values) => {
       if (!("ok" in res) || !res.ok) {
         toast.error(res.error?.message ?? "Failed to submit commitment");
+        return;
+      }
+      const checkoutUrl = res.data.notch?.authorizationUrl;
+      if (checkoutUrl) {
+        toast.success("Redirecting to Notch Pay", {
+          description: `${values.listingSlug} · ${values.amount.toLocaleString()} ${values.currency}`,
+        });
+        await qc.invalidateQueries({ queryKey: userInvestmentQueryKeys.list() });
+        await qc.invalidateQueries({ queryKey: ["admin", "campaigns"] });
+        window.location.assign(checkoutUrl);
         return;
       }
       toast.success("Investment commitment submitted", {

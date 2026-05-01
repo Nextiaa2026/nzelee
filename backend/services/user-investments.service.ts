@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { campaigns, paymentTransactions, pledges } from "@/lib/db/schema";
@@ -14,6 +14,8 @@ type UserInvestmentRow = {
   currency: string;
   status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
   createdAt: Date;
+  paymentStatus: string | null;
+  canOpenCheckout: boolean;
 };
 
 const zeroDecimalCurrencies = new Set(["XAF", "JPY"]);
@@ -82,7 +84,7 @@ async function resolveCampaign(campaignRef: string) {
 }
 
 export async function listInvestmentsForUser(userId: string): Promise<UserInvestmentRow[]> {
-  return db
+  const rows = await db
     .select({
       id: pledges.id,
       campaignId: pledges.campaignId,
@@ -97,6 +99,40 @@ export async function listInvestmentsForUser(userId: string): Promise<UserInvest
     .innerJoin(campaigns, eq(pledges.campaignId, campaigns.id))
     .where(eq(pledges.backerId, userId))
     .orderBy(desc(pledges.createdAt));
+
+  const pledgeIds = rows.map((r) => r.id);
+  if (pledgeIds.length === 0) return [];
+
+  const txs = await db
+    .select()
+    .from(paymentTransactions)
+    .where(inArray(paymentTransactions.pledgeId, pledgeIds))
+    .orderBy(desc(paymentTransactions.createdAt));
+
+  const latestByPledge = new Map<string, (typeof txs)[number]>();
+  for (const t of txs) {
+    if (t.pledgeId && !latestByPledge.has(t.pledgeId)) {
+      latestByPledge.set(t.pledgeId, t);
+    }
+  }
+
+  const checkoutProviders = new Set(["notchpay", "orange_money", "mobile_money"]);
+
+  return rows.map((r) => {
+    const pt = latestByPledge.get(r.id);
+    const paymentStatus = pt?.status ?? null;
+    const canOpenCheckout =
+      (r.status === "PENDING" || r.status === "FAILED") &&
+      pt != null &&
+      paymentStatus !== "SUCCEEDED" &&
+      checkoutProviders.has(pt.provider);
+
+    return {
+      ...r,
+      paymentStatus,
+      canOpenCheckout,
+    };
+  });
 }
 
 export async function createInvestmentForUser(userId: string, input: UserCreateInvestmentBody) {
@@ -152,11 +188,15 @@ export async function createInvestmentForUser(userId: string, input: UserCreateI
       status: "PENDING",
       amount: convertedAmount,
       currency: campaign.currency,
-      provider: input.paymentMethod === "ORANGE_MONEY" ? "orange_money" : "mobile_money",
+      provider: "notchpay",
+      providerRef: null,
       description:
         input.note?.trim() ||
-        `Investment commitment via ${input.paymentMethod === "ORANGE_MONEY" ? "Orange Money" : "Mobile Money"}`,
-      metadata: { paymentMethod: input.paymentMethod, sourceCurrency: input.sourceCurrency },
+        `Investment via Notch Pay (${input.paymentMethod === "ORANGE_MONEY" ? "Orange Money" : "Mobile Money"} intent)`,
+      metadata: {
+        paymentMethod: input.paymentMethod,
+        sourceCurrency: input.sourceCurrency,
+      },
     });
 
     await tx

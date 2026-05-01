@@ -1,10 +1,13 @@
-import { useState } from "react";
+"use client";
+
+import { useMutation } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
+
+import { isApiFailure, isApiSuccess, type ApiResult } from "@/lib/http/api-result";
+import { httpClient } from "@/lib/http/client";
 
 export interface InitializePaymentParams {
   pledgeId: string;
-  amount: number;
-  currency: string;
-  email?: string;
   callbackUrl?: string;
 }
 
@@ -23,55 +26,58 @@ export interface UseNotchPaymentReturn {
   clearError: () => void;
 }
 
-export function useNotchPayment(): UseNotchPaymentReturn {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
+async function postNotchInitialize(
+  params: InitializePaymentParams,
+): Promise<PaymentData> {
+  try {
+    const { data } = await httpClient.post<ApiResult<PaymentData>>(
+      "/payments/notchpay/initialize",
+      {
+        pledgeId: params.pledgeId,
+        callbackUrl: params.callbackUrl,
+      },
+    );
 
-  const initializePayment = async (params: InitializePaymentParams) => {
-    setLoading(true);
-    setError(null);
-    setPaymentData(null);
-
-    try {
-      const response = await fetch("/api/v1/payments/notchpay/initialize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(params),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to initialize payment");
-      }
-
-      if (data.status === "success" && data.data) {
-        setPaymentData(data.data);
-      } else {
-        throw new Error("Invalid response from payment service");
-      }
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unknown error occurred";
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
+    if (!isApiSuccess(data)) {
+      throw new Error(data.error?.message ?? "Failed to initialize payment");
     }
-  };
 
-  const clearError = () => {
-    setError(null);
-  };
+    if (!data.data.authorizationUrl) {
+      throw new Error("Invalid response from payment service");
+    }
+
+    return data.data;
+  } catch (err: unknown) {
+    if (isAxiosError(err) && err.response?.data && isApiFailure(err.response.data)) {
+      throw new Error(err.response.data.error.message);
+    }
+    throw err instanceof Error ? err : new Error("Failed to initialize payment");
+  }
+}
+
+/**
+ * Notch Pay hosted checkout — initializes a session for an existing pledge.
+ * Uses TanStack Query + axios (`httpClient`) like other app APIs.
+ */
+export function useNotchPayment(): UseNotchPaymentReturn {
+  const mutation = useMutation({
+    mutationFn: postNotchInitialize,
+  });
 
   return {
-    loading,
-    error,
-    paymentData,
-    initializePayment,
-    clearError,
+    loading: mutation.isPending,
+    error: mutation.error
+      ? mutation.error instanceof Error
+        ? mutation.error.message
+        : String(mutation.error)
+      : null,
+    paymentData: mutation.data ?? null,
+    initializePayment: async (params) => {
+      mutation.reset();
+      await mutation.mutateAsync(params);
+    },
+    clearError: () => {
+      mutation.reset();
+    },
   };
 }

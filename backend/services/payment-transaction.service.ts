@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { paymentTransactions, pledges } from "@/lib/db/schema";
 import crypto from "crypto";
@@ -28,6 +28,7 @@ export interface TransactionRecord {
   providerRef: string | null;
   idempotencyKey: string | null;
   description: string | null;
+  metadata?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -94,7 +95,19 @@ export class PaymentTransactionService {
     };
 
     if (providerTransactionId) {
-      updateData.providerRef = providerTransactionId;
+      const [existing] = await db
+        .select({ metadata: paymentTransactions.metadata })
+        .from(paymentTransactions)
+        .where(eq(paymentTransactions.id, id))
+        .limit(1);
+      const meta =
+        existing?.metadata && typeof existing.metadata === "object"
+          ? (existing.metadata as Record<string, unknown>)
+          : {};
+      updateData.metadata = {
+        ...meta,
+        notchPayTransactionId: providerTransactionId,
+      };
     }
 
     const [transaction] = await db
@@ -116,6 +129,28 @@ export class PaymentTransactionService {
       .select()
       .from(paymentTransactions)
       .where(eq(paymentTransactions.providerRef, reference))
+      .limit(1);
+
+    return transaction ? (transaction as TransactionRecord) : null;
+  }
+
+  /**
+   * Resolve by our provider reference OR stored Notch transaction id.
+   * Useful when callback/webhook sends either value.
+   */
+  async getTransactionByExternalRef(
+    referenceOrTxnId: string,
+  ): Promise<TransactionRecord | null> {
+    const [transaction] = await db
+      .select()
+      .from(paymentTransactions)
+      .where(
+        or(
+          eq(paymentTransactions.providerRef, referenceOrTxnId),
+          sql`${paymentTransactions.metadata} ->> 'notchPayTransactionId' = ${referenceOrTxnId}`,
+          sql`${paymentTransactions.metadata} ->> 'notchPayReference' = ${referenceOrTxnId}`,
+        ),
+      )
       .limit(1);
 
     return transaction ? (transaction as TransactionRecord) : null;
