@@ -85,6 +85,13 @@
       "when": 1777584922968,
       "tag": "0011_aromatic_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1777613909308,
+      "tag": "0012_bored_chimera",
+      "breakpoints": true
     }
   ]
 }

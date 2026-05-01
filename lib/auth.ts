@@ -80,9 +80,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ account }) {
-      return true;
-    },
     async jwt({ token, user, account }) {
       if (user?.id) {
         token.sub = user.id;
