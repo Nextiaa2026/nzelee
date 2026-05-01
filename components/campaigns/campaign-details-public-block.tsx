@@ -25,8 +25,15 @@ export type CampaignDetailsClientPayload = {
   slug: string;
   summary: string;
   description: string;
+  locationLabel: string | null;
+  isVerified: boolean;
   status: string;
   coverImageUrl: string | null;
+  minimumInvestmentAmount: number | null;
+  targetReturnRate: number | null;
+  durationMonths: number | null;
+  galleryImages: Array<{ url: string; alt?: string }>;
+  impactPoints: string[];
   goalAmount: number;
   raisedAmount: number;
   currency: string;
@@ -70,16 +77,28 @@ function HeroStats({ campaign }: { campaign: CampaignDetailsClientPayload }) {
 
   return (
     <>
-      <p className="inline-flex w-fit items-center gap-2 rounded-full border border-mint/30 bg-mint/15 px-3 py-1 text-xs font-medium text-mint">
-        <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
-        {campaign.status}
-      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="inline-flex w-fit items-center gap-2 rounded-full border border-mint/30 bg-mint/15 px-3 py-1 text-xs font-medium text-mint">
+          <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
+          {campaign.status}
+        </p>
+        {campaign.isVerified ? (
+          <p className="inline-flex w-fit items-center rounded-full border border-emerald-300/60 bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900">
+            Verified
+          </p>
+        ) : null}
+      </div>
       <h1 className="font-display text-4xl tracking-tight text-mint text-glow sm:text-5xl">
         {campaign.title}
       </h1>
       <p className="max-w-2xl text-sm text-deep-green-foreground/75">
         {campaign.summary}
       </p>
+      {campaign.locationLabel ? (
+        <p className="text-xs font-semibold uppercase tracking-wider text-deep-green-foreground/60">
+          {campaign.locationLabel}
+        </p>
+      ) : null}
       <CampaignCurrencyToggle className="pt-1" />
       <div className="h-2 overflow-hidden rounded-full bg-black/10">
         <div
@@ -217,11 +236,11 @@ export function CampaignDetailsPublicBlock({
       </section>
 
       <section className="grid gap-6 md:grid-cols-[1fr_.95fr]">
-        <Card className="border-0 shadow-none">
+        <Card className="rounded-2xl border border-black/10 bg-white shadow-none">
           <CardHeader>
-            <CardTitle>Campaign details</CardTitle>
+            <CardTitle>A propos</CardTitle>
             <CardDescription>
-              Full description and campaign context for investor due diligence.
+              Contexte complet du projet et objectifs d'impact.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-sm text-black/75">
@@ -236,17 +255,80 @@ export function CampaignDetailsPublicBlock({
                 {windowLabel}
               </p>
             </div>
+            <div className="grid gap-3 pt-2 sm:grid-cols-2">
+              <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+                  Impact attendu
+                </p>
+                <p className="mt-1 text-xs text-emerald-900/70">
+                  {campaign.impactPoints[0] ??
+                    "Le financement accelere l'equipement local et la production durable."}
+                </p>
+              </div>
+              <div className="rounded-xl border border-sky-100 bg-sky-50/60 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-sky-800">
+                  Execution
+                </p>
+                <p className="mt-1 text-xs text-sky-900/70">
+                  {campaign.impactPoints[1] ??
+                    "Les fonds sont debloques suivant des jalons de projet verifies."}
+                </p>
+              </div>
+            </div>
+            {campaign.galleryImages.length ? (
+              <div className="grid grid-cols-2 gap-2 pt-2 md:grid-cols-3">
+                {campaign.galleryImages.slice(0, 6).map((image, idx) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={`${image.url}-${idx}`}
+                    src={image.url}
+                    alt={image.alt || `${campaign.title} gallery ${idx + 1}`}
+                    className="h-24 w-full rounded-lg border border-black/10 object-cover"
+                  />
+                ))}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 
-        <Card className="border-0 shadow-none">
+        <Card className="rounded-2xl border border-black/10 bg-white shadow-none">
           <CardHeader>
-            <CardTitle>Top investors</CardTitle>
+            <CardTitle>Funding status</CardTitle>
             <CardDescription>
-              Ranked by amount invested in this campaign.
+              Etat en temps reel des contributions investisseurs.
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-lg border border-black/10 bg-slate-50/80 p-2">
+                <p className="text-black/50">Montant minimum</p>
+                <p className="font-semibold text-black/90">
+                  {campaign.minimumInvestmentAmount
+                    ? campaign.minimumInvestmentAmount.toLocaleString()
+                    : "N/A"}{" "}
+                  {campaign.currency}
+                </p>
+              </div>
+              <div className="rounded-lg border border-black/10 bg-slate-50/80 p-2">
+                <p className="text-black/50">Rendement vise</p>
+                <p className="font-semibold text-black/90">
+                  {campaign.targetReturnRate != null
+                    ? `${campaign.targetReturnRate}% / an`
+                    : "N/A"}
+                </p>
+              </div>
+              <div className="col-span-2 rounded-lg border border-black/10 bg-slate-50/80 p-2">
+                <p className="text-black/50">Duree</p>
+                <p className="font-semibold text-black/90">
+                  {campaign.durationMonths != null
+                    ? `${campaign.durationMonths} mois`
+                    : "N/A"}
+                </p>
+              </div>
+            </div>
+            <div className="mb-4 rounded-xl border border-black/10 bg-slate-50/70 p-3 text-xs text-black/70">
+              Classement des investisseurs actifs sur cette campagne.
+            </div>
             <InvestorRows campaign={campaign} />
           </CardContent>
         </Card>

@@ -44,6 +44,7 @@ export function KycView() {
 
   return (
     <OnboardingWizardShell
+      embedded
       centered
       steps={STEPS}
       current={current}

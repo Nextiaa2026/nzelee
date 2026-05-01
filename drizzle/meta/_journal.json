@@ -92,6 +92,20 @@
       "when": 1777613909308,
       "tag": "0012_bored_chimera",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1777624200000,
+      "tag": "0013_campaign_details_expansion",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1777700000000,
+      "tag": "0014_user_preferred_currency",
+      "breakpoints": true
     }
   ]
 }

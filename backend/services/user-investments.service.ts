@@ -1,4 +1,4 @@
-import { and, desc, eq, or, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { campaigns, paymentTransactions, pledges } from "@/lib/db/schema";
@@ -75,7 +75,8 @@ async function resolveCampaign(campaignRef: string) {
       status: campaigns.status,
     })
     .from(campaigns)
-    .where(or(eq(campaigns.id, campaignRef), eq(campaigns.slug, campaignRef)))
+    // Cast UUID to text so slug refs never trigger UUID parse errors.
+    .where(sql`(${campaigns.id}::text = ${campaignRef} or ${campaigns.slug} = ${campaignRef})`)
     .limit(1);
   return row ?? null;
 }

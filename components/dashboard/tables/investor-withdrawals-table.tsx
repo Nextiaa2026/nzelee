@@ -91,5 +91,43 @@ const columns: ColumnDef<UserWithdrawalRow, unknown>[] = [
 ];
 
 export function InvestorWithdrawalsTable({ data }: { data: UserWithdrawalRow[] }) {
-  return <AdminDataTable columns={columns} data={data} enableRowSelection={false} />;
+  if (!data.length) {
+    return (
+      <div className="rounded-lg border border-black/10 bg-white p-6 text-sm text-black/60">
+        No withdrawals yet.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="space-y-2 md:hidden">
+        {data.map((row) => (
+          <div
+            key={row.id}
+            className="rounded-xl border border-black/10 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-black/90">
+                {formatCentsToUsd(row.amount)}
+              </p>
+              <Badge variant="secondary" className="font-normal">
+                {row.status}
+              </Badge>
+            </div>
+            <p className="mt-2 text-xs text-black/50">
+              Requested {formatDate(row.requestedAt)}
+            </p>
+            <p className="mt-1 text-xs text-black/60">{row.destination}</p>
+            <p className="mt-1 text-xs text-black/45">
+              Completed {formatDate(row.completedAt)}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="hidden md:block">
+        <AdminDataTable columns={columns} data={data} enableRowSelection={false} />
+      </div>
+    </div>
+  );
 }

@@ -21,6 +21,8 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -45,8 +47,15 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
     slug: campaign.slug,
     summary: campaign.summary,
     description: campaign.description,
+    locationLabel: campaign.locationLabel,
+    isVerified: campaign.isVerified,
     status: campaign.status,
     coverImageUrl: campaign.coverImageUrl,
+    minimumInvestmentAmount: campaign.minimumInvestmentAmount,
+    targetReturnRate: campaign.targetReturnRate,
+    durationMonths: campaign.durationMonths,
+    galleryImages: campaign.galleryImages,
+    impactPoints: campaign.impactPoints,
     goalAmount: campaign.goalAmount,
     raisedAmount: campaign.raisedAmount,
     currency: campaign.currency,

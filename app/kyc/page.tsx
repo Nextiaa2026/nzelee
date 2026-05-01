@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function KycPage() {
   return (
-    <div className="mx-auto w-full max-w-4xl">
+    <div className="mx-auto w-full max-w-xl px-4 sm:px-6">
       <KycView />
     </div>
   );

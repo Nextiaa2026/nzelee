@@ -1,14 +1,18 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users, pledges } from "@/lib/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { getUserAccountSummary } from "@/lib/services/user-account-summary";
 import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
 import { getUserEligibilityProfile } from "@/lib/services/user-eligibility";
 import { ProfileDashboardView } from "@/components/profile/profile-dashboard-view";
 import { redirect } from "next/navigation";
 
-export default async function ProfilePage() {
+type PageProps = {
+  searchParams: Promise<{ txPage?: string }>;
+};
+
+export default async function ProfilePage({ searchParams }: PageProps) {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/login");
@@ -24,7 +28,13 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [summary, wallet, latestTransactions, eligibility] = await Promise.all([
+  const query = await searchParams;
+  const txPage = Math.max(1, Number.parseInt(query.txPage ?? "1", 10) || 1);
+  const txPageSize = 10;
+  const txOffset = (txPage - 1) * txPageSize;
+
+  const [summary, wallet, latestTransactions, txCountRows, eligibility] =
+    await Promise.all([
     getUserAccountSummary(user.id),
     getUserWalletSnapshot(user.id),
     db
@@ -32,9 +42,18 @@ export default async function ProfilePage() {
       .from(pledges)
       .where(eq(pledges.backerId, user.id))
       .orderBy(desc(pledges.createdAt))
-      .limit(5),
+      .limit(txPageSize)
+      .offset(txOffset),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(pledges)
+      .where(eq(pledges.backerId, user.id)),
     getUserEligibilityProfile(user.id),
-  ]);
+    ]);
+
+  const txTotal = txCountRows[0]?.count ?? 0;
+  const txPageCount = Math.max(1, Math.ceil(txTotal / txPageSize));
+  const safeTxPage = Math.min(txPage, txPageCount);
 
   return (
     <ProfileDashboardView
@@ -54,6 +73,8 @@ export default async function ProfilePage() {
           createdAt: Date;
         }>
       }
+      txPage={safeTxPage}
+      txPageCount={txPageCount}
       kycStatus={eligibility?.kycStatus ?? "PENDING"}
     />
   );

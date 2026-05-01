@@ -10,11 +10,24 @@ import {
 } from "@/lib/mocks";
 
 export function useMockInvestorTransactions() {
+  return useMockInvestorTransactionsPaginated({ page: 1, pageSize: 10 });
+}
+
+export function useMockInvestorTransactionsPaginated({
+  page,
+  pageSize,
+}: {
+  page: number;
+  pageSize: number;
+}) {
   return useQuery({
-    queryKey: mockQueryKeys.investor.transactions,
+    queryKey: [...mockQueryKeys.investor.transactions, page, pageSize],
     queryFn: async () => {
       await mockNetworkDelay();
-      return investorTransactionsMock;
+      const total = investorTransactionsMock.length;
+      const offset = (page - 1) * pageSize;
+      const items = investorTransactionsMock.slice(offset, offset + pageSize);
+      return { items, total, page, pageSize };
     },
   });
 }

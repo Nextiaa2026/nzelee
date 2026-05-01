@@ -180,7 +180,7 @@ function Hero() {
               Investir. Grandir. Recommencer.
             </span>
 
-            <h1 className="mt-6 font-display text-3xl leading-[1.1] tracking-tight sm:text-5xl lg:text-7xl xl:text-8xl">
+            <h1 className="mt-6 font-display text-2xl leading-[1.1] tracking-tight sm:text-4xl lg:text-6xl xl:text-7xl">
               Dites bonjour à
               <br className="sm:hidden" />
               <span className="mt-2 inline-flex items-center gap-2 rounded-full bg-mint px-4 py-1 text-deep-green sm:-translate-y-2 sm:gap-3 sm:px-5 sm:py-2">

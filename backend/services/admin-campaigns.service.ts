@@ -106,9 +106,16 @@ export async function createCampaign(
       description: input.description.trim(),
       activitySector: input.activitySector?.trim() ?? null,
       projectOwner: input.projectOwner?.trim() ?? null,
+      locationLabel: input.locationLabel?.trim() ?? null,
+      isVerified: input.isVerified ?? false,
       tags: input.tags ?? [],
       documents: input.documents ?? [],
+      galleryImages: input.galleryImages ?? [],
+      impactPoints: input.impactPoints ?? [],
       coverImageUrl: input.coverImageUrl ?? null,
+      minimumInvestmentAmount: input.minimumInvestmentAmount ?? null,
+      targetReturnRate: input.targetReturnRate ?? null,
+      durationMonths: input.durationMonths ?? null,
       goalAmount: input.goalAmount,
       raisedAmount: 0,
       currency: input.currency?.trim() || "USD",
@@ -146,8 +153,19 @@ export async function updateCampaign(
     updates.activitySector = input.activitySector.trim();
   if (input.projectOwner !== undefined)
     updates.projectOwner = input.projectOwner.trim();
+  if (input.locationLabel !== undefined)
+    updates.locationLabel = input.locationLabel.trim();
+  if (input.isVerified !== undefined) updates.isVerified = input.isVerified;
   if (input.tags !== undefined) updates.tags = input.tags;
   if (input.documents !== undefined) updates.documents = input.documents;
+  if (input.galleryImages !== undefined) updates.galleryImages = input.galleryImages;
+  if (input.impactPoints !== undefined) updates.impactPoints = input.impactPoints;
+  if (input.minimumInvestmentAmount !== undefined)
+    updates.minimumInvestmentAmount = input.minimumInvestmentAmount;
+  if (input.targetReturnRate !== undefined)
+    updates.targetReturnRate = input.targetReturnRate;
+  if (input.durationMonths !== undefined)
+    updates.durationMonths = input.durationMonths;
   if (input.goalAmount !== undefined) updates.goalAmount = input.goalAmount;
   if (input.currency !== undefined) updates.currency = input.currency.trim();
   if (input.isFeatured !== undefined) updates.isFeatured = input.isFeatured;

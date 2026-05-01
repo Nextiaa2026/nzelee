@@ -154,7 +154,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
   );
 
   return (
-    <div className="w-full max-w-sm space-y-6 text-left">
+    <div className="w-full max-w-md space-y-6 text-left">
       <div className="relative min-h-[140px]">
         <AnimatePresence mode="wait">
           <motion.div

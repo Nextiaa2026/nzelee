@@ -299,7 +299,7 @@ export const userProfileController = new Elysia()
     }
 
     try {
-      const { displayName, country, dateOfBirth, organization } = parsed.data;
+      const { displayName, country, dateOfBirth, currency } = parsed.data;
 
       await db
         .update(users)
@@ -307,7 +307,8 @@ export const userProfileController = new Elysia()
           name: displayName,
           country,
           dateOfBirth,
-          organization: organization ?? null,
+          preferredCurrency: currency,
+          organization: null,
           onboardingCompletedAt: new Date(),
           updatedAt: new Date(),
         })

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
+
 export const onboardingSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters"),
   country: z.string().length(2, "Please select a country"),
@@ -10,7 +12,9 @@ export const onboardingSchema = z.object({
     const age = new Date().getFullYear() - date.getFullYear();
     return age >= 18 && age <= 120;
   }, "You must be 18 or older"),
-  organization: z.string().optional(),
+  currency: z.enum(investmentCurrencyCodes, {
+    message: "Please select a currency",
+  }),
 });
 
 export type OnboardingData = z.infer<typeof onboardingSchema>;

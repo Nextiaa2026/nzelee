@@ -8,6 +8,16 @@ export const campaignStatusValues = [
   "CANCELLED",
 ] as const;
 
+const documentItemSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  url: z.string().trim().url(),
+});
+
+const galleryImageItemSchema = z.object({
+  url: z.string().trim().url(),
+  alt: z.string().trim().max(160).optional(),
+});
+
 export const adminCreateCampaignBodySchema = z.object({
   title: z.string().trim().min(1).max(180),
   slug: z
@@ -20,10 +30,17 @@ export const adminCreateCampaignBodySchema = z.object({
   description: z.string().trim().min(1),
   activitySector: z.string().trim().max(100).optional(),
   projectOwner: z.string().trim().max(120).optional(),
+  locationLabel: z.string().trim().max(160).optional(),
+  isVerified: z.boolean().optional(),
   tags: z.array(z.string().trim().min(1)).default([]),
-  documents: z.array(z.string().url()).default([]),
+  documents: z.array(documentItemSchema).default([]),
+  galleryImages: z.array(galleryImageItemSchema).default([]),
+  impactPoints: z.array(z.string().trim().min(1).max(180)).default([]),
   /** Goal in smallest currency unit (e.g. cents). */
   goalAmount: z.number().int().positive(),
+  minimumInvestmentAmount: z.number().int().positive().optional(),
+  targetReturnRate: z.number().int().min(0).max(100).optional(),
+  durationMonths: z.number().int().positive().max(240).optional(),
   currency: z.string().trim().max(12).optional(),
   isFeatured: z.boolean().optional(),
   status: z.enum(campaignStatusValues).optional(),
@@ -48,9 +65,16 @@ export const adminUpdateCampaignBodySchema = z
     description: z.string().trim().min(1).optional(),
     activitySector: z.string().trim().max(100).optional(),
     projectOwner: z.string().trim().max(120).optional(),
+    locationLabel: z.string().trim().max(160).optional(),
+    isVerified: z.boolean().optional(),
     tags: z.array(z.string().trim().min(1)).optional(),
-    documents: z.array(z.string().url()).optional(),
+    documents: z.array(documentItemSchema).optional(),
+    galleryImages: z.array(galleryImageItemSchema).optional(),
+    impactPoints: z.array(z.string().trim().min(1).max(180)).optional(),
     goalAmount: z.number().int().positive().optional(),
+    minimumInvestmentAmount: z.number().int().positive().optional(),
+    targetReturnRate: z.number().int().min(0).max(100).optional(),
+    durationMonths: z.number().int().positive().max(240).optional(),
     currency: z.string().trim().max(12).optional(),
     isFeatured: z.boolean().optional(),
     status: z.enum(campaignStatusValues).optional(),

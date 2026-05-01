@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { ageFromDateOfBirth } from "@/lib/utils";
+import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 
 const dateOfBirthSchema = z
   .string()
@@ -27,15 +28,9 @@ export const completeOnboardingSchema = z.object({
     .regex(/^[a-zA-Z]{2}$/, "Invalid country")
     .transform((c) => c.toUpperCase()),
   dateOfBirth: dateOfBirthSchema,
-  organization: z
-    .string()
-    .max(120, "Organization name is too long")
-    .optional()
-    .transform((s) => {
-      if (s === undefined || s === null) return undefined;
-      const t = s.trim();
-      return t.length > 0 ? t : undefined;
-    }),
+  currency: z.enum(investmentCurrencyCodes, {
+    message: "Pick a currency",
+  }),
 });
 
 export type CompleteOnboardingInput = z.infer<typeof completeOnboardingSchema>;

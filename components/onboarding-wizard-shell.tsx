@@ -46,7 +46,7 @@ export function OnboardingWizardShell({
         className={cn(
           "w-full mx-auto grid gap-10",
           centered
-            ? "max-w-xl lg:grid-cols-1"
+            ? "max-w-2xl lg:grid-cols-1"
             : "max-w-6xl lg:grid-cols-[minmax(0,240px)_1fr]",
         )}
       >
@@ -107,7 +107,13 @@ export function OnboardingWizardShell({
         </aside>
 
         <main className={cn("relative w-full")}>
-          <div className={cn("mb-8", !showHeading && !subtitle && "mb-4")}>
+          <div
+            className={cn(
+              "mb-8",
+              centered && "mx-auto w-full max-w-md",
+              !showHeading && !subtitle && "mb-4",
+            )}
+          >
             <div className="flex items-start justify-between">
               <p
                 className={cn(
@@ -124,10 +130,17 @@ export function OnboardingWizardShell({
               </h1>
             ) : null}
             {subtitle ? (
-              <p className="mt-4 max-w-2xl text-base leading-relaxed text-black/60">{subtitle}</p>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed text-black/60">
+                {subtitle}
+              </p>
             ) : null}
           </div>
-          <div className="relative">
+          <div
+            className={cn(
+              "relative",
+              centered && "mx-auto flex w-full max-w-md justify-center",
+            )}
+          >
             {children}
           </div>
         </main>

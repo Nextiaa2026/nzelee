@@ -61,13 +61,17 @@ const textareaClassName = cn(
 
 const formSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(180),
-  slug: z.string().trim().max(220).optional(),
   summary: z.string().trim().min(1, "Summary is required").max(320),
   description: z.string().trim().min(1, "Description is required"),
   sector: z.string().trim().min(1, "Sector is required"),
   projectOwner: z.string().trim().min(1, "Project owner is required").max(120),
   tags: z.array(z.string().trim().min(1)),
-  documents: z.array(z.string().url()),
+  documents: z.array(
+    z.object({
+      name: z.string().trim().min(1).max(120),
+      url: z.string().trim().url(),
+    }),
+  ),
   goalDollars: z.number().positive("Goal must be greater than zero"),
   currency: z.string().trim().min(1).max(12),
   isFeatured: z.boolean(),
@@ -89,7 +93,6 @@ function toDatetimeLocal(value: Date | string | null | undefined) {
 
 const emptyDefaults: FormValues = {
   title: "",
-  slug: "",
   summary: "",
   description: "",
   sector: "",
@@ -108,7 +111,6 @@ const emptyDefaults: FormValues = {
 function campaignToForm(row: UserCampaignProject): FormValues {
   return {
     title: row.title,
-    slug: row.slug,
     summary: row.summary,
     description: row.description,
     sector: row.activitySector ?? "",
@@ -226,14 +228,16 @@ export function ProjectsCrudModule({
       updateMut.mutate({
         id: editingId,
         body: {
+          slug: undefined,
           title: values.title,
-          slug: values.slug?.trim() || undefined,
           summary: values.summary,
           description: values.description,
           activitySector: values.sector.trim(),
           projectOwner: values.projectOwner.trim(),
           tags: values.tags,
           documents: values.documents,
+          galleryImages: [],
+          impactPoints: [],
           goalAmount,
           currency: values.currency.trim(),
           isFeatured: values.isFeatured,
@@ -249,14 +253,16 @@ export function ProjectsCrudModule({
       });
     } else {
       createMut.mutate({
+        slug: undefined,
         title: values.title,
-        slug: values.slug?.trim() || undefined,
         summary: values.summary,
         description: values.description,
         activitySector: values.sector.trim(),
         projectOwner: values.projectOwner.trim(),
         tags: values.tags,
         documents: values.documents,
+        galleryImages: [],
+        impactPoints: [],
         goalAmount,
         currency: values.currency.trim(),
         isFeatured: values.isFeatured,
@@ -527,7 +533,7 @@ export function ProjectsCrudModule({
 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="proj-sector">Secteur d'activité</Label>
+                    <Label htmlFor="proj-sector">{"Secteur d'activité"}</Label>
                     <Select
                       value={form.watch("sector")}
                       onValueChange={(v) =>
@@ -620,7 +626,7 @@ export function ProjectsCrudModule({
                 {/* Pro Tip Card */}
                 <div className="rounded-lg border border-deep-green/20 bg-deep-green/5 p-4">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-deep-green/10">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-deep-green/10">
                       <svg
                         className="h-4 w-4 text-deep-green"
                         fill="none"
@@ -647,7 +653,7 @@ export function ProjectsCrudModule({
                         EXEMPLE RECOMMANDÉ
                       </p>
                       <p className="mt-1 text-xs italic text-foreground/60">
-                        "Irrigation Connectée - Sahel IWRT"
+                        {"“Irrigation Connectée - Sahel IWRT”"}
                       </p>
                     </div>
                   </div>

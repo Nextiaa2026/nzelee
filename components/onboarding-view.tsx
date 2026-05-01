@@ -15,7 +15,7 @@ const STEPS: WizardStep[] = [
   { label: "Display name" },
   { label: "Country" },
   { label: "Date of birth" },
-  { label: "Organization" },
+  { label: "Currency" },
   { label: "Review" },
   { label: "Identity (optional)" },
 ];

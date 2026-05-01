@@ -13,8 +13,8 @@ import {
   UsersIcon,
   ImageOffIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useMemo, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -64,11 +64,21 @@ const textareaClassName = cn(
 
 const formSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(180),
-  slug: z.string().trim().max(220).optional(),
   summary: z.string().trim().min(1).max(320),
   description: z.string().trim().min(1),
+  activitySector: z.string().trim().max(100).optional(),
+  projectOwner: z.string().trim().max(120).optional(),
+  locationLabel: z.string().trim().max(160).optional(),
   goalDollars: z.number().positive("Goal must be greater than zero"),
+  minimumInvestment: z.number().positive().optional(),
+  targetReturnRate: z.number().int().min(0).max(100).optional(),
+  durationMonths: z.number().int().positive().max(240).optional(),
   currency: z.string().trim().min(1).max(12),
+  tagsInput: z.string().optional(),
+  impactPointsInput: z.string().optional(),
+  galleryImagesInput: z.string().optional(),
+  documentsInput: z.string().optional(),
+  isVerified: z.boolean(),
   isFeatured: z.boolean(),
   status: z.enum(campaignStatusValues),
   coverImageUrl: z.string().optional(),
@@ -88,11 +98,21 @@ function toDatetimeLocal(value: Date | string | null | undefined) {
 
 const emptyDefaults: FormValues = {
   title: "",
-  slug: "",
   summary: "",
   description: "",
+  activitySector: "",
+  projectOwner: "",
+  locationLabel: "",
   goalDollars: 1000,
+  minimumInvestment: 100,
+  targetReturnRate: 12,
+  durationMonths: 36,
   currency: "USD",
+  tagsInput: "",
+  impactPointsInput: "",
+  galleryImagesInput: "",
+  documentsInput: "",
+  isVerified: false,
   isFeatured: false,
   status: "DRAFT",
   coverImageUrl: "",
@@ -103,11 +123,28 @@ const emptyDefaults: FormValues = {
 function rowToForm(row: AdminCampaignRow): FormValues {
   return {
     title: row.title,
-    slug: row.slug,
     summary: row.summary,
     description: row.description,
+    activitySector: row.activitySector ?? "",
+    projectOwner: row.projectOwner ?? "",
+    locationLabel: row.locationLabel ?? "",
     goalDollars: row.goalAmount / 100,
+    minimumInvestment:
+      row.minimumInvestmentAmount != null
+        ? row.minimumInvestmentAmount / 100
+        : undefined,
+    targetReturnRate: row.targetReturnRate ?? undefined,
+    durationMonths: row.durationMonths ?? undefined,
     currency: row.currency,
+    tagsInput: (row.tags ?? []).join(", "),
+    impactPointsInput: (row.impactPoints ?? []).join("\n"),
+    galleryImagesInput: (row.galleryImages ?? [])
+      .map((img) => `${img.url}${img.alt ? `|${img.alt}` : ""}`)
+      .join("\n"),
+    documentsInput: (row.documents ?? [])
+      .map((doc) => `${doc.name}|${doc.url}`)
+      .join("\n"),
+    isVerified: row.isVerified ?? false,
     isFeatured: row.isFeatured,
     status: row.status,
     coverImageUrl: row.coverImageUrl ?? "",
@@ -162,6 +199,7 @@ export function AdminCampaignsPanel() {
   const pageSize = 20;
   const [investorsPage, setInvestorsPage] = useState(1);
   const investorsPageSize = 20;
+  const [wizardStep, setWizardStep] = useState(0);
 
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ["admin", "campaigns", { page, pageSize, search }],
@@ -204,19 +242,23 @@ export function AdminCampaignsPanel() {
     [rows, statusFilter],
   );
 
-  useEffect(() => {
-    setPage(1);
-  }, [search, statusFilter]);
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: emptyDefaults,
   });
+  const selectedStatus = useWatch({ control: form.control, name: "status" });
+  const selectedIsVerified =
+    useWatch({ control: form.control, name: "isVerified" }) ?? false;
+  const selectedIsFeatured =
+    useWatch({ control: form.control, name: "isFeatured" }) ?? false;
+  const selectedCoverImageUrl =
+    useWatch({ control: form.control, name: "coverImageUrl" }) ?? "";
 
   const openCreate = () => {
     setSheetMode("form");
     setEditingId(null);
     form.reset(emptyDefaults);
+    setWizardStep(0);
     setSheetOpen(true);
   };
 
@@ -225,6 +267,7 @@ export function AdminCampaignsPanel() {
       setSheetMode("form");
       setEditingId(row.id);
       form.reset(rowToForm(row));
+      setWizardStep(0);
       setSheetOpen(true);
     },
     [form],
@@ -287,22 +330,59 @@ export function AdminCampaignsPanel() {
 
   const onSubmit = form.handleSubmit((values) => {
     const goalAmount = Math.round(values.goalDollars * 100);
+    const minimumInvestmentAmount = values.minimumInvestment
+      ? Math.round(values.minimumInvestment * 100)
+      : undefined;
     const trimmedCover = values.coverImageUrl?.trim() ?? "";
+    const tags = (values.tagsInput ?? "")
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+    const impactPoints = (values.impactPointsInput ?? "")
+      .split("\n")
+      .map((point) => point.trim())
+      .filter(Boolean);
+    const galleryImages = (values.galleryImagesInput ?? "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [url, alt] = line.split("|").map((part) => part.trim());
+        return { url, alt: alt || undefined };
+      });
+    const documents = (values.documentsInput ?? "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line, idx) => {
+        const [name, url] = line.split("|").map((part) => part.trim());
+        if (url) return { name, url };
+        return { name: `Document ${idx + 1}`, url: name };
+      });
 
     if (editingId) {
       updateMut.mutate({
         id: editingId,
         body: {
+          slug: undefined,
           title: values.title,
-          slug: values.slug?.trim() || undefined,
           summary: values.summary,
           description: values.description,
+          activitySector: values.activitySector?.trim() || undefined,
+          projectOwner: values.projectOwner?.trim() || undefined,
+          locationLabel: values.locationLabel?.trim() || undefined,
+          isVerified: values.isVerified,
           goalAmount,
+          minimumInvestmentAmount,
+          targetReturnRate: values.targetReturnRate,
+          durationMonths: values.durationMonths,
           currency: values.currency.trim(),
           isFeatured: values.isFeatured,
           status: values.status,
-          tags: [],
-          documents: [],
+          tags,
+          impactPoints,
+          galleryImages,
+          documents,
           coverImageUrl: trimmedCover === "" ? null : trimmedCover,
           startsAt: values.startsAt?.trim()
             ? new Date(values.startsAt).toISOString()
@@ -314,16 +394,25 @@ export function AdminCampaignsPanel() {
       });
     } else {
       createMut.mutate({
+        slug: undefined,
         title: values.title,
-        slug: values.slug?.trim() || undefined,
         summary: values.summary,
         description: values.description,
+        activitySector: values.activitySector?.trim() || undefined,
+        projectOwner: values.projectOwner?.trim() || undefined,
+        locationLabel: values.locationLabel?.trim() || undefined,
+        isVerified: values.isVerified,
         goalAmount,
+        minimumInvestmentAmount,
+        targetReturnRate: values.targetReturnRate,
+        durationMonths: values.durationMonths,
         currency: values.currency.trim(),
         isFeatured: values.isFeatured,
         status: values.status,
-        tags: [],
-        documents: [],
+        tags,
+        impactPoints,
+        galleryImages,
+        documents,
         coverImageUrl: trimmedCover === "" ? undefined : trimmedCover,
         startsAt: values.startsAt?.trim()
           ? new Date(values.startsAt).toISOString()
@@ -597,16 +686,22 @@ export function AdminCampaignsPanel() {
         <div className="flex flex-wrap items-center gap-2">
           <SearchInput
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search title or slug"
             className="h-9 w-72 rounded-md bg-white"
           />
           <Select
             value={statusFilter}
             onValueChange={(value) =>
-              setStatusFilter(
-                value as "ALL" | (typeof campaignStatusValues)[number],
-              )
+              {
+                setStatusFilter(
+                  value as "ALL" | (typeof campaignStatusValues)[number],
+                );
+                setPage(1);
+              }
             }
           >
             <SelectTrigger className="h-9 w-36 rounded-md bg-white">
@@ -707,13 +802,61 @@ export function AdminCampaignsPanel() {
               <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
                 Cancel
               </FullTopSheetCancelButton>
-              <Button type="submit" form="campaign-sheet-form" disabled={busy}>
-                {busy
-                  ? "Saving…"
-                  : editingId
-                    ? "Save changes"
-                    : "Create listing"}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={wizardStep === 0 || busy}
+                  onClick={() => setWizardStep((step) => Math.max(0, step - 1))}
+                >
+                  Back
+                </Button>
+                {wizardStep < 2 ? (
+                  <Button
+                    type="button"
+                    disabled={busy}
+                    onClick={async () => {
+                      const stepFields: (keyof FormValues)[][] = [
+                        [
+                          "title",
+                          "summary",
+                          "description",
+                          "activitySector",
+                          "projectOwner",
+                          "locationLabel",
+                        ],
+                        [
+                          "goalDollars",
+                          "minimumInvestment",
+                          "targetReturnRate",
+                          "durationMonths",
+                          "currency",
+                          "status",
+                        ],
+                      ];
+                      const fields = stepFields[wizardStep];
+                      if (!fields) return;
+                      const ok = await form.trigger(fields);
+                      if (!ok) return;
+                      setWizardStep((step) => Math.min(2, step + 1));
+                    }}
+                  >
+                    Next
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    form="campaign-sheet-form"
+                    disabled={busy}
+                  >
+                    {busy
+                      ? "Saving…"
+                      : editingId
+                        ? "Save changes"
+                        : "Create listing"}
+                  </Button>
+                )}
+              </div>
             </div>
           )
         }
@@ -759,155 +902,215 @@ export function AdminCampaignsPanel() {
             onSubmit={onSubmit}
             className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4"
           >
-            <div className="space-y-2">
-              <Label htmlFor="camp-title">Title</Label>
-              <Input id="camp-title" {...form.register("title")} />
-              {form.formState.errors.title && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.title.message}
-                </p>
-              )}
+            <div className="flex items-center gap-2 rounded-lg border bg-black/3 p-2 text-xs">
+              {["Basics", "Finance", "Media & publish"].map((label, idx) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setWizardStep(idx)}
+                  className={cn(
+                    "rounded-md px-3 py-1.5 transition",
+                    wizardStep === idx
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-white text-black/70",
+                  )}
+                >
+                  {idx + 1}. {label}
+                </button>
+              ))}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="camp-slug">Slug (optional)</Label>
-              <Input
-                id="camp-slug"
-                {...form.register("slug")}
-                placeholder="auto-generated if empty"
-              />
-            </div>
+            {wizardStep === 0 ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-title">Title</Label>
+                  <Input id="camp-title" {...form.register("title")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-summary">Summary</Label>
+                  <Input id="camp-summary" {...form.register("summary")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-desc">Description</Label>
+                  <textarea
+                    id="camp-desc"
+                    className={textareaClassName}
+                    {...form.register("description")}
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-sector">Sector</Label>
+                    <Input id="camp-sector" {...form.register("activitySector")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-owner">Project owner</Label>
+                    <Input id="camp-owner" {...form.register("projectOwner")} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-location">Location</Label>
+                    <Input id="camp-location" {...form.register("locationLabel")} />
+                  </div>
+                </div>
+              </>
+            ) : null}
 
-            <div className="space-y-2">
-              <Label htmlFor="camp-summary">Summary</Label>
-              <Input id="camp-summary" {...form.register("summary")} />
-              {form.formState.errors.summary && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.summary.message}
-                </p>
-              )}
-            </div>
+            {wizardStep === 1 ? (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-goal">Funding goal</Label>
+                    <Input
+                      id="camp-goal"
+                      type="number"
+                      step="0.01"
+                      min={0.01}
+                      {...form.register("goalDollars", { valueAsNumber: true })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-minimum">Minimum investment</Label>
+                    <Input
+                      id="camp-minimum"
+                      type="number"
+                      step="0.01"
+                      min={0.01}
+                      {...form.register("minimumInvestment", {
+                        valueAsNumber: true,
+                      })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-return">Target return (%)</Label>
+                    <Input
+                      id="camp-return"
+                      type="number"
+                      {...form.register("targetReturnRate", { valueAsNumber: true })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-duration">Duration (months)</Label>
+                    <Input
+                      id="camp-duration"
+                      type="number"
+                      {...form.register("durationMonths", { valueAsNumber: true })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-currency">Currency</Label>
+                    <Input id="camp-currency" {...form.register("currency")} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select
+                    value={selectedStatus}
+                    onValueChange={(v) =>
+                      form.setValue("status", v as FormValues["status"], {
+                        shouldValidate: true,
+                      })
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {campaignStatusValues.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            ) : null}
 
-            <div className="space-y-2">
-              <Label htmlFor="camp-desc">Description</Label>
-              <textarea
-                id="camp-desc"
-                className={textareaClassName}
-                {...form.register("description")}
-              />
-              {form.formState.errors.description && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.description.message}
-                </p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="camp-goal">Funding goal</Label>
-                <Input
-                  id="camp-goal"
-                  type="number"
-                  step="0.01"
-                  min={0.01}
-                  {...form.register("goalDollars", { valueAsNumber: true })}
-                />
-                {form.formState.errors.goalDollars && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.goalDollars.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="camp-currency">Currency</Label>
-                <Input
-                  id="camp-currency"
-                  maxLength={12}
-                  {...form.register("currency")}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={form.watch("status")}
-                onValueChange={(v) =>
-                  form.setValue("status", v as FormValues["status"], {
-                    shouldValidate: true,
-                  })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  {campaignStatusValues.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-start gap-3 rounded-lg border p-3">
-              <Checkbox
-                id="camp-featured"
-                checked={form.watch("isFeatured")}
-                onCheckedChange={(v) =>
-                  form.setValue("isFeatured", v === true, {
-                    shouldValidate: true,
-                  })
-                }
-              />
-              <div className="space-y-1">
-                <Label htmlFor="camp-featured">Featured campaign</Label>
-                <p className="text-xs text-muted-foreground">
-                  Featured campaigns are prioritized in public campaign
-                  showcases.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Cover image</Label>
-              <FileDropZone
-                accept="image/*"
-                remoteUrl={form.watch("coverImageUrl")?.trim() || null}
-                isUploading={uploading}
-                disabled={busy}
-                onFileSelect={uploadCover}
-                onClear={() => {
-                  const current = form.getValues("coverImageUrl")?.trim();
-                  form.setValue("coverImageUrl", "");
-                  if (current) {
-                    void deleteCoverByUrl(current);
-                  }
-                }}
-                hint="Drag an image or click. Files upload to Cloudinary; max size follows NEXT_PUBLIC_MAX_UPLOAD_MB."
-              />
-              <input type="hidden" {...form.register("coverImageUrl")} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="camp-start">Starts (optional)</Label>
-                <Input
-                  id="camp-start"
-                  type="datetime-local"
-                  {...form.register("startsAt")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="camp-end">Ends (optional)</Label>
-                <Input
-                  id="camp-end"
-                  type="datetime-local"
-                  {...form.register("endsAt")}
-                />
-              </div>
-            </div>
+            {wizardStep === 2 ? (
+              <>
+                <div className="flex items-start gap-3 rounded-lg border p-3">
+                  <Checkbox
+                    id="camp-verified"
+                    checked={selectedIsVerified}
+                    onCheckedChange={(v) => form.setValue("isVerified", v === true)}
+                  />
+                  <Label htmlFor="camp-verified">Verified campaign</Label>
+                </div>
+                <div className="flex items-start gap-3 rounded-lg border p-3">
+                  <Checkbox
+                    id="camp-featured"
+                    checked={selectedIsFeatured}
+                    onCheckedChange={(v) => form.setValue("isFeatured", v === true)}
+                  />
+                  <Label htmlFor="camp-featured">Featured campaign</Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-tags">Tags (comma separated)</Label>
+                  <Input id="camp-tags" {...form.register("tagsInput")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-impact">Impact points (line-separated)</Label>
+                  <textarea
+                    id="camp-impact"
+                    className={textareaClassName}
+                    {...form.register("impactPointsInput")}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-gallery">Gallery URLs (line-separated)</Label>
+                  <textarea
+                    id="camp-gallery"
+                    className={textareaClassName}
+                    {...form.register("galleryImagesInput")}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="camp-docs">Document URLs (line-separated)</Label>
+                  <textarea
+                    id="camp-docs"
+                    className={textareaClassName}
+                    {...form.register("documentsInput")}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Cover image</Label>
+                  <FileDropZone
+                    accept="image/*"
+                    remoteUrl={selectedCoverImageUrl.trim() || null}
+                    isUploading={uploading}
+                    disabled={busy}
+                    onFileSelect={uploadCover}
+                    onClear={() => {
+                      const current = form.getValues("coverImageUrl")?.trim();
+                      form.setValue("coverImageUrl", "");
+                      if (current) void deleteCoverByUrl(current);
+                    }}
+                    hint="Drag an image or click. Files upload to Cloudinary; max size follows NEXT_PUBLIC_MAX_UPLOAD_MB."
+                  />
+                  <input type="hidden" {...form.register("coverImageUrl")} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-start">Starts (optional)</Label>
+                    <Input
+                      id="camp-start"
+                      type="datetime-local"
+                      {...form.register("startsAt")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="camp-end">Ends (optional)</Label>
+                    <Input
+                      id="camp-end"
+                      type="datetime-local"
+                      {...form.register("endsAt")}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : null}
           </form>
         )}
       </FullTopSheet>

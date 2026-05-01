@@ -4,7 +4,7 @@ export interface CompleteOnboardingParams {
   displayName: string;
   country: string;
   dateOfBirth: string;
-  organization?: string;
+  currency: string;
 }
 
 export function useCompleteOnboarding() {

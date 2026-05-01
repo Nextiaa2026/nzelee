@@ -20,6 +20,9 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { SITE_NAME } from "@/lib/brand";
+import { createMyInvestment } from "@/lib/services/user-investments";
+import { currencyMinorExponent } from "@/lib/services/exchange-rate";
+import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 
 type Campaign = {
   id: string;
@@ -67,6 +70,12 @@ const checkoutSchema = z
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
+  const safeSourceCurrency = investmentCurrencyCodes.includes(
+    campaign.currency as (typeof investmentCurrencyCodes)[number],
+  )
+    ? (campaign.currency as (typeof investmentCurrencyCodes)[number])
+    : "USD";
+
   const router = useRouter();
 
   const form = useForm<CheckoutFormValues>({
@@ -85,8 +94,12 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
   const paymentMethod = form.watch("paymentMethod");
   const mobileOperator = form.watch("mobileOperator");
 
-  const platformFee = Math.round(Number.parseInt(selectedAmount) * 0.0);
-  const totalAmount = Number.parseInt(selectedAmount) + platformFee;
+  const selectedMajorAmount = Math.max(
+    0,
+    Number.parseInt(selectedAmount || "0", 10) || 0,
+  );
+  const platformFeeMajor = Math.round(selectedMajorAmount * 0.0);
+  const totalMajorAmount = selectedMajorAmount + platformFeeMajor;
 
   const progress =
     campaign.goalAmount > 0
@@ -96,12 +109,16 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
         )
       : 0;
 
-  const formatMoney = (amountMinor: number) => {
-    return (amountMinor / 100).toLocaleString(undefined, {
+  const formatMoney = (amountMajor: number) => {
+    return amountMajor.toLocaleString(undefined, {
       style: "currency",
       currency: campaign.currency,
       maximumFractionDigits: 0,
     });
+  };
+
+  const toMinor = (amountMajor: number) => {
+    return Math.round(amountMajor * 10 ** currencyMinorExponent(campaign.currency));
   };
 
   const onSubmit = form.handleSubmit(async (data) => {
@@ -117,9 +134,21 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
     }
 
     try {
-      // TODO: Integrate with Notch Pay API
-      // For now, simulate the payment process
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const paymentMethod =
+        data.mobileOperator === "ORANGE_MONEY"
+          ? "ORANGE_MONEY"
+          : "MOBILE_MONEY";
+      const response = await createMyInvestment({
+        campaignRef: campaign.slug,
+        amount: toMinor(selectedMajorAmount),
+        sourceCurrency: safeSourceCurrency,
+        paymentMethod,
+        note: undefined,
+      });
+      if (!response.ok) {
+        toast.error(response.error?.message ?? "Payment failed");
+        return;
+      }
 
       toast.success("Payment initiated", {
         description:
@@ -137,7 +166,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
   });
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
@@ -160,10 +189,10 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
           {/* Left Column - Payment Form */}
           <div className="space-y-6">
             {/* Campaign Info */}
-            <Card className="overflow-hidden rounded-lg border border-foreground/10">
+            <Card className="overflow-hidden rounded-2xl border border-foreground/10">
               <CardContent className="p-6">
                 <div className="flex gap-4">
-                  <div className="relative h-24 w-32 flex-shrink-0 overflow-hidden rounded-lg">
+                  <div className="relative h-24 w-32 shrink-0 overflow-hidden rounded-lg">
                     {campaign.coverImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -172,7 +201,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-deep-green/10 to-mint/10">
+                      <div className="flex h-full items-center justify-center bg-linear-to-br from-deep-green/10 to-mint/10">
                         <svg
                           className="h-8 w-8 text-deep-green/30"
                           fill="none"
@@ -213,7 +242,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                     <p className="mt-2 text-sm text-foreground/60">
                       Montant d&apos;investissement:{" "}
                       <span className="font-semibold text-deep-green">
-                        {formatMoney(Number.parseInt(selectedAmount))}
+                        {formatMoney(selectedMajorAmount)}
                       </span>
                     </p>
                   </div>
@@ -222,7 +251,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
             </Card>
 
             {/* Amount Selection */}
-            <Card className="rounded-lg border border-foreground/10">
+            <Card className="rounded-2xl border border-foreground/10">
               <CardContent className="p-6">
                 <h3 className="mb-4 font-display text-lg font-semibold">
                   1. Choisissez votre montant
@@ -243,7 +272,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                           : "border-foreground/10 hover:border-deep-green/50"
                       }`}
                     >
-                      {formatMoney(Number.parseInt(preset))}
+                      {formatMoney(Number.parseInt(preset, 10))}
                     </button>
                   ))}
                 </div>
@@ -269,7 +298,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                     💡 <strong>Votre impact immédiat</strong>
                   </p>
                   <p className="mt-1 text-xs text-foreground/60">
-                    Avec {formatMoney(Number.parseInt(selectedAmount))}, vous
+                    Avec {formatMoney(selectedMajorAmount)}, vous
                     équipez une ferme familiale d&apos;une pompe solaire
                     autonome, doublant sa capacité de production annuelle.
                   </p>
@@ -278,7 +307,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
             </Card>
 
             {/* Payment Method */}
-            <Card className="rounded-lg border border-foreground/10">
+            <Card className="rounded-2xl border border-foreground/10">
               <CardContent className="p-6">
                 <h3 className="mb-4 font-display text-lg font-semibold">
                   2. Mode de paiement
@@ -427,7 +456,9 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
             <Button
               type="submit"
               disabled={
-                form.formState.isSubmitting || paymentMethod !== "MOBILE_MONEY"
+                form.formState.isSubmitting ||
+                paymentMethod !== "MOBILE_MONEY" ||
+                selectedMajorAmount <= 0
               }
               className="w-full rounded-lg bg-deep-green py-6 text-base font-medium hover:bg-deep-green/90"
             >
@@ -462,7 +493,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
 
           {/* Right Column - Summary */}
           <div className="space-y-6">
-            <Card className="sticky top-4 rounded-lg border border-foreground/10">
+            <Card className="sticky top-4 rounded-2xl border border-foreground/10">
               <CardContent className="p-6">
                 <h3 className="mb-4 font-display text-lg font-semibold">
                   Résumé
@@ -473,7 +504,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                       Montant d&apos;investissement
                     </span>
                     <span className="font-medium">
-                      {formatMoney(Number.parseInt(selectedAmount))}
+                      {formatMoney(selectedMajorAmount)}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -481,14 +512,14 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                       Frais de plateforme (0%)
                     </span>
                     <span className="font-medium">
-                      {formatMoney(platformFee)}
+                      {formatMoney(platformFeeMajor)}
                     </span>
                   </div>
                   <div className="border-t border-foreground/10 pt-3">
                     <div className="flex justify-between text-base">
                       <span className="font-semibold">Total à payer</span>
                       <span className="font-semibold text-deep-green">
-                        {formatMoney(totalAmount)}
+                        {formatMoney(totalMajorAmount)}
                       </span>
                     </div>
                   </div>
@@ -496,7 +527,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
 
                 <div className="mt-6 rounded-lg bg-mint/10 p-4">
                   <div className="flex items-start gap-2">
-                    <LockIcon className="mt-0.5 h-4 w-4 flex-shrink-0 text-mint-foreground" />
+                    <LockIcon className="mt-0.5 h-4 w-4 shrink-0 text-mint-foreground" />
                     <div>
                       <p className="text-xs font-semibold text-mint-foreground">
                         Transaction protégée par cryptage 256-bit
@@ -512,10 +543,10 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
             </Card>
 
             {/* Testimonial */}
-            <Card className="rounded-lg border border-foreground/10 bg-gradient-to-br from-deep-green/5 to-mint/5">
+            <Card className="rounded-2xl border border-foreground/10 bg-linear-to-br from-deep-green/5 to-mint/5">
               <CardContent className="p-6">
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-deep-green/20">
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-deep-green/20">
                     <div className="flex h-full items-center justify-center text-sm font-semibold text-deep-green">
                       M
                     </div>

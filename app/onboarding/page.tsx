@@ -31,7 +31,7 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-svh w-full bg-white">
-      <div className="mx-auto w-full max-w-4xl">
+      <div className="mx-auto w-full max-w-xl px-4 py-8 sm:px-6">
         <OnboardingView />
       </div>
     </div>

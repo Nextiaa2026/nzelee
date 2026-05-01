@@ -36,6 +36,13 @@ export type PublicCampaignInvestorRow = {
 
 export type PublicCampaignDetails = PublicCampaignBrowseRow & {
   description: string;
+  locationLabel: string | null;
+  isVerified: boolean;
+  minimumInvestmentAmount: number | null;
+  targetReturnRate: number | null;
+  durationMonths: number | null;
+  galleryImages: Array<{ url: string; alt?: string }>;
+  impactPoints: string[];
   startsAt: Date | null;
   endsAt: Date | null;
   investors: PublicCampaignInvestorRow[];
@@ -109,6 +116,13 @@ export async function getPublicCampaignBySlug(
         slug: string;
         summary: string;
         description: string;
+        locationLabel: string | null;
+        isVerified: boolean;
+        minimumInvestmentAmount: number | null;
+        targetReturnRate: number | null;
+        durationMonths: number | null;
+        galleryImages: Array<{ url: string; alt?: string }> | null;
+        impactPoints: string[] | null;
         coverImageUrl: string | null;
         goalAmount: number;
         raisedAmount: number;
@@ -127,6 +141,13 @@ export async function getPublicCampaignBySlug(
         slug: campaigns.slug,
         summary: campaigns.summary,
         description: campaigns.description,
+        locationLabel: campaigns.locationLabel,
+        isVerified: campaigns.isVerified,
+        minimumInvestmentAmount: campaigns.minimumInvestmentAmount,
+        targetReturnRate: campaigns.targetReturnRate,
+        durationMonths: campaigns.durationMonths,
+        galleryImages: campaigns.galleryImages,
+        impactPoints: campaigns.impactPoints,
         coverImageUrl: campaigns.coverImageUrl,
         goalAmount: campaigns.goalAmount,
         raisedAmount: campaigns.raisedAmount,
@@ -148,6 +169,13 @@ export async function getPublicCampaignBySlug(
         slug: campaigns.slug,
         summary: campaigns.summary,
         description: campaigns.description,
+        locationLabel: campaigns.locationLabel,
+        isVerified: campaigns.isVerified,
+        minimumInvestmentAmount: campaigns.minimumInvestmentAmount,
+        targetReturnRate: campaigns.targetReturnRate,
+        durationMonths: campaigns.durationMonths,
+        galleryImages: campaigns.galleryImages,
+        impactPoints: campaigns.impactPoints,
         coverImageUrl: campaigns.coverImageUrl,
         goalAmount: campaigns.goalAmount,
         raisedAmount: campaigns.raisedAmount,
@@ -208,6 +236,10 @@ export async function getPublicCampaignBySlug(
 
   return {
     ...campaign,
+    galleryImages: (campaign.galleryImages ?? []).map((img) =>
+      typeof img === "string" ? { url: img } : img,
+    ),
+    impactPoints: campaign.impactPoints ?? [],
     investors,
     reviews: reviewsRows.map((r) => ({
       id: r.id,

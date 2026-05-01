@@ -71,6 +71,10 @@ export const users = pgTable("users", {
   onboardingCompletedAt: timestamp("onboarding_completed_at", { mode: "date" }),
   /** ISO 3166-1 alpha-2 (e.g. US, GB), set during onboarding. */
   country: varchar("country", { length: 2 }),
+  /** Preferred display / wallet currency chosen at onboarding (ISO 4217). */
+  preferredCurrency: varchar("preferred_currency", { length: 12 })
+    .default("XAF")
+    .notNull(),
   /** Collected at onboarding for eligibility; must match ID at KYC. */
   dateOfBirth: date("date_of_birth", { mode: "date" }),
   organization: varchar("organization", { length: 120 }),
@@ -179,10 +183,28 @@ export const campaigns = pgTable("campaigns", {
   projectOwner: varchar("project_owner", { length: 120 }),
   /** Categorization labels for filtering and organization. */
   tags: jsonb("tags").$type<string[]>().default([]),
-  /** Array of document URLs for supporting materials. */
-  documents: jsonb("documents").$type<string[]>().default([]),
+  /** Country or city label displayed on campaign public page. */
+  locationLabel: varchar("location_label", { length: 160 }),
+  /** Whether the campaign has passed internal verification checks. */
+  isVerified: boolean("is_verified").default(false).notNull(),
+  /** Array of supporting campaign documents. */
+  documents: jsonb("documents")
+    .$type<Array<{ name: string; url: string }>>()
+    .default([]),
+  /** Optional gallery images shown in detail pages. */
+  galleryImages: jsonb("gallery_images")
+    .$type<Array<{ url: string; alt?: string }>>()
+    .default([]),
+  /** Impact highlight bullets/cards shown in campaign details. */
+  impactPoints: jsonb("impact_points").$type<string[]>().default([]),
   /** Cover / hero image (e.g. Cloudinary secure URL). */
   coverImageUrl: text("cover_image_url"),
+  /** Minimum accepted investment amount in smallest currency unit. */
+  minimumInvestmentAmount: bigint("minimum_investment_amount", { mode: "number" }),
+  /** Projected annual return percentage shown to investors. */
+  targetReturnRate: integer("target_return_rate"),
+  /** Campaign duration in months. */
+  durationMonths: integer("duration_months"),
   goalAmount: bigint("goal_amount", { mode: "number" }).notNull(),
   raisedAmount: bigint("raised_amount", { mode: "number" })
     .default(0)

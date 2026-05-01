@@ -21,6 +21,8 @@ import { getUsdRates } from "@/lib/services/exchange-rate";
 
 type PageProps = { params: Promise<{ slug: string }> };
 
+export const dynamic = "force-dynamic";
+
 function formatMoney(amountMinor: number, currency: string) {
   const code = currency.length === 3 ? currency : "USD";
   return (amountMinor / 100).toLocaleString(undefined, {

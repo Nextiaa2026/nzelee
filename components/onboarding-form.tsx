@@ -1,13 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AnimatePresence, motion } from "framer-motion";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { useCompleteOnboarding } from "@/hooks/use-onboarding-api";
 import { CountrySelect } from "@/components/country-select";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -18,7 +18,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useCompleteOnboarding } from "@/hooks/use-onboarding-api";
 import { onboardingSchema, type OnboardingData } from "@/lib/onboarding-schema";
+import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 import { ageFromDateOfBirth, cn } from "@/lib/utils";
 
 export const ONBOARDING_STEP_COUNT = 6;
@@ -28,7 +37,7 @@ type OnboardingFormProps = {
   onStepChange: (step: number) => void;
 };
 
-import { AnimatePresence, motion } from "framer-motion";
+const CURRENCY_CODES = investmentCurrencyCodes as readonly string[];
 
 export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
   const { data: session, update } = useSession();
@@ -40,6 +49,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
     handleSubmit,
     setValue,
     watch,
+    trigger,
     formState: { errors },
   } = useForm<OnboardingData>({
     resolver: zodResolver(onboardingSchema),
@@ -47,7 +57,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
       displayName: "",
       country: "",
       dateOfBirth: "",
-      organization: "",
+      currency: undefined as unknown as OnboardingData["currency"],
     },
     mode: "onChange",
   });
@@ -55,7 +65,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
   const displayName = watch("displayName");
   const country = watch("country");
   const dateOfBirth = watch("dateOfBirth");
-  const organization = watch("organization");
+  const currency = watch("currency");
 
   useEffect(() => {
     if (session?.user?.name && !displayName) {
@@ -65,6 +75,38 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
 
   const dobDate = dateOfBirth ? new Date(dateOfBirth) : undefined;
   const reviewAge = dobDate ? ageFromDateOfBirth(dobDate) : null;
+
+  const isStepSatisfied = (stepIndex: number) => {
+    if (stepIndex === 0) {
+      return displayName.trim().length >= 2 && !errors.displayName;
+    }
+    if (stepIndex === 1) {
+      return country.length === 2 && !errors.country;
+    }
+    if (stepIndex === 2) {
+      if (!dateOfBirth || !/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth)) return false;
+      if (errors.dateOfBirth) return false;
+      if (!dobDate) return false;
+      const age = ageFromDateOfBirth(dobDate);
+      return age >= 18 && age <= 120;
+    }
+    if (stepIndex === 3) {
+      return Boolean(currency && CURRENCY_CODES.includes(currency) && !errors.currency);
+    }
+    return true;
+  };
+
+  const canJumpToStep = useMemo(() => {
+    return (target: number) => {
+      if (target <= step) return true;
+      for (let i = 0; i < target; i += 1) {
+        if (!isStepSatisfied(i)) return false;
+      }
+      return true;
+    };
+  }, [step, displayName, country, dateOfBirth, currency, errors, dobDate]);
+
+  const stepValid = isStepSatisfied(step);
 
   const onSubmit = async (
     data: OnboardingData,
@@ -88,23 +130,37 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
     });
   };
 
-  const handleNext = () => {
-    if (step < ONBOARDING_STEP_COUNT - 1) {
+  const handleNext = async () => {
+    if (step >= ONBOARDING_STEP_COUNT - 1) return;
+
+    if (step <= 2) {
+      const field =
+        step === 0 ? "displayName" : step === 1 ? "country" : "dateOfBirth";
+      const ok = await trigger(field, { shouldFocus: true });
+      if (!ok) return;
       onStepChange(step + 1);
+      return;
+    }
+
+    if (step === 3) {
+      const ok = await trigger("currency", { shouldFocus: true });
+      if (!ok) return;
+      onStepChange(step + 1);
+      return;
+    }
+
+    if (step === 4) {
+      const ok = await trigger(undefined, { shouldFocus: true });
+      if (!ok) return;
+      onStepChange(step + 1);
+      return;
     }
   };
-
-  const stepValid = (() => {
-    if (step === 0) return !errors.displayName && displayName.length >= 2;
-    if (step === 1) return !errors.country && country.length === 2;
-    if (step === 2) return !errors.dateOfBirth && dateOfBirth.length > 0;
-    return true;
-  })();
 
   const isKycStep = step === ONBOARDING_STEP_COUNT - 1;
 
   return (
-    <div className="w-full max-w-sm space-y-6 text-left">
+    <div className="w-full max-w-md space-y-6 text-left">
       <div className="relative min-h-[140px]">
         <AnimatePresence mode="wait">
           <motion.div
@@ -227,20 +283,46 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
             ) : null}
 
             {step === 3 ? (
-              <div className="space-y-1.5 sm:space-y-2">
+              <div className="space-y-2">
                 <Label
-                  htmlFor="organization"
+                  htmlFor="currency"
                   className="text-sm font-semibold text-black"
                 >
-                  Organization{" "}
-                  <span className="font-normal text-black/50">(optional)</span>
+                  Preferred currency
                 </Label>
-                <Input
-                  id="organization"
-                  {...register("organization")}
-                  placeholder="Company or group name"
-                  autoComplete="organization"
-                />
+                <Select
+                  value={currency ?? ""}
+                  onValueChange={(val) =>
+                    setValue("currency", val as OnboardingData["currency"], {
+                      shouldValidate: true,
+                    })
+                  }
+                  disabled={completeOnboardingMutation.isPending}
+                >
+                  <SelectTrigger
+                    id="currency"
+                    className={cn(
+                      "h-11 w-full rounded-xl border-0 bg-black/4 hover:bg-black/6",
+                      errors.currency && "ring-1 ring-red-500/30",
+                    )}
+                  >
+                    <SelectValue placeholder="Select a currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {investmentCurrencyCodes.map((code) => (
+                      <SelectItem key={code} value={code}>
+                        {code}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.currency ? (
+                  <p className="text-[11px] text-red-500">{errors.currency.message}</p>
+                ) : (
+                  <p className="text-xs text-black/40">
+                    Used for amounts and summaries across your account.
+                  </p>
+                )}
               </div>
             ) : null}
 
@@ -273,37 +355,22 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   </div>
                   <div className="rounded-2xl border border-black/5 bg-black/[0.01] p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-black/30">
-                      Organization
+                      Currency
                     </span>
                     <p className="mt-1 text-base font-semibold text-black">
-                      {organization || "—"}
+                      {currency || "—"}
                     </p>
                   </div>
                 </div>
-                <p className="pt-4 text-center text-sm text-black/50">
-                  Continue to identity verification, or finish without it.
+                <p className="pt-2 text-center text-sm text-black/50">
+                  Continue to finish setup. You can verify your identity now or
+                  later from your dashboard.
                 </p>
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="h-auto px-0 text-black/40 underline-offset-4 hover:text-black transition-colors"
-                    disabled={completeOnboardingMutation.isPending}
-                    onClick={handleSubmit((data) => onSubmit(data))}
-                  >
-                    Save profile and skip identity verification
-                  </Button>
-                </div>
               </div>
             ) : null}
 
             {step === 5 ? (
               <div className="space-y-6">
-                <p className="text-center text-sm text-black/50">
-                  KYC unlocks investing. Not ready?{" "}
-                  <span className="font-semibold text-black">Skip for now</span>{" "}
-                  below.
-                </p>
                 <div className="mx-auto max-w-sm rounded-3xl border border-black/5 bg-black/[0.01] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
                   <p className="text-sm font-semibold text-black">
                     Before you start
@@ -341,8 +408,10 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
               <button
                 key={i}
                 type="button"
-                onClick={() => (i < step || stepValid ? onStepChange(i) : null)}
-                disabled={i > step && !stepValid}
+                onClick={() => {
+                  if (canJumpToStep(i)) onStepChange(i);
+                }}
+                disabled={!canJumpToStep(i)}
                 className={cn(
                   "h-1.5 rounded-full transition-all duration-500",
                   i === step
@@ -376,7 +445,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   disabled={completeOnboardingMutation.isPending}
                   onClick={handleSubmit((data) => onSubmit(data))}
                 >
-                  Skip for now
+                  Finish without KYC
                 </Button>
                 <Button
                   type="button"
@@ -398,7 +467,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                 type="button"
                 className="rounded-full bg-mint px-10 font-semibold text-mint-foreground shadow-[0_10px_20px_-5px_rgba(15,130,97,0.25)] hover:bg-mint/90 active:scale-95 transition-all"
                 disabled={!stepValid || completeOnboardingMutation.isPending}
-                onClick={handleNext}
+                onClick={() => void handleNext()}
               >
                 Continue
               </Button>

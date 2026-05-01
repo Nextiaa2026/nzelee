@@ -415,6 +415,43 @@ const SEED_CAMPAIGNS = [
   },
 ] as const;
 
+const DEFAULT_GALLERY = [
+  "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg",
+  "https://res.cloudinary.com/demo/image/upload/v1312461204/park.jpg",
+  "https://res.cloudinary.com/demo/image/upload/v1312461204/landscape.jpg",
+] as const;
+
+function structuredCampaignFields(
+  c: (typeof SEED_CAMPAIGNS)[number],
+  index: number,
+) {
+  const minAmount = Math.max(50_000, Math.round(c.goalAmount * 0.02));
+  const durationMonths = 12 + (index % 4) * 6;
+  const targetReturnRate = 8 + (index % 7);
+  const impactPoints = [
+    `Create local impact through ${c.title.toLowerCase()}.`,
+    "Deploy funding in verified milestones with transparent reporting.",
+  ];
+  const galleryImages = DEFAULT_GALLERY.map((url, i) => ({
+    url,
+    alt: `${c.title} gallery image ${i + 1}`,
+  }));
+  const documents = [
+    { name: "Investment Memo", url: "https://example.com/docs/investment-memo.pdf" },
+    { name: "Financial Projections", url: "https://example.com/docs/projections.pdf" },
+  ];
+  return {
+    locationLabel: "Nakuru County, Kenya",
+    isVerified: c.status !== "DRAFT",
+    minimumInvestmentAmount: minAmount,
+    targetReturnRate,
+    durationMonths,
+    impactPoints,
+    galleryImages,
+    documents,
+  };
+}
+
 const SEED_INVESTORS = [
   { name: "Amelia Carter", email: "amelia@nexiaa.local" },
   { name: "Marcus Lin", email: "marcus@nexiaa.local" },
@@ -468,7 +505,8 @@ async function ensureAdminUser(): Promise<string> {
 }
 
 async function seedCampaigns(creatorId: string) {
-  for (const c of SEED_CAMPAIGNS) {
+  for (const [index, c] of SEED_CAMPAIGNS.entries()) {
+    const extra = structuredCampaignFields(c, index);
     const [existing] = await db
       .select({ id: campaigns.id })
       .from(campaigns)
@@ -476,7 +514,37 @@ async function seedCampaigns(creatorId: string) {
       .limit(1);
 
     if (existing) {
-      console.log(`Campaign skipped (slug exists): ${c.slug}`);
+      await db
+        .update(campaigns)
+        .set({
+          creatorId,
+          title: c.title,
+          summary: c.summary,
+          description: c.description,
+          goalAmount: c.goalAmount,
+          raisedAmount: c.raisedAmount,
+          currency: c.currency,
+          status: c.status,
+          isFeatured: c.isFeatured,
+          startsAt: new Date(),
+          endsAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          updatedAt: new Date(),
+          ...extra,
+        })
+        .where(eq(campaigns.id, existing.id));
+
+      await db.delete(rewardTiers).where(eq(rewardTiers.campaignId, existing.id));
+      if (c.tiers.length > 0) {
+        await db.insert(rewardTiers).values(
+          c.tiers.map((t) => ({
+            campaignId: existing.id,
+            title: t.title,
+            description: t.description,
+            amount: t.amount,
+          })),
+        );
+      }
+      console.log(`Campaign refreshed: ${c.title} (${c.slug})`);
       continue;
     }
 
@@ -495,6 +563,7 @@ async function seedCampaigns(creatorId: string) {
         isFeatured: c.isFeatured,
         startsAt: new Date(),
         endsAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+        ...extra,
       })
       .returning({ id: campaigns.id });
 

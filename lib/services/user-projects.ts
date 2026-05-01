@@ -12,7 +12,7 @@ export type UserCampaignProject = {
   activitySector: string | null;
   projectOwner: string | null;
   tags: string[];
-  documents: string[];
+  documents: Array<{ name: string; url: string }>;
   goalAmount: number;
   currency: string;
   isFeatured: boolean;
@@ -55,6 +55,8 @@ export async function listMyCampaignProjects(
   return rows.map((row) => ({
     ...row,
     tags: row.tags ?? [],
-    documents: row.documents ?? [],
+    documents: (row.documents ?? []).map((doc, idx) =>
+      typeof doc === "string" ? { name: `Document ${idx + 1}`, url: doc } : doc,
+    ),
   }));
 }

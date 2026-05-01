@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -72,6 +72,8 @@ type ProfileDashboardViewProps = {
     createdAt: Date;
     type?: string;
   }>;
+  txPage: number;
+  txPageCount: number;
   kycStatus: "PENDING" | "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "EXPIRED";
 };
 
@@ -80,9 +82,13 @@ export function ProfileDashboardView({
   summary,
   wallet,
   transactions,
+  txPage,
+  txPageCount,
   kycStatus,
 }: ProfileDashboardViewProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
@@ -144,6 +150,12 @@ export function ProfileDashboardView({
   };
 
   const kycConfig = getKycStatusConfig(kycStatus);
+
+  const toTxPageHref = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("txPage", String(nextPage));
+    return `${pathname}?${params.toString()}`;
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -528,6 +540,33 @@ export function ProfileDashboardView({
               </TableBody>
             </Table>
           </div>
+          {transactions.length > 0 ? (
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={txPage <= 1}
+                onClick={() => router.push(toTxPageHref(Math.max(1, txPage - 1)))}
+              >
+                Previous
+              </Button>
+              <p className="text-xs font-medium text-foreground/50">
+                Page {txPage} of {txPageCount}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={txPage >= txPageCount}
+                onClick={() =>
+                  router.push(toTxPageHref(Math.min(txPageCount, txPage + 1)))
+                }
+              >
+                Next
+              </Button>
+            </div>
+          ) : null}
         </div>
       </motion.div>
 
