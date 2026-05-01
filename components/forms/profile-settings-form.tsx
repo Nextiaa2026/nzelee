@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -12,6 +14,8 @@ import { Label } from "@/components/ui/label";
 import { profileSettingsSchema } from "@/lib/validations/marketing-forms";
 import { cn } from "@/lib/utils";
 import { useUpdateProfile } from "@/hooks/use-profile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Camera, Loader2 } from "lucide-react";
 
 type Values = z.infer<typeof profileSettingsSchema>;
 
@@ -21,6 +25,7 @@ export function ProfileSettingsForm({
   defaultOrganization,
   defaultCountry,
   defaultDateOfBirth,
+  defaultImage,
   email,
 }: {
   className?: string;
@@ -28,10 +33,12 @@ export function ProfileSettingsForm({
   defaultOrganization: string;
   defaultCountry: string;
   defaultDateOfBirth: string;
+  defaultImage: string;
   email: string;
 }) {
   const router = useRouter();
   const updateProfile = useUpdateProfile();
+  const [uploadingAvatar, setUploadingAvatar] = React.useState(false);
   const form = useForm<Values>({
     resolver: zodResolver(profileSettingsSchema),
     defaultValues: {
@@ -39,8 +46,44 @@ export function ProfileSettingsForm({
       organization: defaultOrganization,
       country: defaultCountry,
       dateOfBirth: defaultDateOfBirth,
+      image: defaultImage,
     },
   });
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image too large (max 2MB)");
+      return;
+    }
+
+    setUploadingAvatar(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/v1/avatar", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const data = await res.json();
+      if (data.url) {
+        form.setValue("image", data.url, { shouldDirty: true });
+        toast.success("Profile image updated locally. Save changes to apply.");
+      }
+    } catch {
+      toast.error("Failed to upload profile image");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   return (
     <form
@@ -59,6 +102,41 @@ export function ProfileSettingsForm({
         });
       })}
     >
+      <div className="flex items-center gap-6 pb-2">
+        <div className="relative group">
+          <Avatar className="h-20 w-20 border-2 border-muted shadow-sm">
+            <AvatarImage src={form.watch("image") || undefined} />
+            <AvatarFallback className="text-2xl">
+              {defaultName.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <label
+            htmlFor="avatar-upload"
+            className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100"
+          >
+            {uploadingAvatar ? (
+              <Loader2 className="h-6 w-6 animate-spin" />
+            ) : (
+              <Camera className="h-6 w-6" />
+            )}
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+              disabled={uploadingAvatar}
+            />
+          </label>
+        </div>
+        <div className="text-sm">
+          <p className="font-medium">Profile Image</p>
+          <p className="text-muted-foreground text-xs mt-1 max-w-[200px]">
+            Click the image to upload a new avatar. JPG, PNG or WEBP (max 2MB).
+          </p>
+        </div>
+      </div>
+
       <div className="space-y-1.5 sm:space-y-2">
         <Label>Email</Label>
         <Input value={email} disabled readOnly className="bg-muted/50" />

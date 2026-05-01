@@ -91,7 +91,7 @@ export function DashboardAccountHeader({
                 )}
               >
                 <ShieldCheck className="size-3.5" />
-                <span className="hidden sm:inline">{kycDisplay.label}</span>
+                <span className="inline">{kycDisplay.label}</span>
               </div>
             </Link>
           )}

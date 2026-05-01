@@ -46,4 +46,5 @@ export const profileSettingsSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Date of birth must be YYYY-MM-DD")
     .optional()
     .or(z.literal("")),
+  image: z.string().url("Invalid image URL").optional().or(z.literal("")),
 });

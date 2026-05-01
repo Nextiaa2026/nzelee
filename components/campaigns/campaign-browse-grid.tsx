@@ -167,32 +167,32 @@ export function CampaignBrowseGrid({
             ))}
           </div>
           
-          <div className="flex items-center justify-between border-t border-foreground/10 pt-6">
-            <p className="text-sm text-muted-foreground">
-              Affichage de {filteredCampaigns.length > 0 ? ((currentPage - 1) * ITEMS_PER_PAGE) + 1 : 0} à {Math.min(currentPage * ITEMS_PER_PAGE, filteredCampaigns.length)} sur {filteredCampaigns.length}
+          <div className="flex flex-col items-center justify-between gap-4 border-t border-foreground/10 pt-6 sm:flex-row">
+            <p className="text-sm text-muted-foreground text-center sm:text-left">
+              Affichage de <span className="font-medium text-foreground">{filteredCampaigns.length > 0 ? ((currentPage - 1) * ITEMS_PER_PAGE) + 1 : 0}</span> à <span className="font-medium text-foreground">{Math.min(currentPage * ITEMS_PER_PAGE, filteredCampaigns.length)}</span> sur <span className="font-medium text-foreground">{filteredCampaigns.length}</span>
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1 || totalPages === 0}
-                className="rounded-xl"
+                className="rounded-xl px-3"
               >
                 <ChevronLeft className="mr-1 h-4 w-4" />
-                Précédent
+                <span className="hidden sm:inline">Précédent</span>
               </Button>
-              <div className="flex items-center gap-1 px-2 text-sm font-medium">
-                {totalPages > 0 ? currentPage : 0} <span className="text-muted-foreground">/ {totalPages}</span>
+              <div className="flex items-center text-sm font-medium">
+                {totalPages > 0 ? currentPage : 0} <span className="mx-1 text-muted-foreground">/</span> <span className="text-muted-foreground">{totalPages}</span>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages || totalPages === 0}
-                className="rounded-xl"
+                className="rounded-xl px-3"
               >
-                Suivant
+                <span className="hidden sm:inline">Suivant</span>
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             </div>

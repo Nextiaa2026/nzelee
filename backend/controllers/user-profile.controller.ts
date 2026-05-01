@@ -16,6 +16,7 @@ import {
   addCampaignFavorite,
   removeCampaignFavorite,
 } from "@/lib/services/campaign-favorites";
+import { executeImageUpload } from "@/lib/services/image-upload";
 
 /**
  * User profile and related endpoints (profile, notifications, favorites, onboarding)
@@ -39,19 +40,25 @@ export const userProfileController = new Elysia()
     }
 
     try {
-      const { displayName, email, phone, organization, country, dateOfBirth } = parsed.data;
+      const { displayName, email, phone, organization, country, dateOfBirth, image } = parsed.data;
+
+      const updateData: Partial<typeof users.$inferInsert> = {
+        name: displayName,
+        email,
+        phone: phone?.trim() ? phone.trim() : null,
+        organization: organization?.trim() ? organization.trim() : null,
+        country: country?.trim() ? country.trim().toUpperCase() : null,
+        dateOfBirth: dateOfBirth?.trim() ? new Date(dateOfBirth) : null,
+        updatedAt: new Date(),
+      };
+
+      if (image !== undefined) {
+        updateData.image = image?.trim() ? image.trim() : null;
+      }
 
       await db
         .update(users)
-        .set({
-          name: displayName,
-          email,
-          phone: phone?.trim() ? phone.trim() : null,
-          organization: organization?.trim() ? organization.trim() : null,
-          country: country?.trim() ? country.trim().toUpperCase() : null,
-          dateOfBirth: dateOfBirth?.trim() ? new Date(dateOfBirth) : null,
-          updatedAt: new Date(),
-        })
+        .set(updateData)
         .where(eq(users.id, session.user.id));
 
       return apiOk({ updated: true });
@@ -62,6 +69,15 @@ export const userProfileController = new Elysia()
         error instanceof Error ? error.message : "Failed to update profile",
       );
     }
+  })
+  // Upload profile avatar
+  .post("/avatar", async ({ request, set }) => {
+    const { status, result } = await executeImageUpload(request, {
+      folder: "nexiaa/avatars",
+      adminOnly: false,
+    });
+    set.status = status;
+    return result;
   })
   // List notifications
   .get("/notifications", async ({ set }) => {

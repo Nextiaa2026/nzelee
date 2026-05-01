@@ -1,71 +1,80 @@
-import { withAuth } from "next-auth/middleware";
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const path = req.nextUrl.pathname;
+export default auth(function middleware(req) {
+  const token = req.auth?.user;
+  const path = req.nextUrl.pathname;
 
-    if (path.startsWith("/admin")) {
-      if (!token?.emailVerified) {
-        return NextResponse.redirect(new URL("/login?error=unverified_email", req.url));
-      }
-      if (!token?.onboardingComplete) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
-      }
-      if (token.role !== "ADMIN") {
-        return NextResponse.redirect(new URL("/unauthorized", req.url));
-      }
-      return NextResponse.next();
+  // ── Admin routes ──────────────────────────────────────────────────────────
+  if (path.startsWith("/admin")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
     }
-
-    if (path.startsWith("/dashboard") || path.startsWith("/kyc")) {
-      if (!token?.emailVerified) {
-        return NextResponse.redirect(new URL("/login?error=unverified_email", req.url));
-      }
-      if (!token?.onboardingComplete) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
-      }
-      return NextResponse.next();
+    if (!token.emailVerified) {
+      return NextResponse.redirect(
+        new URL("/login?error=unverified_email", req.url),
+      );
     }
-
-    if (path.startsWith("/onboarding") && token && !token.emailVerified) {
-      return NextResponse.redirect(new URL("/login?error=unverified_email", req.url));
+    if (!token.onboardingComplete) {
+      return NextResponse.redirect(new URL("/onboarding", req.url));
     }
-
-    if (path === "/" && token) {
-      if (!token.emailVerified) {
-        return NextResponse.redirect(new URL("/login?error=unverified_email", req.url));
-      }
-      if (!token.onboardingComplete) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
-      }
+    if (token.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
-
     return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized({ req, token }) {
-        const path = req.nextUrl.pathname;
-        if (path.startsWith("/onboarding")) {
-          return !!token;
-        }
-        if (path.startsWith("/admin")) {
-          return !!token;
-        }
-        if (path.startsWith("/dashboard") || path.startsWith("/kyc")) {
-          return !!token;
-        }
-        if (path === "/") {
-          return true;
-        }
-        return true;
-      },
-    },
-  },
-);
+  }
+
+  // ── Dashboard / KYC routes ────────────────────────────────────────────────
+  if (path.startsWith("/dashboard") || path.startsWith("/kyc")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    if (!token.emailVerified) {
+      return NextResponse.redirect(
+        new URL("/login?error=unverified_email", req.url),
+      );
+    }
+    if (!token.onboardingComplete) {
+      return NextResponse.redirect(new URL("/onboarding", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // ── Onboarding — must be authenticated ───────────────────────────────────
+  if (path.startsWith("/onboarding")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    if (!token.emailVerified) {
+      return NextResponse.redirect(
+        new URL("/login?error=unverified_email", req.url),
+      );
+    }
+    return NextResponse.next();
+  }
+
+  // ── Home page — redirect authenticated + complete users ──────────────────
+  if (path === "/" && token) {
+    if (!token.emailVerified) {
+      return NextResponse.redirect(
+        new URL("/login?error=unverified_email", req.url),
+      );
+    }
+    if (!token.onboardingComplete) {
+      return NextResponse.redirect(new URL("/onboarding", req.url));
+    }
+  }
+
+  return NextResponse.next();
+});
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/kyc", "/kyc/:path*", "/admin/:path*", "/onboarding"],
+  matcher: [
+    "/",
+    "/dashboard/:path*",
+    "/kyc",
+    "/kyc/:path*",
+    "/admin/:path*",
+    "/onboarding",
+  ],
 };

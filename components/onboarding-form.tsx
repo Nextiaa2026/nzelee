@@ -75,13 +75,14 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
     setError(null);
     completeOnboardingMutation.mutate(data, {
       onSuccess: async () => {
+        // Force a full session update and page reload to break potential redirect loops
+        // between the server layout and client-side routing state.
         await update();
         if (options?.thenNavigate) {
-          router.push(options.thenNavigate);
+          window.location.href = options.thenNavigate;
         } else {
-          router.push("/dashboard");
+          window.location.href = "/dashboard";
         }
-        router.refresh();
       },
       onError: (e) => {
         setError(e instanceof Error ? e.message : "Could not save. Try again.");
@@ -105,8 +106,8 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
   const isKycStep = step === ONBOARDING_STEP_COUNT - 1;
 
   return (
-    <div className="w-full max-w-sm space-y-8 text-left">
-      <div className="relative min-h-[300px]">
+    <div className="w-full max-w-sm space-y-6 text-left">
+      <div className="relative min-h-[200px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={step}

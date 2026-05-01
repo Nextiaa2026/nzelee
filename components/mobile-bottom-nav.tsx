@@ -16,7 +16,10 @@ import {
   FileText,
   Lock,
   LogOut,
-  ShieldCheck
+  ShieldCheck,
+  LayoutDashboard,
+  Wallet2,
+  ArrowUpRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { 
@@ -32,7 +35,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getDashboardNavItems, dashboardSettingsItem } from "@/lib/dashboard/dashboard-nav-config";
 import { signOut, useSession } from "next-auth/react";
 
-const navItems = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  exact?: boolean;
+};
+
+const navItems: NavItem[] = [
   {
     href: "/",
     label: "Accueil",
@@ -55,13 +65,41 @@ const navItems = [
   },
 ];
 
+const dashboardNavItems: NavItem[] = [
+  {
+    href: "/dashboard",
+    label: "Aperçu",
+    icon: LayoutDashboard,
+    exact: true,
+  },
+  {
+    href: "/dashboard/markets",
+    label: "Marchés",
+    icon: LayoutGrid,
+  },
+  {
+    href: "/dashboard/wallet",
+    label: "Banque",
+    icon: Wallet2,
+  },
+  {
+    href: "/dashboard/saved",
+    label: "Favoris",
+    icon: Heart,
+  },
+];
+
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   
+  const isDashboard = pathname?.startsWith("/dashboard");
+  const currentItems = isDashboard ? dashboardNavItems : navItems;
+  
   // Dashboard items from config
-  const dashboardItems = getDashboardNavItems(); // isAdmin doesn't matter for the list
+  const dashboardItemsList = getDashboardNavItems(); 
+
 
   // Don't show on auth pages, admin, or onboarding
   if (
@@ -77,10 +115,10 @@ export function MobileBottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/40 bg-white/95 backdrop-blur-lg md:hidden safe-area-inset-bottom">
       <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map((item) => {
-          const isActive =
-            pathname === item.href ||
-            (item.href !== "/" && pathname?.startsWith(item.href));
+        {currentItems.map((item) => {
+          const isActive = item.exact 
+            ? pathname === item.href 
+            : pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
           const Icon = item.icon;
 
           return (
@@ -220,7 +258,7 @@ export function MobileBottomNav() {
                     <div className="space-y-1">
                       <h4 className="text-[10px] font-bold uppercase tracking-widest text-foreground/30 px-4 py-3">Espace Personnel</h4>
                       <div className="flex flex-col">
-                        {dashboardItems.map((item) => (
+                        {dashboardItemsList.map((item) => (
                           <SheetClose key={item.href} asChild>
                             <Link
                               href={item.href}
@@ -230,10 +268,25 @@ export function MobileBottomNav() {
                                 <item.icon className="h-5 w-5 text-deep-green" strokeWidth={1} />
                               </div>
                               <span className="text-sm font-normal text-foreground/80">{item.label}</span>
-                              <div className="ml-auto h-1.5 w-1.5 rounded-full bg-deep-green/10" />
+                              {currentItems.some(nav => nav.href === item.href) && (
+                                <div className="ml-auto h-1 w-1 rounded-full bg-deep-green/10" />
+                              )}
+                              <ArrowUpRight className="ml-auto h-4 w-4 text-foreground/20" />
                             </Link>
                           </SheetClose>
                         ))}
+                        <SheetClose asChild>
+                          <Link
+                            href={dashboardSettingsItem.href}
+                            className="flex items-center gap-4 border-b border-foreground/[0.03] px-4 py-4 transition-all active:bg-foreground/5 last:border-0"
+                          >
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-deep-green/5">
+                              <dashboardSettingsItem.icon className="h-5 w-5 text-deep-green" strokeWidth={1} />
+                            </div>
+                            <span className="text-sm font-normal text-foreground/80">{dashboardSettingsItem.label}</span>
+                            <ArrowUpRight className="ml-auto h-4 w-4 text-foreground/20" />
+                          </Link>
+                        </SheetClose>
                       </div>
                     </div>
                   )}

@@ -51,15 +51,15 @@ export function AboutPageClient() {
   const formattedStats = stats
     ? [
         {
-          v: `${(stats.totalRaised / 100 / 1000000).toFixed(1)}M XAF`,
+          v: `${((stats.totalRaised ?? 0) / 100 / 1_000_000).toFixed(1)}M XAF`,
           l: "Actifs investis",
         },
         {
-          v: `${(stats.totalInvestors / 1000).toFixed(0)}k+`,
+          v: `${((stats.totalInvestors ?? 0) / 1000).toFixed(0)}k+`,
           l: "Investisseurs actifs",
         },
-        { v: stats.activeCampaigns.toString(), l: "Campagnes actives" },
-        { v: `${stats.averageRating.toFixed(1)}★`, l: "Note moyenne" },
+        { v: String(stats.activeCampaigns ?? 0), l: "Campagnes actives" },
+        { v: `${(stats.averageRating ?? 0).toFixed(1)}★`, l: "Note moyenne" },
       ]
     : [
         { v: "...", l: "Actifs investis" },

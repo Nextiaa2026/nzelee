@@ -1,7 +1,6 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { eq } from "drizzle-orm";
-import type { NextAuthOptions } from "next-auth";
-import { getServerSession } from "next-auth/next";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -11,13 +10,7 @@ import type { AppUserRole } from "@/types/app-user";
 import { verifyPassword } from "@/lib/security/password";
 import { loginSchema } from "@/lib/validations/auth";
 
-/**
- * next-auth/react calls `new URL(data.url)` when `signIn(..., { redirect: false })`.
- * Relative paths throw in the browser — redirect strings from `signIn` must be absolute.
- */
-
-
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
   session: {
     strategy: "jwt",
@@ -52,12 +45,18 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Block unverified email addresses for credentials login.
+        // Google OAuth users are always considered verified.
+        if (!user.emailVerified) {
+          throw new Error("EMAIL_NOT_VERIFIED");
+        }
+
         const valid = await verifyPassword(
           parsed.data.password,
           user.passwordHash,
         );
         if (!valid) {
-          return null;
+          throw new Error("INVALID_CREDENTIALS");
         }
 
         return {
@@ -71,15 +70,13 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ account }) {
-      // OAuth providers like Google already verify emails.
-      // We only enforce manual verification for Credentials provider.
       return true;
     },
     async jwt({ token, user, account }) {
       if (user?.id) {
         token.sub = user.id;
       }
-      
+
       if (account) {
         token.provider = account.provider;
       }
@@ -104,9 +101,8 @@ export const authOptions: NextAuthOptions = {
 
         if (row) {
           token.role = (row.role ?? "USER") as AppUserRole;
-          // If the user used OAuth, we treat them as verified. 
-          // If credentials, we check the database timestamp.
-          token.emailVerified = token.provider !== "credentials" || Boolean(row.emailVerified);
+          token.emailVerified =
+            token.provider !== "credentials" || Boolean(row.emailVerified);
           token.onboardingComplete = Boolean(row.onboardingCompletedAt);
           token.name = row.name ?? undefined;
           token.organization = row.organization ?? null;
@@ -120,23 +116,25 @@ export const authOptions: NextAuthOptions = {
       if (session.user && token.sub) {
         session.user.id = token.sub;
         session.user.role = (token.role ?? "USER") as AppUserRole;
-        session.user.emailVerified = Boolean(token.emailVerified);
+        // Cast: v5 base type is `Date | null`; we intentionally store a boolean
+        (session.user as unknown as { emailVerified: boolean }).emailVerified =
+          Boolean(token.emailVerified);
         session.user.onboardingComplete = Boolean(token.onboardingComplete);
         if (typeof token.name === "string") {
           session.user.name = token.name;
         }
-        session.user.organization = token.organization ?? null;
-        session.user.kycStatus = token.kycStatus;
+        // Cast: v5 JWT uses `{}` for unknown fields; narrow to our declared type
+        session.user.organization =
+          (token.organization as string | null | undefined) ?? null;
+        session.user.kycStatus = token.kycStatus as
+          | "PENDING"
+          | "UNDER_REVIEW"
+          | "APPROVED"
+          | "REJECTED"
+          | "EXPIRED"
+          | undefined;
       }
       return session;
     },
   },
-};
-
-/**
- * Current session in the App Router / Route Handlers (same cookies as the incoming request).
- * NextAuth v4: implemented with `getServerSession`; aligns with the v5-style `auth()` API.
- */
-export async function auth() {
-  return getServerSession(authOptions);
-}
+});
