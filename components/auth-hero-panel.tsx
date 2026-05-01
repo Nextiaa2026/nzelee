@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LineChart, PiggyBank, ShieldCheck, Timer } from "lucide-react";
 
+import { CompanyBrandMark } from "@/components/company-brand-mark";
+
 const ROTATING_COPY = [
   "Three campaigns hit their minimums last week — backers saw updates in real time.",
   "You always see ticket size, fees, and key dates before you confirm a pledge.",
@@ -76,6 +78,9 @@ export function AuthHeroPanel() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_18%,oklch(0.78_0.16_145/0.22),transparent_58%)]" />
 
       <div className="relative flex h-full flex-col items-center justify-center px-8 py-12 xl:px-14">
+        <div className="mb-10 flex w-full max-w-md justify-center">
+          <CompanyBrandMark variant="horizontalDarkBg" href="/" />
+        </div>
         <div className="mb-8 w-full max-w-md">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-deep-green-foreground/20 bg-deep-green/40 px-3 py-1.5 text-xs font-medium text-deep-green-foreground/90 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-mint" />

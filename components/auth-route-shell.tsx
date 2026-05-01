@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthHeroPanel } from "@/components/auth-hero-panel";
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { SITE_NAME } from "@/lib/brand";
 
 type AuthMeta = {
@@ -145,12 +146,7 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
   const formPanel = (
     <div className="flex min-h-svh w-full flex-col bg-white px-6 py-10 sm:px-10 lg:w-[46%] lg:border-r lg:border-border lg:px-12 xl:px-16 dark:bg-card">
       <div className="mb-10 flex items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="font-display text-lg font-bold tracking-tight text-foreground"
-        >
-          {SITE_NAME}
-        </Link>
+        <CompanyBrandMark variant="horizontalLightBg" href="/" priority />
         <Link
           href="/"
           className="text-sm text-black/55 transition hover:text-black/90 dark:text-white/55 dark:hover:text-white/90"

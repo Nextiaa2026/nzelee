@@ -9,6 +9,7 @@ import {
   WebsiteStructuredData,
 } from "@/components/structured-data";
 import { SITE_NAME } from "@/lib/brand";
+import { BRAND_ICON_FILES } from "@/lib/brand-logos";
 import "./globals.css";
 /* Resolved by path so Turbopack can load the built CSS (package root import may not resolve). */
 import "../node_modules/tw-animate-css/dist/tw-animate.css";
@@ -90,7 +91,21 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      {
+        url: BRAND_ICON_FILES.favicon16,
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        url: BRAND_ICON_FILES.favicon32,
+        sizes: "32x32",
+        type: "image/png",
+      },
+    ],
+    apple: BRAND_ICON_FILES.appleTouch,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -118,9 +133,7 @@ export default async function RootLayout({
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icon-192.svg" />
-        <meta name="apple-mobile-web-app-title" content="Nzelle" />
+        <meta name="apple-mobile-web-app-title" content={SITE_NAME} />
         <meta name="mobile-web-app-capable" content="yes" />
         <OrganizationStructuredData />
         <WebsiteStructuredData />

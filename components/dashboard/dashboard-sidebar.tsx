@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { dashboardPanelClass } from "@/components/dashboard/dashboard-page-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,9 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden w-full min-w-0 max-w-[240px] shrink-0 lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide">
       <div className="space-y-4">
+        <div className="flex justify-center px-1 pb-1 lg:justify-start">
+          <CompanyBrandMark variant="horizontalLightBg" href="/dashboard" />
+        </div>
         <nav className={cn(dashboardPanelClass, "p-3 shadow-none")}>
           <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-widest text-foreground/45">
             Menu

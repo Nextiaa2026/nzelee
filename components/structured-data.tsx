@@ -1,4 +1,5 @@
 import { SITE_NAME } from "@/lib/brand";
+import { BRAND_ICON_FILES } from "@/lib/brand-logos";
 import { getStructuredDataStats } from "@/lib/services/structured-data";
 
 export async function OrganizationStructuredData() {
@@ -12,7 +13,7 @@ export async function OrganizationStructuredData() {
     description:
       "Private-market investment platform with structured listings, transparent fees, and comprehensive dashboards",
     url: baseUrl,
-    logo: `${baseUrl}/icon-512.svg`,
+    logo: `${baseUrl}${BRAND_ICON_FILES.pwa512}`,
     sameAs: [
       // Add your social media URLs here
       // "https://twitter.com/yourhandle",

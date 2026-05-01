@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Download, Smartphone, Share } from "lucide-react";
+import { X, Download, Share } from "lucide-react";
+import Image from "next/image";
+
 import { Button } from "@/components/ui/button";
 import { SITE_NAME } from "@/lib/brand";
+import { BRAND_ICON_FILES } from "@/lib/brand-logos";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -127,8 +130,14 @@ export function PWAInstaller() {
           </button>
 
           <div className="flex items-start gap-5">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-lg shadow-emerald-500/20 ring-4 ring-emerald-500/10">
-              <Smartphone className="h-7 w-7" />
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0b2d24] shadow-lg ring-4 ring-emerald-500/10">
+              <Image
+                src={BRAND_ICON_FILES.pwa192}
+                alt=""
+                width={56}
+                height={56}
+                className="h-full w-full object-cover"
+              />
             </div>
             
             <div className="flex-1 pr-4">

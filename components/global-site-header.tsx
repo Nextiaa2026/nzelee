@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SITE_NAME } from "@/lib/brand";
+import { BRAND_LOGOS } from "@/lib/brand-logos";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -91,12 +93,16 @@ export function GlobalSiteHeader() {
   const brand = (
     <Link
       href="/"
-      className={cn(
-        "font-display text-lg font-bold tracking-tight transition-opacity duration-300 hover:opacity-90 md:text-xl",
-        expandedHome ? "text-deep-green-foreground" : "text-white",
-      )}
+      className="block shrink-0 transition-opacity duration-300 hover:opacity-90"
     >
-      {SITE_NAME}
+      <Image
+        src={BRAND_LOGOS.headerOnDark}
+        alt={SITE_NAME}
+        width={140}
+        height={35}
+        className="h-7 w-auto md:h-8"
+        priority
+      />
     </Link>
   );
 

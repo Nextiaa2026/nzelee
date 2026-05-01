@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { auth } from "@/lib/auth";
 import { SITE_NAME } from "@/lib/brand";
 
@@ -21,8 +22,14 @@ export default async function KycLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-svh bg-[#FAFAFA] text-foreground flex flex-col">
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 md:px-6">
+      <main className="flex flex-1 flex-col items-center justify-center px-4 py-12 md:px-6">
         <div className="w-full max-w-xl">
+          <div className="mb-8 flex justify-center">
+            <CompanyBrandMark
+              variant="horizontalLightBg"
+              href="/dashboard"
+            />
+          </div>
           {children}
         </div>
       </main>

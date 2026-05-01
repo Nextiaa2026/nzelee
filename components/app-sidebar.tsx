@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   BankIcon,
   DashboardSquare01Icon,
@@ -14,6 +15,7 @@ import {
   CustomerSupportIcon,
 } from "@hugeicons/core-free-icons";
 
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { Hugeicon } from "@/components/hugeicon";
 import { SITE_NAME } from "@/lib/brand";
 import { NavMain } from "@/components/nav-main";
@@ -104,16 +106,16 @@ export function AppSidebar({
               asChild
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
-              <a href="/admin" title={SITE_NAME}>
-                <span className="flex flex-col gap-0.5 leading-tight">
-                  <span className="text-sm font-bold tracking-tight text-sidebar-foreground">
-                    {SITE_NAME}
-                  </span>
-                  <span className="text-xs font-medium text-sidebar-foreground/70">
-                    Admin
-                  </span>
+              <Link
+                href="/admin"
+                title={SITE_NAME}
+                className="flex flex-col items-start gap-1 leading-tight"
+              >
+                <CompanyBrandMark variant="horizontalDarkBg" href={null} />
+                <span className="text-xs font-medium text-sidebar-foreground/70">
+                  Admin
                 </span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

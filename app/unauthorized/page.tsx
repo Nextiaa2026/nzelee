@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +15,9 @@ export default function UnauthorizedPage() {
     <div className="flex min-h-svh items-center justify-center bg-muted p-6">
       <Card className="w-full max-w-md">
         <CardHeader>
+          <div className="mb-4 flex justify-center">
+            <CompanyBrandMark variant="horizontalLightBg" href="/" />
+          </div>
           <CardTitle>Admin only</CardTitle>
           <CardDescription>
             This area is restricted to administrator accounts. If you should have

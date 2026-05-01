@@ -10,6 +10,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { DashboardWalletHeaderPill } from "@/components/dashboard/dashboard-wallet-header-pill";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUnreadNotificationCount } from "@/hooks/use-notifications";
-import { SITE_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 
@@ -73,12 +73,11 @@ export function DashboardAccountHeader({
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           {/* Removed mobile hamburger menu as we now have bottom nav */}
           
-          <Link
+          <CompanyBrandMark
+            variant="horizontalLightBg"
             href="/dashboard"
-            className="font-display text-base font-bold tracking-tight text-foreground sm:text-lg"
-          >
-            {SITE_NAME}
-          </Link>
+            className="sm:h-9"
+          />
           <DashboardWalletHeaderPill />
         </div>
         <div className="flex shrink-0 items-center gap-2">
