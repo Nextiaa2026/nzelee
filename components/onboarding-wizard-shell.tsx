@@ -13,6 +13,8 @@ type OnboardingWizardShellProps = {
   children: React.ReactNode;
   /** Centered single-column layout for focused flows like onboarding/KYC. */
   centered?: boolean;
+  /** Whether the wizard is embedded in another layout (e.g. settings) */
+  embedded?: boolean;
   className?: string;
   topRightAction?: React.ReactNode;
 };
@@ -28,6 +30,7 @@ export function OnboardingWizardShell({
   subtitle,
   children,
   centered = false,
+  embedded = false,
   className,
   topRightAction,
 }: OnboardingWizardShellProps) {
@@ -35,7 +38,7 @@ export function OnboardingWizardShell({
   return (
     <div
       className={cn(
-        "flex min-h-svh flex-col items-center justify-center bg-white p-4",
+        !embedded && "min-h-svh flex-col items-center justify-center bg-white p-4",
         className,
       )}
     >
