@@ -1,10 +1,10 @@
 import { ProfileSettingsForm } from "@/components/forms/profile-settings-form";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 import { getUserAccountSummary } from "@/lib/services/user-account-summary";
 import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
+import { paymentTransactions, campaigns, users } from "@/lib/db/schema";
+import { eq, desc, or } from "drizzle-orm";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -37,44 +37,48 @@ export default async function DashboardSettingsPage() {
   const summary = await getUserAccountSummary(session.user.id);
   const wallet = await getUserWalletSnapshot(session.user.id);
 
-  const transactions = [
-    {
-      id: "1",
-      date: "12 Oct 2023",
-      title: "Investissement - Ferme Solaire Ndar",
-      category: "Infrastructure",
-      amount: "- 500 000 FCFA",
-      isPositive: false,
-      status: "Complété",
-    },
-    {
-      id: "2",
-      date: "05 Oct 2023",
-      title: "Dépôt de fonds",
-      category: "Portefeuille",
-      amount: "+ 1 000 000 FCFA",
-      isPositive: true,
-      status: "Complété",
-    },
-    {
-      id: "3",
-      date: "28 Sept 2023",
-      title: "Investissement - Coopérative Rizicole",
-      category: "Agri-tech",
-      amount: "- 250 000 FCFA",
-      isPositive: false,
-      status: "Complété",
-    },
-  ];
+  const dbTransactions = await db
+    .select({
+      id: paymentTransactions.id,
+      amount: paymentTransactions.amount,
+      type: paymentTransactions.type,
+      status: paymentTransactions.status,
+      createdAt: paymentTransactions.createdAt,
+      campaignTitle: campaigns.title,
+    })
+    .from(paymentTransactions)
+    .leftJoin(campaigns, eq(paymentTransactions.campaignId, campaigns.id))
+    .where(
+      or(
+        eq(paymentTransactions.payerUserId, session.user.id),
+        eq(paymentTransactions.payeeUserId, session.user.id),
+      ),
+    )
+    .orderBy(desc(paymentTransactions.createdAt))
+    .limit(10);
+
+  const transactions = dbTransactions.map((tx) => ({
+    id: tx.id,
+    date: tx.createdAt.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    title: tx.campaignTitle || (tx.type === "ADJUSTMENT" ? "Ajustement de solde" : "Transaction système"),
+    category: tx.type === "PLEDGE_CAPTURE" ? "Investissement" : "Portefeuille",
+    amount: `${tx.amount > 0 ? "+" : ""} ${(tx.amount / 100).toLocaleString("fr-FR")} FCFA`,
+    isPositive: tx.amount > 0,
+    status: tx.status === "SUCCEEDED" ? "Complété" : tx.status,
+  }));
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8 p-4 md:p-8">
+    <div className="mx-auto w-full max-w-5xl space-y-6 p-4 md:space-y-8 md:p-8">
       {/* Top Section: Profile & Wallet */}
       <div className="grid gap-6 md:grid-cols-[1.5fr_1fr]">
         {/* Profile Card */}
-        <div className="flex flex-col justify-center rounded-[2rem] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="flex flex-col justify-center rounded-3xl bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-5">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-5">
               <div className="relative">
                 <Avatar className="h-24 w-24 border-4 border-white shadow-md">
                   <AvatarImage src={user?.image ?? session.user.image ?? ""} />
@@ -91,7 +95,7 @@ export default async function DashboardSettingsPage() {
                   <Edit2 className="h-3 w-3" />
                 </div>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-center sm:text-left">
                 <h2 className="font-display text-2xl font-semibold text-foreground">
                   {session.user.name ?? "Moussa Diop"}
                 </h2>
@@ -123,11 +127,11 @@ export default async function DashboardSettingsPage() {
             
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="rounded-xl bg-deep-green px-6 font-semibold hover:bg-deep-green/90">
+                <Button className="w-full rounded-xl bg-deep-green px-6 font-semibold hover:bg-deep-green/90 sm:w-auto">
                   Modifier le profil
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="w-[calc(100%-2rem)] max-w-[425px] rounded-3xl">
                 <DialogHeader>
                   <DialogTitle>Modifier le profil</DialogTitle>
                   <DialogDescription>
@@ -150,7 +154,7 @@ export default async function DashboardSettingsPage() {
         </div>
 
         {/* Wallet Card */}
-        <div className="flex flex-col justify-between rounded-[2rem] bg-deep-green p-8 text-white shadow-lg">
+        <div className="flex flex-col justify-between rounded-3xl bg-deep-green p-6 md:p-8 text-white shadow-lg">
           <div>
             <p className="text-xs font-semibold tracking-widest text-white/60 uppercase">
               Solde Actuel
@@ -181,7 +185,7 @@ export default async function DashboardSettingsPage() {
       {/* Middle Section: Security & Notifications */}
       <div className="grid gap-6 md:grid-cols-2">
         {/* Security Card */}
-        <div className="rounded-[2rem] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="rounded-3xl bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-mint/20 text-deep-green">
               <Shield className="h-5 w-5" />
@@ -211,7 +215,7 @@ export default async function DashboardSettingsPage() {
         </div>
 
         {/* Notifications Card */}
-        <div className="rounded-[2rem] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="rounded-3xl bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <div className="mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-mint/20 text-deep-green">
               <Bell className="h-5 w-5" />
@@ -242,7 +246,7 @@ export default async function DashboardSettingsPage() {
       </div>
 
       {/* Bottom Section: Transactions */}
-      <div className="rounded-[2rem] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+      <div className="rounded-3xl bg-white p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-mint/20 text-deep-green">
@@ -259,11 +263,11 @@ export default async function DashboardSettingsPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b-0 bg-foreground/[0.02] text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                <th className="rounded-l-2xl py-4 pl-6 pr-4 font-bold">Date</th>
-                <th className="py-4 px-4 font-bold">Transaction</th>
-                <th className="py-4 px-4 font-bold">Catégorie</th>
-                <th className="py-4 px-4 font-bold">Montant</th>
-                <th className="rounded-r-2xl py-4 pr-6 pl-4 font-bold text-right sm:text-left">Statut</th>
+                <th className="rounded-l-2xl py-4 pl-6 pr-4 font-bold whitespace-nowrap">Date</th>
+                <th className="py-4 px-4 font-bold whitespace-nowrap">Transaction</th>
+                <th className="py-4 px-4 font-bold whitespace-nowrap">Catégorie</th>
+                <th className="py-4 px-4 font-bold whitespace-nowrap">Montant</th>
+                <th className="rounded-r-2xl py-4 pr-6 pl-4 font-bold text-right sm:text-left whitespace-nowrap">Statut</th>
               </tr>
             </thead>
             <tbody>
