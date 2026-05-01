@@ -193,14 +193,14 @@ export function DashboardHomeOverview({
               href={s.href}
               className="block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint/50 focus-visible:ring-offset-2"
             >
-              <div className="flex h-full flex-col justify-between bg-white p-6 rounded-xl border border-gray-200 shadow-sm transition-all hover:shadow-md hover:border-gray-300">
+              <div className="flex h-full flex-col justify-between bg-white p-6 rounded-2xl border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:shadow-[0_15px_45px_rgb(0,0,0,0.08)] hover:border-black/10">
                 <div className="flex items-start justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 text-deep-green">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-deep-green/5 text-deep-green">
                     <s.icon className="size-5" />
                   </div>
                   {idx < 3 && (
-                    <span className="text-xs font-semibold text-green-600">
-                      +{(Math.random() * 15 + 5).toFixed(1)}%
+                    <span className="rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-600">
+                      +{((idx * 3.7 + 5) % 15 + 5).toFixed(1)}%
                     </span>
                   )}
                 </div>

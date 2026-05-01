@@ -47,6 +47,7 @@ export function ProfileSettingsForm({
       country: defaultCountry,
       dateOfBirth: defaultDateOfBirth,
       image: defaultImage,
+      email: email,
     },
   });
 
@@ -139,7 +140,7 @@ export function ProfileSettingsForm({
 
       <div className="space-y-1.5 sm:space-y-2">
         <Label>Email</Label>
-        <Input value={email} disabled readOnly className="bg-muted/50" />
+        <Input {...form.register("email")} disabled readOnly className="bg-muted/50" />
         <p className="text-xs text-muted-foreground">
           Email changes are not available here.
         </p>
@@ -150,18 +151,23 @@ export function ProfileSettingsForm({
           id="prof-name"
           {...form.register("displayName")}
           autoComplete="name"
+          className="h-12 rounded-2xl bg-black/5 border-0 focus-visible:ring-deep-green/20 px-5"
         />
         {form.formState.errors.displayName && (
-          <p className="text-xs text-destructive">
+          <p className="text-xs font-medium text-red-500 px-1">
             {form.formState.errors.displayName.message}
           </p>
         )}
       </div>
       <div className="space-y-1.5 sm:space-y-2">
         <Label htmlFor="prof-org">Organization (optional)</Label>
-        <Input id="prof-org" {...form.register("organization")} />
+        <Input 
+          id="prof-org" 
+          {...form.register("organization")} 
+          className="h-12 rounded-2xl bg-black/5 border-0 focus-visible:ring-deep-green/20 px-5"
+        />
         {form.formState.errors.organization && (
-          <p className="text-xs text-destructive">
+          <p className="text-xs font-medium text-red-500 px-1">
             {form.formState.errors.organization.message}
           </p>
         )}
@@ -173,24 +179,33 @@ export function ProfileSettingsForm({
           {...form.register("country")}
           placeholder="US"
           maxLength={2}
-          className="uppercase"
+          className="h-12 rounded-2xl bg-black/5 border-0 focus-visible:ring-deep-green/20 px-5 uppercase"
         />
         {form.formState.errors.country && (
-          <p className="text-xs text-destructive">
+          <p className="text-xs font-medium text-red-500 px-1">
             {form.formState.errors.country.message}
           </p>
         )}
       </div>
       <div className="space-y-1.5 sm:space-y-2">
         <Label htmlFor="prof-dob">Date of birth (optional)</Label>
-        <Input id="prof-dob" type="date" {...form.register("dateOfBirth")} />
+        <Input 
+          id="prof-dob" 
+          type="date" 
+          {...form.register("dateOfBirth")} 
+          className="h-12 rounded-2xl bg-black/5 border-0 focus-visible:ring-deep-green/20 px-5"
+        />
         {form.formState.errors.dateOfBirth && (
-          <p className="text-xs text-destructive">
+          <p className="text-xs font-medium text-red-500 px-1">
             {form.formState.errors.dateOfBirth.message}
           </p>
         )}
       </div>
-      <Button type="submit" disabled={updateProfile.isPending}>
+      <Button 
+        type="submit" 
+        disabled={updateProfile.isPending}
+        className="w-full h-12 rounded-2xl bg-deep-green font-bold text-white shadow-lg shadow-deep-green/10 hover:bg-deep-green/90 active:scale-95 transition-all"
+      >
         {updateProfile.isPending ? "Saving…" : "Save changes"}
       </Button>
     </form>

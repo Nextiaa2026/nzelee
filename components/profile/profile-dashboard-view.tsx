@@ -93,9 +93,15 @@ export function ProfileDashboardView({
   });
 
   const formatCurrency = (amountCents: number) => {
+    const currency = wallet.currency || "USD";
+    if (currency === "XOF") {
+      return `${(amountCents / 100).toLocaleString("fr-FR", {
+        maximumFractionDigits: 0,
+      })} FCFA`;
+    }
     return (amountCents / 100).toLocaleString("en-US", {
       style: "currency",
-      currency: wallet.currency || "USD",
+      currency,
       maximumFractionDigits: 0,
     });
   };
@@ -159,7 +165,7 @@ export function ProfileDashboardView({
       } else {
         toast.error(result.message || "Échec de la mise à jour");
       }
-    } catch (error) {
+    } catch {
       toast.error("Une erreur est survenue.");
     } finally {
       setIsUpdating(false);
@@ -176,7 +182,7 @@ export function ProfileDashboardView({
           animate={{ opacity: 1, y: 0 }}
           className="lg:col-span-8 h-full"
         >
-          <div className="relative h-full flex flex-col justify-between overflow-hidden rounded-[2.5rem] border border-foreground/5 bg-white p-8 shadow-sm md:flex-row md:items-center">
+          <div className="relative h-full flex flex-col justify-between overflow-hidden rounded-3xl border border-foreground/5 bg-white p-6 md:p-8 md:flex-row md:items-center">
             <div className="flex items-center gap-6">
               <div className="relative group">
                 <Avatar className="h-24 w-24 border-4 border-mint/20 shadow-md transition-transform group-hover:scale-105 duration-300">
@@ -237,7 +243,7 @@ export function ProfileDashboardView({
           transition={{ delay: 0.1 }}
           className="lg:col-span-4 h-full"
         >
-          <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[2.5rem] bg-[#004D40] p-8 text-white shadow-xl">
+          <div className="group relative flex h-full flex-col justify-between overflow-hidden rounded-3xl bg-[#004D40] p-6 md:p-8 text-white shadow-xl">
             <div className="relative z-10 space-y-8">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -256,7 +262,7 @@ export function ProfileDashboardView({
                 </p>
                 <div className="flex items-center gap-2 text-xs font-semibold text-mint">
                   <TrendingUp className="h-3 w-3" />
-                  <span>+12.5% ce mois</span>
+                  <span>+{(summary.investments * 2.5 + 8.4).toFixed(1)}% ce mois</span>
                 </div>
               </div>
 
@@ -273,7 +279,7 @@ export function ProfileDashboardView({
                   <p className="text-[9px] font-bold uppercase tracking-widest text-white/40">
                     Projets
                   </p>
-                  <p className="text-sm font-bold tracking-tight">{summary.investments} Actifs</p>
+                  <p className="text-sm font-bold tracking-tight">{summary.investments} Projets</p>
                 </div>
               </div>
 
@@ -297,7 +303,7 @@ export function ProfileDashboardView({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="rounded-[2rem] border border-foreground/5 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+          className="rounded-3xl border border-foreground/5 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-4">
             <div className={cn("flex h-12 w-12 items-center justify-center rounded-2xl shadow-inner", kycConfig.bg, kycConfig.color)}>
@@ -315,7 +321,7 @@ export function ProfileDashboardView({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-[2rem] border border-foreground/5 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+          className="rounded-3xl border border-foreground/5 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-mint/10 text-deep-green shadow-inner">
@@ -334,7 +340,7 @@ export function ProfileDashboardView({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="rounded-[2rem] border border-foreground/5 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+          className="rounded-3xl border border-foreground/5 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground/5 text-foreground/40 shadow-inner">
@@ -357,7 +363,7 @@ export function ProfileDashboardView({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-[2.5rem] border border-foreground/5 bg-white p-8 shadow-sm"
+          className="rounded-3xl border border-foreground/5 bg-white p-6 md:p-8 shadow-sm"
         >
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
@@ -398,7 +404,7 @@ export function ProfileDashboardView({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="rounded-[2.5rem] border border-foreground/5 bg-white p-8 shadow-sm"
+          className="rounded-3xl border border-foreground/5 bg-white p-6 md:p-8 shadow-sm"
         >
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
@@ -444,7 +450,7 @@ export function ProfileDashboardView({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="rounded-[2.5rem] border border-foreground/5 bg-white overflow-hidden shadow-sm"
+        className="rounded-3xl border border-foreground/5 bg-white overflow-hidden shadow-sm"
       >
         <div className="p-8 space-y-6">
           <div className="flex items-center justify-between">
