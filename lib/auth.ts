@@ -5,13 +5,24 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
 import { db } from "@/lib/db";
-import { users, userEligibilityProfiles } from "@/lib/db/schema";
+import {
+  users,
+  accounts,
+  sessions,
+  verificationTokens,
+  userEligibilityProfiles,
+} from "@/lib/db/schema";
 import type { AppUserRole } from "@/types/app-user";
 import { verifyPassword } from "@/lib/security/password";
 import { loginSchema } from "@/lib/validations/auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }),
   session: {
     strategy: "jwt",
   },

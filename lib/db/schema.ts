@@ -109,9 +109,9 @@ export const accounts = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: varchar("type", { length: 255 }).$type<
-      "oauth" | "oidc" | "email" | "credentials"
-    >(),
+    type: varchar("type", { length: 255 })
+      .$type<"oauth" | "oidc" | "email" | "webauthn">()
+      .notNull(),
     provider: varchar("provider", { length: 255 }).notNull(),
     providerAccountId: varchar("provider_account_id", {
       length: 255,
