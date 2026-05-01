@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { apiFail, apiOk } from "@/lib/http/api-result";
 import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
 import { createCampaignReviewForSlug } from "@/lib/services/campaign-reviews";
@@ -19,11 +20,52 @@ import {
   listWithdrawalsForUser,
 } from "./services/user-withdrawal-requests.service";
 
+import { campaigns, paymentTransactions } from "@/lib/db/schema";
+import { desc, eq, or } from "drizzle-orm";
+
 /**
  * Authenticated user routes under `/api/v1`: withdrawals, investments, campaign reviews,
  * and signed-in image uploads.
  */
 export const userController = new Elysia()
+  .get("/transactions", async ({ set }) => {
+    const session = await auth();
+    const id = session?.user?.id;
+    if (!id) {
+      set.status = 401;
+      return apiFail("UNAUTHORIZED", "Sign in required.");
+    }
+
+    try {
+      const txs = await db
+        .select({
+          id: paymentTransactions.id,
+          amount: paymentTransactions.amount,
+          type: paymentTransactions.type,
+          status: paymentTransactions.status,
+          createdAt: paymentTransactions.createdAt,
+          campaignTitle: campaigns.title,
+        })
+        .from(paymentTransactions)
+        .leftJoin(campaigns, eq(paymentTransactions.campaignId, campaigns.id))
+        .where(
+          or(
+            eq(paymentTransactions.payerUserId, id),
+            eq(paymentTransactions.payeeUserId, id),
+          ),
+        )
+        .orderBy(desc(paymentTransactions.createdAt))
+        .limit(20);
+
+      return apiOk(txs);
+    } catch (error) {
+      set.status = 500;
+      return apiFail(
+        "SERVER_ERROR",
+        error instanceof Error ? error.message : "Failed to fetch transactions",
+      );
+    }
+  })
   .get("/wallet", async ({ set }) => {
     const session = await auth();
     const id = session?.user?.id;

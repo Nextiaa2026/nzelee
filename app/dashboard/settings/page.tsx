@@ -1,14 +1,11 @@
+"use client";
+
 import { ProfileSettingsForm } from "@/components/forms/profile-settings-form";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { getUserAccountSummary } from "@/lib/services/user-account-summary";
-import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
-import { paymentTransactions, campaigns, users } from "@/lib/db/schema";
-import { eq, desc, or } from "drizzle-orm";
+import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Shield, Bell, History, PlusCircle, Edit2, ChevronRight } from "lucide-react";
+import { Shield, Bell, History, PlusCircle, Edit2, ChevronRight, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,49 +14,35 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useMyProfile } from "@/hooks/use-my-profile";
+import { useMySummary } from "@/hooks/use-my-summary";
+import { useUserWallet } from "@/hooks/use-user-wallet";
+import { useMyTransactions } from "@/hooks/use-my-transactions";
 
-export default async function DashboardSettingsPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
+export default function DashboardSettingsPage() {
+  const { data: session } = useSession();
+  const { data: profile, isLoading: profileLoading } = useMyProfile();
+  const { data: summary, isLoading: summaryLoading } = useMySummary();
+  const { data: wallet, isLoading: walletLoading } = useUserWallet();
+  const { data: transactionsData, isLoading: transactionsLoading } = useMyTransactions();
+
+  if (!session) {
     return null;
   }
-  const [user] = await db
-    .select({
-      dateOfBirth: users.dateOfBirth,
-      country: users.country,
-      image: users.image,
-      phone: users.phone,
-    })
-    .from(users)
-    .where(eq(users.id, session.user.id))
-    .limit(1);
 
-  const summary = await getUserAccountSummary(session.user.id);
-  const wallet = await getUserWalletSnapshot(session.user.id);
+  const isLoading = profileLoading || summaryLoading || walletLoading || transactionsLoading;
 
-  const dbTransactions = await db
-    .select({
-      id: paymentTransactions.id,
-      amount: paymentTransactions.amount,
-      type: paymentTransactions.type,
-      status: paymentTransactions.status,
-      createdAt: paymentTransactions.createdAt,
-      campaignTitle: campaigns.title,
-    })
-    .from(paymentTransactions)
-    .leftJoin(campaigns, eq(paymentTransactions.campaignId, campaigns.id))
-    .where(
-      or(
-        eq(paymentTransactions.payerUserId, session.user.id),
-        eq(paymentTransactions.payeeUserId, session.user.id),
-      ),
-    )
-    .orderBy(desc(paymentTransactions.createdAt))
-    .limit(10);
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-deep-green" />
+      </div>
+    );
+  }
 
-  const transactions = dbTransactions.map((tx) => ({
+  const transactions = (transactionsData ?? []).map((tx) => ({
     id: tx.id,
-    date: tx.createdAt.toLocaleDateString("fr-FR", {
+    date: new Date(tx.createdAt).toLocaleDateString("fr-FR", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -81,9 +64,9 @@ export default async function DashboardSettingsPage() {
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-5">
               <div className="relative">
                 <Avatar className="h-24 w-24 border-4 border-white shadow-md">
-                  <AvatarImage src={user?.image ?? session.user.image ?? ""} />
+                  <AvatarImage src={profile?.image ?? session.user.image ?? ""} />
                   <AvatarFallback className="bg-mint text-3xl font-bold text-deep-green">
-                    {(session.user.name ?? "M D")
+                    {(profile?.name ?? session.user.name ?? "M D")
                       .split(" ")
                       .map((n) => n[0])
                       .join("")
@@ -97,28 +80,28 @@ export default async function DashboardSettingsPage() {
               </div>
               <div className="space-y-1 text-center sm:text-left">
                 <h2 className="font-display text-2xl font-semibold text-foreground">
-                  {session.user.name ?? "Moussa Diop"}
+                  {profile?.name ?? session.user.name ?? "Utilisateur"}
                 </h2>
                 <div className="flex flex-col space-y-0.5 text-sm text-muted-foreground">
                   <span className="flex items-center gap-2">
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    {session.user.email}
+                    {profile?.email ?? session.user.email}
                   </span>
-                  {user?.phone ? (
+                  {profile?.phone ? (
                     <span className="flex items-center gap-2">
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
-                      {user.phone}
+                      {profile.phone}
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
-                      +221 77 123 45 67
+                      Non renseigné
                     </span>
                   )}
                 </div>
@@ -139,14 +122,14 @@ export default async function DashboardSettingsPage() {
                   </DialogDescription>
                 </DialogHeader>
                 <ProfileSettingsForm
-                  email={session.user.email ?? ""}
-                  defaultName={session.user.name ?? ""}
-                  defaultOrganization={session.user.organization ?? ""}
-                  defaultCountry={user?.country ?? ""}
+                  email={profile?.email ?? session.user.email ?? ""}
+                  defaultName={profile?.name ?? session.user.name ?? ""}
+                  defaultOrganization={profile?.organization ?? ""}
+                  defaultCountry={profile?.country ?? ""}
                   defaultDateOfBirth={
-                    user?.dateOfBirth ? user.dateOfBirth.toISOString().slice(0, 10) : ""
+                    profile?.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().slice(0, 10) : ""
                   }
-                  defaultImage={user?.image ?? ""}
+                  defaultImage={profile?.image ?? ""}
                 />
               </DialogContent>
             </Dialog>
@@ -160,19 +143,19 @@ export default async function DashboardSettingsPage() {
               Solde Actuel
             </p>
             <h3 className="mt-2 font-display text-4xl font-semibold">
-              {(wallet.availableCents / 100).toLocaleString("fr-FR")} FCFA
+              {((wallet?.availableCents ?? 0) / 100).toLocaleString("fr-FR")} FCFA
             </h3>
           </div>
           <div className="mt-8 flex items-center justify-between">
             <div>
               <p className="text-[10px] font-bold text-white/50 uppercase">Total Investi</p>
               <p className="text-sm font-semibold mt-0.5">
-                {(summary.investedAmount / 100).toLocaleString("fr-FR")} FCFA
+                {((summary?.investedAmount ?? 0) / 100).toLocaleString("fr-FR")} FCFA
               </p>
             </div>
             <div>
               <p className="text-[10px] font-bold text-white/50 uppercase">Projets</p>
-              <p className="text-sm font-semibold mt-0.5">{summary.investments} Projets</p>
+              <p className="text-sm font-semibold mt-0.5">{summary?.investments ?? 0} Projets</p>
             </div>
           </div>
           <Button className="mt-6 w-full rounded-xl bg-amber-500 text-black hover:bg-amber-400 font-bold shadow-md">
@@ -271,32 +254,40 @@ export default async function DashboardSettingsPage() {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((tx) => (
-                <tr key={tx.id} className="border-b border-foreground/5 last:border-0 hover:bg-foreground/[0.01]">
-                  <td className="py-4 pl-6 pr-4 font-semibold text-foreground whitespace-nowrap">
-                    {tx.date}
-                  </td>
-                  <td className="py-4 px-4 font-medium text-foreground min-w-[200px]">
-                    {tx.title}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={tx.category === "Portefeuille" ? "rounded-full bg-amber-500/10 px-3 py-1 text-[10px] font-bold text-amber-600" : "rounded-full bg-mint/20 px-3 py-1 text-[10px] font-bold text-deep-green"}>
-                      {tx.category}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4 whitespace-nowrap">
-                    <span className="font-semibold text-foreground">
-                      {tx.amount}
-                    </span>
-                  </td>
-                  <td className="py-4 pr-6 pl-4 whitespace-nowrap text-right sm:text-left">
-                    <div className="inline-flex items-center gap-1.5 font-semibold text-foreground text-xs sm:text-sm">
-                      <span className="h-1.5 w-1.5 rounded-full bg-deep-green"></span>
-                      {tx.status}
-                    </div>
+              {transactions.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                    Aucune transaction trouvée.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                transactions.map((tx) => (
+                  <tr key={tx.id} className="border-b border-foreground/5 last:border-0 hover:bg-foreground/[0.01]">
+                    <td className="py-4 pl-6 pr-4 font-semibold text-foreground whitespace-nowrap">
+                      {tx.date}
+                    </td>
+                    <td className="py-4 px-4 font-medium text-foreground min-w-[200px]">
+                      {tx.title}
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={tx.category === "Portefeuille" ? "rounded-full bg-amber-500/10 px-3 py-1 text-[10px] font-bold text-amber-600" : "rounded-full bg-mint/20 px-3 py-1 text-[10px] font-bold text-deep-green"}>
+                        {tx.category}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 whitespace-nowrap">
+                      <span className="font-semibold text-foreground">
+                        {tx.amount}
+                      </span>
+                    </td>
+                    <td className="py-4 pr-6 pl-4 whitespace-nowrap text-right sm:text-left">
+                      <div className="inline-flex items-center gap-1.5 font-semibold text-foreground text-xs sm:text-sm">
+                        <span className={tx.status === "Complété" ? "h-1.5 w-1.5 rounded-full bg-deep-green" : "h-1.5 w-1.5 rounded-full bg-amber-500"}></span>
+                        {tx.status}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

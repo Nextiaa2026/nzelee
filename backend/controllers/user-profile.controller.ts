@@ -16,12 +16,71 @@ import {
   addCampaignFavorite,
   removeCampaignFavorite,
 } from "@/lib/services/campaign-favorites";
+import { getUserAccountSummary } from "@/lib/services/user-account-summary";
 import { executeImageUpload } from "@/lib/services/image-upload";
 
 /**
  * User profile and related endpoints (profile, notifications, favorites, onboarding)
  */
 export const userProfileController = new Elysia()
+  // Get profile details
+  .get("/profile", async ({ set }) => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      set.status = 401;
+      return apiFail("UNAUTHORIZED", "Sign in required");
+    }
+
+    try {
+      const [user] = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          image: users.image,
+          phone: users.phone,
+          country: users.country,
+          dateOfBirth: users.dateOfBirth,
+          organization: users.organization,
+          onboardingCompletedAt: users.onboardingCompletedAt,
+        })
+        .from(users)
+        .where(eq(users.id, session.user.id))
+        .limit(1);
+
+      if (!user) {
+        set.status = 404;
+        return apiFail("NOT_FOUND", "User not found");
+      }
+
+      return apiOk(user);
+    } catch (error) {
+      set.status = 500;
+      return apiFail(
+        "SERVER_ERROR",
+        error instanceof Error ? error.message : "Failed to fetch profile",
+      );
+    }
+  })
+  // Get account summary
+  .get("/summary", async ({ set }) => {
+    const session = await auth();
+    if (!session?.user?.id) {
+      set.status = 401;
+      return apiFail("UNAUTHORIZED", "Sign in required");
+    }
+
+    try {
+      const summary = await getUserAccountSummary(session.user.id);
+      return apiOk(summary);
+    } catch (error) {
+      set.status = 500;
+      return apiFail(
+        "SERVER_ERROR",
+        error instanceof Error ? error.message : "Failed to fetch summary",
+      );
+    }
+  })
   // Update profile settings
   .put("/profile", async ({ body, set }) => {
     const session = await auth();
