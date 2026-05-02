@@ -1,6 +1,8 @@
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
+import { serverAppOrigin } from "@/lib/server-app-origin";
+
 import {
   adminController,
   authController,
@@ -20,10 +22,7 @@ import { userController } from "./user.controller";
 export const API_BASE_PATH = "/api/v1";
 
 export function createApiApp() {
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.NEXTAUTH_URL ??
-    "http://localhost:3000";
+  const appUrl = serverAppOrigin();
 
   return new Elysia({ prefix: API_BASE_PATH })
     .use(

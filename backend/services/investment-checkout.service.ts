@@ -4,6 +4,7 @@ import { desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { campaigns, paymentTransactions, pledges, users } from "@/lib/db/schema";
+import { serverAppOrigin } from "@/lib/server-app-origin";
 import { investmentCurrencyCodes } from "@/lib/validations/user-investment";
 
 import { NotchPayService } from "./notchpay.service";
@@ -23,11 +24,7 @@ function toMajorAmount(minorAmount: number, currency: string) {
 }
 
 function appBaseUrl() {
-  return (
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.NEXTAUTH_URL ??
-    "http://localhost:3000"
-  ).replace(/\/$/, "");
+  return serverAppOrigin();
 }
 
 export function defaultNotchCallbackUrl() {
