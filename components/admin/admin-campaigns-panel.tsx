@@ -179,7 +179,7 @@ function formatDate(value: Date | string | null | undefined) {
 
 async function copyText(value: string, label: string) {
   await navigator.clipboard.writeText(value);
-  toast.success(`${label} copied`);
+  toast.success(`${label} copié`);
 }
 
 export function AdminCampaignsPanel() {
@@ -283,7 +283,7 @@ export function AdminCampaignsPanel() {
     mutationFn: adminCreateCampaign,
     onSuccess: (res) => {
       if (isApiSuccess(res)) {
-        toast.success("Listing created");
+        toast.success("Annonce créée");
         void qc.invalidateQueries({ queryKey: ["admin", "campaigns"] });
         setSheetOpen(false);
       } else {
@@ -303,23 +303,23 @@ export function AdminCampaignsPanel() {
     }) => adminUpdateCampaign(id, body),
     onSuccess: (res) => {
       if (isApiSuccess(res)) {
-        toast.success("Listing updated");
+        toast.success("Annonce mise à jour");
         void qc.invalidateQueries({ queryKey: ["admin", "campaigns"] });
         setSheetOpen(false);
       } else {
         toast.error(res.error.message);
       }
     },
-    onError: () => toast.error("Request failed"),
+    onError: () => toast.error("La requête a échoué"),
   });
 
   const deleteRow = useCallback(
     async (id: string) => {
-      if (!globalThis.confirm("Delete this listing? This cannot be undone."))
+      if (!globalThis.confirm("Supprimer cette annonce ? Cette action est irréversible."))
         return;
       const res = await adminDeleteCampaign(id);
       if (isApiSuccess(res)) {
-        toast.success("Listing deleted");
+        toast.success("Annonce supprimée");
         void qc.invalidateQueries({ queryKey: ["admin", "campaigns"] });
       } else {
         toast.error(res.error.message);
@@ -466,7 +466,7 @@ export function AdminCampaignsPanel() {
         if (oldCover && oldCover !== newUrl) {
           await deleteCoverByUrl(oldCover);
         }
-        toast.success("Image uploaded");
+        toast.success("Image téléchargée");
         return;
       }
       const msg =
@@ -542,6 +542,13 @@ export function AdminCampaignsPanel() {
             FAILED: "bg-red-500/10 text-red-600 border-red-500/20",
             CANCELLED: "bg-red-500/10 text-red-600 border-red-500/20",
           };
+          const statusLabels: Record<string, string> = {
+            DRAFT: "Brouillon",
+            ACTIVE: "Actif",
+            SUCCESSFUL: "Succès",
+            FAILED: "Échec",
+            CANCELLED: "Annulé",
+          };
           const colorClass =
             statusColors[row.original.status] ||
             "bg-secondary text-secondary-foreground";
@@ -552,7 +559,7 @@ export function AdminCampaignsPanel() {
                 colorClass,
               )}
             >
-              {row.original.status}
+              {statusLabels[row.original.status] || row.original.status}
             </span>
           );
         },
@@ -563,10 +570,10 @@ export function AdminCampaignsPanel() {
         cell: ({ row }) =>
           row.original.isFeatured ? (
             <span className="rounded-md bg-mint/20 px-2 py-0.5 text-xs font-medium text-mint-foreground">
-              Yes
+              Oui
             </span>
           ) : (
-            <span className="text-xs text-muted-foreground">No</span>
+            <span className="text-xs text-muted-foreground">Non</span>
           ),
       },
       {
@@ -655,7 +662,7 @@ export function AdminCampaignsPanel() {
     () => [
       {
         accessorKey: "backerName",
-        header: "Investor",
+        header: "Investisseur",
         cell: ({ row }) => row.original.backerName ?? "—",
       },
       {
@@ -664,7 +671,7 @@ export function AdminCampaignsPanel() {
       },
       {
         accessorKey: "amount",
-        header: "Amount",
+        header: "Montant",
         cell: ({ row }) => formatMoney(row.original.amount, "USD"),
       },
       {
@@ -705,7 +712,7 @@ export function AdminCampaignsPanel() {
             }
           >
             <SelectTrigger className="h-9 w-36 rounded-md bg-white">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder="Statut" />
             </SelectTrigger>
             <SelectContent className="bg-white">
               <SelectItem value="ALL">Tous les statuts</SelectItem>
@@ -777,24 +784,24 @@ export function AdminCampaignsPanel() {
         }}
         title={
           sheetMode === "investors"
-            ? `Investors — ${selectedCampaign?.title ?? "Listing"}`
+            ? `Investisseurs — ${selectedCampaign?.title ?? "Annonce"}`
             : editingId
-              ? "Edit listing"
-              : "New listing"
+              ? "Modifier l'annonce"
+              : "Nouvelle annonce"
         }
         description={
           sheetMode === "investors"
-            ? "All investments for this listing, including investor names and amounts."
+            ? "Tous les investissements pour cette annonce, incluant les noms des investisseurs et les montants."
             : editingId
-              ? "Update fields and save. Amounts are in major units (e.g. dollars); stored as cents."
-              : "Create a listing investors can browse. Cover image uploads go to Cloudinary."
+              ? "Mettez à jour les champs et enregistrez. Les montants sont en unités majeures (ex: dollars) ; stockés en centimes."
+              : "Créez une annonce que les investisseurs peuvent consulter. Les téléchargements d'images de couverture vont sur Cloudinary."
         }
         bodyClassName="gap-4"
         footer={
           sheetMode === "investors" ? (
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
               <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
-                Close
+                Fermer
               </FullTopSheetCancelButton>
             </div>
           ) : (

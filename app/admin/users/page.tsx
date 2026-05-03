@@ -1,9 +1,9 @@
 "use client";
 
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react";
-import { toast } from "sonner";
 import { useMemo, useState } from "react";
 
+import { AddUserSheet } from "@/components/admin/add-user-sheet";
 import { AdminUsersTable } from "@/components/admin/tables/admin-users-table";
 import { MockQueryPlaceholder } from "@/components/mock-query-placeholder";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { useAdminUsers } from "@/hooks/use-admin-queries";
 
 export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
+  const [addUserOpen, setAddUserOpen] = useState(false);
   const [roleFilter, setRoleFilter] = useState<
     "ALL" | "USER" | "CREATOR" | "ADMIN"
   >("ALL");
@@ -41,7 +42,7 @@ export default function AdminUsersPage() {
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:py-6 lg:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Utilisateurs</h1>
         <div className="flex flex-wrap items-center gap-2">
           <SearchInput
             value={search}
@@ -49,7 +50,7 @@ export default function AdminUsersPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Search name or email"
+            placeholder="Rechercher par nom ou email"
             className="h-9 w-72 rounded-md bg-white"
           />
           <Select
@@ -60,24 +61,29 @@ export default function AdminUsersPage() {
             }}
           >
             <SelectTrigger className="h-9 w-36 rounded-md bg-white">
-              <SelectValue placeholder="Role" />
+              <SelectValue placeholder="Rôle" />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              <SelectItem value="ALL">All roles</SelectItem>
-              <SelectItem value="USER">USER</SelectItem>
-              <SelectItem value="CREATOR">CREATOR</SelectItem>
+              <SelectItem value="ALL">Tous les rôles</SelectItem>
+              <SelectItem value="USER">UTILISATEUR</SelectItem>
+              <SelectItem value="CREATOR">CRÉATEUR</SelectItem>
               <SelectItem value="ADMIN">ADMIN</SelectItem>
             </SelectContent>
           </Select>
           <Button
             type="button"
             size="sm"
-            className="rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-            onClick={() => toast.info("New user flow coming next.")}
+            className="rounded-md bg-mint text-mint-foreground hover:bg-mint/90"
+            onClick={() => setAddUserOpen(true)}
           >
             <PlusIcon className="size-4" />
-            New user
+            Nouvel utilisateur
           </Button>
+          <AddUserSheet 
+            open={addUserOpen} 
+            onOpenChange={setAddUserOpen} 
+            onSuccess={() => void refetch()}
+          />
         </div>
       </div>
       <MockQueryPlaceholder

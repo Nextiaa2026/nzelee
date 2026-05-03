@@ -92,11 +92,11 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem className="gap-2">
                 <Hugeicon icon={UserCircleIcon} size={18} className="opacity-70" />
-                Account
+                Compte
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2">
                 <Hugeicon icon={CreditCardIcon} size={18} className="opacity-70" />
-                Billing
+                Facturation
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2">
                 <Hugeicon
@@ -113,7 +113,7 @@ export function NavUser({
               onClick={() => signOut({ callbackUrl: "/login" })}
             >
               <Hugeicon icon={Logout01Icon} size={18} className="opacity-70" />
-              Log out
+              Se déconnecter
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -25,8 +25,8 @@ export function DashboardSidebar() {
   return (
     <aside className="hidden w-full min-w-0 max-w-[240px] shrink-0 lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto scrollbar-hide">
       <div className="space-y-4 pt-2">
-        <nav className={cn(dashboardPanelClass, "p-3 shadow-none")}>
-          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-widest text-foreground/45">
+        <nav className={cn(dashboardPanelClass, "p-3 shadow-none bg-deep-green border-deep-green-foreground/10")}>
+          <p className="px-2 pb-2 text-[10px] font-bold uppercase tracking-widest text-deep-green-foreground/50">
             Menu
           </p>
           <div className="space-y-0.5">
@@ -39,8 +39,8 @@ export function DashboardSidebar() {
                   className={cn(
                     "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                     active
-                      ? "bg-deep-green text-deep-green-foreground shadow-sm"
-                      : "text-foreground/70 hover:bg-surface-muted hover:text-foreground",
+                      ? "bg-mint text-mint-foreground shadow-sm"
+                      : "text-deep-green-foreground/70 hover:bg-white/10 hover:text-deep-green-foreground",
                   )}
                 >
                   <item.icon className="size-4 shrink-0 opacity-90" />

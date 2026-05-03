@@ -54,7 +54,7 @@ export function NavMain({
               <SidebarMenuButton
                 tooltip={item.title}
                 asChild
-                  className="text-sidebar-foreground/85 hover:bg-white/12 hover:text-sidebar-foreground data-[active=true]:bg-white/22 data-[active=true]:text-sidebar-foreground data-[active=true]:shadow-[inset_0_0_0_1px_oklch(1_0_0/0.18)]"
+                className="text-sidebar-foreground/85 hover:bg-white/12 hover:text-sidebar-foreground data-[active=true]:bg-mint data-[active=true]:text-mint-foreground data-[active=true]:shadow-none"
                 isActive={
                   item.url !== "#" &&
                   (item.url === "/admin"

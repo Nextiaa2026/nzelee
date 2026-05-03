@@ -30,7 +30,7 @@ export default async function UserDashboardLayout({
     : null;
 
   return (
-    <div className="min-h-svh text-foreground">
+    <div className="min-h-svh bg-[#f7fcf8] text-foreground">
       <DashboardAccountHeader
         user={{
           name: session.user.name ?? "Membre",

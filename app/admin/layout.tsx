@@ -27,13 +27,13 @@ export default async function AdminLayout({
 
   const style = {
     "--sidebar-width": "calc(var(--spacing) * 72)",
-    "--header-height": "calc(var(--spacing) * 12)",
+    "--header-height": "calc(var(--spacing) * 16)",
     "--sidebar": "var(--deep-green)",
     "--sidebar-foreground": "var(--deep-green-foreground)",
     "--sidebar-primary": "var(--mint)",
     "--sidebar-primary-foreground": "var(--mint-foreground)",
-    "--sidebar-accent": "oklch(1 0 0 / 0.12)",
-    "--sidebar-accent-foreground": "var(--deep-green-foreground)",
+    "--sidebar-accent": "var(--mint)",
+    "--sidebar-accent-foreground": "var(--mint-foreground)",
     "--sidebar-border": "oklch(1 0 0 / 0.14)",
     "--sidebar-ring": "var(--mint)",
   } as React.CSSProperties;
@@ -47,9 +47,9 @@ export default async function AdminLayout({
           avatar: session.user.image ?? "",
         }}
       />
-      <SidebarInset className="bg-gray-50">
+      <SidebarInset className="bg-[#f7fcf8] flex flex-col min-h-screen">
         <SiteHeader />
-        <div className="flex flex-1 flex-col bg-gray-50 p-6">{children}</div>
+        <div className="flex flex-1 flex-col bg-[#f7fcf8] p-6">{children}</div>
       </SidebarInset>
     </DashboardProviders>
   );

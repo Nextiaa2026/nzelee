@@ -47,7 +47,7 @@ function KycImagePreview({
           "flex items-center justify-center p-4 text-center text-xs text-muted-foreground",
         )}
       >
-        No {label}
+        Pas de {label}
       </div>
     );
   }
@@ -98,7 +98,7 @@ export function AdminKycSubmissionsTable({
         toast.error(res.error.message);
         return;
       }
-      toast.success("KYC decision saved");
+      toast.success("Décision KYC enregistrée");
       setReviewing(null);
       setRejectReason("");
       await qc.invalidateQueries({ queryKey: adminQueryKeys.kycSubmissions() });
@@ -112,7 +112,7 @@ export function AdminKycSubmissionsTable({
     () => [
       {
         accessorKey: "userEmail",
-        header: "User",
+        header: "Utilisateur",
       },
       {
         accessorKey: "documentType",
@@ -120,43 +120,52 @@ export function AdminKycSubmissionsTable({
       },
       {
         accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => (
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">{row.original.status}</Badge>
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              className="h-8"
-              onClick={() => {
-                setRejectReason("");
-                setReviewing(row.original);
-              }}
-            >
-              Review
-            </Button>
-          </div>
-        ),
+        header: "Statut",
+        cell: ({ row }) => {
+          const statusMap: Record<string, string> = {
+            PENDING: "En attente",
+            UNDER_REVIEW: "En cours",
+            APPROVED: "Vérifié",
+            REJECTED: "Rejeté",
+            EXPIRED: "Expiré",
+          };
+          return (
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline">{statusMap[row.original.status] || row.original.status}</Badge>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="h-8"
+                onClick={() => {
+                  setRejectReason("");
+                  setReviewing(row.original);
+                }}
+              >
+                Examiner
+              </Button>
+            </div>
+          );
+        },
       },
       {
         accessorKey: "userCountry",
-        header: "Country",
+        header: "Pays",
         cell: ({ row }) => row.original.userCountry ?? "—",
       },
       {
         accessorKey: "userOrganization",
-        header: "Organization",
+        header: "Organisation",
         cell: ({ row }) => row.original.userOrganization ?? "—",
       },
       {
         accessorKey: "submittedAt",
-        header: "Submitted",
+        header: "Soumis",
         cell: ({ row }) => formatDateLong(row.original.submittedAt),
       },
       {
         accessorKey: "reviewedAt",
-        header: "Reviewed",
+        header: "Examiné",
         cell: ({ row }) => formatDateLong(row.original.reviewedAt) || "—",
       },
       {
@@ -182,7 +191,7 @@ export function AdminKycSubmissionsTable({
                   setReviewing(row.original);
                 }}
               >
-                Preview and decide
+                Prévisualiser et décider
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
@@ -197,22 +206,22 @@ export function AdminKycSubmissionsTable({
                   window.open(url, "_blank", "noopener,noreferrer");
                 }}
               >
-                Open first document
+                Ouvrir le premier document
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => void copyText(row.original.id, "Submission id")}
+                onClick={() => void copyText(row.original.id, "ID de soumission")}
               >
-                Copy submission id
+                Copier l&apos;ID de soumission
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => void copyText(row.original.userId, "User id")}
+                onClick={() => void copyText(row.original.userId, "ID utilisateur")}
               >
-                Copy user id
+                Copier l&apos;ID utilisateur
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <a href={`mailto:${row.original.userEmail}`}>Email user</a>
+                <a href={`mailto:${row.original.userEmail}`}>Envoyer un email</a>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -233,7 +242,7 @@ export function AdminKycSubmissionsTable({
             setRejectReason("");
           }
         }}
-        title="KYC review"
+        title="Examen KYC"
         description={
           reviewing
             ? `${reviewing.userEmail} · ${reviewing.documentType} · ${reviewing.status}`
@@ -249,7 +258,7 @@ export function AdminKycSubmissionsTable({
                 setRejectReason("");
               }}
             >
-              Close
+              Fermer
             </FullTopSheetCancelButton>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -303,7 +312,7 @@ export function AdminKycSubmissionsTable({
                   });
                 }}
               >
-                Reject
+                Rejeter
               </Button>
             </div>
           </div>
@@ -312,10 +321,10 @@ export function AdminKycSubmissionsTable({
         {reviewing ? (
           <div className="flex flex-col gap-6">
             <div className="grid gap-3 rounded-lg border bg-muted/30 p-4">
-              <h3 className="font-semibold text-sm">User Information</h3>
+              <h3 className="font-semibold text-sm">Informations de l&apos;utilisateur</h3>
               <div className="grid gap-2 text-sm">
                 <p>
-                  <span className="text-muted-foreground">Name:</span>{" "}
+                  <span className="text-muted-foreground">Nom:</span>{" "}
                   <span className="font-medium">
                     {reviewing.userName ?? "—"}
                   </span>
@@ -325,42 +334,42 @@ export function AdminKycSubmissionsTable({
                   <span className="font-medium">{reviewing.userEmail}</span>
                 </p>
                 <p>
-                  <span className="text-muted-foreground">Country:</span>{" "}
+                  <span className="text-muted-foreground">Pays:</span>{" "}
                   <span className="font-medium">
                     {reviewing.userCountry ?? "—"}
                   </span>
                 </p>
                 <p>
-                  <span className="text-muted-foreground">Date of Birth:</span>{" "}
+                  <span className="text-muted-foreground">Date de naissance:</span>{" "}
                   <span className="font-medium">
                     {formatDateLong(reviewing.userDateOfBirth) || "—"}
                   </span>
                 </p>
                 <p>
-                  <span className="text-muted-foreground">Organization:</span>{" "}
+                  <span className="text-muted-foreground">Organisation:</span>{" "}
                   <span className="font-medium">
                     {reviewing.userOrganization ?? "—"}
                   </span>
                 </p>
                 <p>
                   <span className="text-muted-foreground">
-                    Onboarding Completed:
+                    Onboarding terminé:
                   </span>{" "}
                   <span className="font-medium">
                     {formatDateLong(reviewing.userOnboardingCompletedAt) ||
-                      "Not completed"}
+                      "Non terminé"}
                   </span>
                 </p>
               </div>
             </div>
             <div className="grid gap-2 text-sm">
               <p>
-                <span className="text-muted-foreground">Submitted:</span>{" "}
+                <span className="text-muted-foreground">Soumis:</span>{" "}
                 {formatDateLong(reviewing.submittedAt)}
               </p>
               {reviewing.rejectionReason ? (
                 <p className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs">
-                  <span className="font-semibold">Last rejection reason:</span>{" "}
+                  <span className="font-semibold">Dernier motif de rejet:</span>{" "}
                   {reviewing.rejectionReason}
                 </p>
               ) : null}
@@ -378,13 +387,13 @@ export function AdminKycSubmissionsTable({
             </div>
             <div className="space-y-2">
               <Label htmlFor="kyc-reject-reason">
-                Rejection reason (required to reject)
+                Motif du rejet (requis pour rejeter)
               </Label>
               <Input
                 id="kyc-reject-reason"
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="Shown to the applicant in their notification"
+                placeholder="Affiché au demandeur dans sa notification"
                 className="max-w-xl"
               />
             </div>

@@ -35,7 +35,7 @@ export function AdminUsersTable({ data }: { data: AdminUserRow[] }) {
   const qc = useQueryClient();
   const copyText = async (value: string, label: string) => {
     await navigator.clipboard.writeText(value);
-    toast.success(`${label} copied`);
+    toast.success(`${label} copié`);
   };
 
   const patchRoleMut = useMutation({
@@ -51,17 +51,17 @@ export function AdminUsersTable({ data }: { data: AdminUserRow[] }) {
         toast.error(res.error.message);
         return;
       }
-      toast.success("User role updated");
+      toast.success("Rôle de l'utilisateur mis à jour");
       await qc.invalidateQueries({ queryKey: adminQueryKeys.all });
     },
-    onError: () => toast.error("Failed to update user role"),
+    onError: () => toast.error("Échec de la mise à jour du rôle"),
   });
 
   const columns = useMemo<ColumnDef<AdminUserRow, unknown>[]>(
     () => [
       {
         accessorKey: "name",
-        header: "Name",
+        header: "Nom",
         cell: ({ row }) => row.original.name ?? "—",
       },
       {
@@ -99,14 +99,14 @@ export function AdminUsersTable({ data }: { data: AdminUserRow[] }) {
       },
       {
         accessorKey: "createdAt",
-        header: "Joined",
+        header: "Inscrit le",
         cell: ({ row }) => formatDateLong(row.original.createdAt),
       },
       {
         accessorKey: "lastLoginAt",
-        header: "Last Login",
+        header: "Dernière connexion",
         cell: ({ row }) =>
-          row.original.lastLoginAt ? formatDateLong(row.original.lastLoginAt) : "Never",
+          row.original.lastLoginAt ? formatDateLong(row.original.lastLoginAt) : "Jamais",
       },
       {
         id: "actions",
@@ -126,18 +126,18 @@ export function AdminUsersTable({ data }: { data: AdminUserRow[] }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem asChild>
-                <a href={`mailto:${row.original.email}`}>Email user</a>
+                <a href={`mailto:${row.original.email}`}>Envoyer un email</a>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => void copyText(row.original.id, "User id")}
+                onClick={() => void copyText(row.original.id, "ID utilisateur")}
               >
-                Copy user id
+                Copier l&apos;ID utilisateur
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => void copyText(row.original.email, "Email")}
               >
-                Copy email
+                Copier l&apos;email
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
