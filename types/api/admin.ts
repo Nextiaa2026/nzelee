@@ -42,6 +42,7 @@ export type AdminUsersListResponse = {
     email: string;
     role: string;
     createdAt: Date;
+    lastLoginAt: Date | null;
   }[];
   total: number;
   page: number;

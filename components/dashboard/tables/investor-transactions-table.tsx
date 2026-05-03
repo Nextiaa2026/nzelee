@@ -29,7 +29,7 @@ const columns: ColumnDef<InvestorTransactionRow, unknown>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: "Statut",
     cell: ({ row }) => (
       <Badge variant="secondary" className="font-normal">
         {row.original.status}
@@ -38,11 +38,11 @@ const columns: ColumnDef<InvestorTransactionRow, unknown>[] = [
   },
   {
     accessorKey: "amount",
-    header: "Amount",
+    header: "Montant",
   },
   {
     accessorKey: "listing",
-    header: "Listing",
+    header: "Annonce",
   },
   {
     id: "actions",
@@ -58,7 +58,7 @@ const columns: ColumnDef<InvestorTransactionRow, unknown>[] = [
           <DropdownMenuItem
             onClick={() => toast.info(`Transaction ${row.original.id}`)}
           >
-            View details
+            Voir détails
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -82,7 +82,7 @@ export function InvestorTransactionsTable({
   if (!data.length) {
     return (
       <div className="rounded-lg border border-black/10 bg-white p-6 text-sm text-black/60">
-        No transactions yet.
+        Aucune transaction pour le moment.
       </div>
     );
   }
@@ -128,7 +128,7 @@ export function InvestorTransactionsTable({
           <ChevronLeftIcon className="size-4" />
         </Button>
         <p className="text-xs text-black/60">
-          Page {safePage} of {pageCount}
+          Page {safePage} sur {pageCount}
         </p>
         <Button
           type="button"

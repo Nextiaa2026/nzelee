@@ -616,7 +616,7 @@ function FeatureCards() {
                   ))}
                 </div>
                 <span className="mt-2 inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-[8px]">
-                  Term
+                  Condition
                 </span>
               </motion.div>
               <motion.div
@@ -649,7 +649,7 @@ function FeatureCards() {
                   ))}
                 </div>
                 <span className="mt-2 inline-block rounded-full bg-foreground/10 px-2 py-0.5 text-[8px]">
-                  Term
+                  Condition
                 </span>
               </motion.div>
             </div>

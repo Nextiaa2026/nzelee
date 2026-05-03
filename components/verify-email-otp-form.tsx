@@ -39,7 +39,7 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
     const effectiveCode = overrideCode ?? code;
     const parsed = verifyEmailOtpSchema.safeParse({ email, code: effectiveCode });
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? "Check the code and email.");
+      setError(parsed.error.issues[0]?.message ?? "Vérifiez le code et l'email.");
       return;
     }
     setPending(true);
@@ -49,10 +49,10 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
         setError(result.error.message);
         return;
       }
-      toast.success("Email verified. You can sign in.");
+      toast.success("Email vérifié. Vous pouvez vous connecter.");
       router.push("/login?verified=1");
     } catch {
-      setError("Something went wrong. Try again.");
+      setError("Quelque chose s'est mal passé. Réessayez.");
     } finally {
       setPending(false);
     }
@@ -61,7 +61,7 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
   async function onResend() {
     const trimmed = email.trim().toLowerCase();
     if (!trimmed) {
-      toast.error("Enter your email first.");
+      toast.error("Entrez d'abord votre email.");
       return;
     }
     setResendPending(true);
@@ -70,13 +70,13 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
       if (isApiSuccess(out)) {
         const code = out.data.devVerificationCode;
         toast.success(
-          code ? `${out.data.message} (dev code: ${code})` : out.data.message,
+          code ? `${out.data.message} (code dev : ${code})` : out.data.message,
         );
       } else {
         toast.error(out.error.message);
       }
     } catch {
-      toast.error("Could not resend. Try again later.");
+      toast.error("Impossible de renvoyer. Réessayez plus tard.");
     } finally {
       setResendPending(false);
     }
@@ -98,12 +98,12 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
         </div>
       ) : (
         <p className="text-center text-sm text-black/65">
-          Code sent to <span className="font-medium text-black">{trimmedInitial}</span>
+          Code envoyé à <span className="font-medium text-black">{trimmedInitial}</span>
         </p>
       )}
 
       <div className="space-y-1.5 sm:space-y-2">
-        <Label className="block text-center">6-digit code</Label>
+        <Label className="block text-center">Code à 6 chiffres</Label>
         <div className="flex justify-center">
           <InputOTP
             maxLength={6}
@@ -132,7 +132,7 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
         disabled={pending || code.length !== 6}
         onClick={() => void submit()}
       >
-        {pending ? "Verifying…" : "Verify email"}
+        {pending ? "Vérification…" : "Vérifier l'email"}
       </Button>
 
       <Button
@@ -142,7 +142,7 @@ export function VerifyEmailOtpForm({ initialEmail }: Props) {
         disabled={resendPending}
         onClick={() => void onResend()}
       >
-        {resendPending ? "Sending…" : "Resend code"}
+        {resendPending ? "Envoi…" : "Renvoyer le code"}
       </Button>
     </div>
   );

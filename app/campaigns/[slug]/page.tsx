@@ -27,9 +27,9 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const campaign = await getPublicCampaignBySlug(slug);
-  if (!campaign) return { title: "Campaign not found" };
+  if (!campaign) return { title: "Campagne non trouvée" };
   return {
-    title: `${campaign.title} | Campaign details`,
+    title: `${campaign.title} | Détails de la campagne`,
     description: campaign.summary,
   };
 }
@@ -73,9 +73,9 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
       <section className="mt-10 grid gap-6 md:grid-cols-[1fr_.95fr]">
         <Card className="border-0 shadow-none">
           <CardHeader>
-            <CardTitle>Investor reviews</CardTitle>
+            <CardTitle>Avis des investisseurs</CardTitle>
             <CardDescription>
-              Real feedback from users who reviewed this campaign.
+              Retours réels des utilisateurs ayant évalué cette campagne.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -106,7 +106,7 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
                     </div>
                     <div
                       className="mb-2 flex gap-0.5"
-                      aria-label={`${review.rating} out of 5 stars`}
+                      aria-label={`${review.rating} sur 5 étoiles`}
                     >
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
@@ -127,15 +127,15 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-black/60">No reviews yet.</p>
+              <p className="text-sm text-black/60">Pas encore d&apos;avis.</p>
             )}
           </CardContent>
         </Card>
         <Card className="border-0 shadow-none">
           <CardHeader>
-            <CardTitle>Add your review</CardTitle>
+            <CardTitle>Ajoutez votre avis</CardTitle>
             <CardDescription>
-              Signed-in users can rate and review this campaign.
+              Les utilisateurs connectés peuvent noter et commenter cette campagne.
             </CardDescription>
           </CardHeader>
           <CardContent>

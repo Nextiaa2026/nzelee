@@ -14,7 +14,7 @@ export function NotificationsPanel() {
   if (isPending) {
     return (
       <p className="text-sm text-muted-foreground" aria-live="polite">
-        Loading notifications…
+        Chargement des notifications…
       </p>
     );
   }
@@ -22,7 +22,7 @@ export function NotificationsPanel() {
   if (isError) {
     return (
       <p className="text-sm text-destructive" role="alert">
-        {error instanceof Error ? error.message : "Could not load notifications."}
+        {error instanceof Error ? error.message : "Impossible de charger les notifications."}
       </p>
     );
   }
@@ -31,9 +31,9 @@ export function NotificationsPanel() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>No notifications yet</CardTitle>
+          <CardTitle>Aucune notification pour le moment</CardTitle>
           <CardDescription>
-            When there are updates to your account, KYC, or investments, they will appear here.
+            Lorsqu&apos;il y aura des mises à jour sur votre compte, votre KYC ou vos investissements, elles apparaîtront ici.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -79,10 +79,10 @@ export function NotificationsPanel() {
                   disabled={markRead.isPending}
                   onClick={() => markRead.mutate(n.id)}
                 >
-                  Mark read
+                  Marquer comme lu
                 </Button>
               ) : (
-                <span className="text-xs text-muted-foreground">Read</span>
+                <span className="text-xs text-muted-foreground">Lu</span>
               )}
             </CardHeader>
           </Card>

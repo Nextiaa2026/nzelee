@@ -8,8 +8,8 @@ import { SITE_NAME } from "@/lib/brand";
 import { listBrowseableCampaigns } from "@/lib/services/public-campaigns";
 
 export const metadata: Metadata = {
-  title: "Markets",
-  description: `Browse live and funded campaigns on ${SITE_NAME}.`,
+  title: "Marchés",
+  description: `Parcourez les campagnes en direct et financées sur ${SITE_NAME}.`,
 };
 
 export default async function DashboardMarketsPage() {
@@ -17,12 +17,12 @@ export default async function DashboardMarketsPage() {
 
   return (
     <DashboardPageShell
-      eyebrow="Discover"
-      title="Markets"
-      description="All campaigns you can open, save, or invest in. Filters and search match the public browse experience."
+      eyebrow="Découvrir"
+      title="Marchés"
+      description="Toutes les campagnes que vous pouvez ouvrir, sauvegarder ou dans lesquelles vous pouvez investir. Les filtres et la recherche correspondent à l'expérience de navigation publique."
       actions={
         <Button variant="outline" size="sm" asChild className="border-black/15">
-          <Link href="/campaigns">Open public browse</Link>
+          <Link href="/campaigns">Ouvrir la navigation publique</Link>
         </Button>
       }
     >

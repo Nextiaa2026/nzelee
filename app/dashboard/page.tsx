@@ -42,10 +42,10 @@ export default async function UserDashboardPage() {
     displayCampaigns = SAMPLE_PLEDGE_CAMPAIGNS;
   }
   const campaignsSectionTitle = featuredOnly.length
-    ? "Featured campaigns"
+    ? "Campagnes à la une"
     : allCampaigns.length > 0
-      ? "Campaigns for you"
-      : "Sample pledge campaigns";
+      ? "Campagnes pour vous"
+      : "Exemples de campagnes";
 
   const campaignCards = displayCampaigns.map((c) => ({
     id: c.id,

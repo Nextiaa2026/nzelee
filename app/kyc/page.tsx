@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { KycView } from "@/components/kyc-view";
 
 export const metadata: Metadata = {
-  title: "Identity verification",
-  description: "Submit documents so we can confirm eligibility for investing and withdrawals.",
+  title: "Vérification d'identité",
+  description: "Soumettez vos documents afin que nous puissions confirmer votre éligibilité pour les investissements et les retraits.",
 };
 
 export default function KycPage() {

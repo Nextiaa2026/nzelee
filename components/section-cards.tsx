@@ -27,7 +27,7 @@ export function SectionCards(props?: Partial<SectionCardsProps>) {
   const totalCampaigns = props?.totalCampaigns ?? 0
   const paidPledgeDisplay = props?.paidPledgeDisplay ?? "—"
   const pendingPipeline = props?.pendingPipeline ?? 0
-  const pendingDetail = props?.pendingDetail ?? "Pending items"
+  const pendingDetail = props?.pendingDetail ?? "Éléments en attente"
 
   const hasLive = props?.totalUsers !== undefined
 
@@ -35,7 +35,7 @@ export function SectionCards(props?: Partial<SectionCardsProps>) {
     <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total users</CardDescription>
+          <CardDescription>Utilisateurs totaux</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {hasLive ? totalUsers.toLocaleString() : totalUsers}
           </CardTitle>
@@ -47,15 +47,15 @@ export function SectionCards(props?: Partial<SectionCardsProps>) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Registered accounts
+            Comptes enregistrés
             <UsersIcon className="size-4" />
           </div>
-          <div className="text-muted-foreground">All roles</div>
+          <div className="text-muted-foreground">Tous les rôles</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Campaigns</CardDescription>
+          <CardDescription>Campagnes</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {hasLive ? totalCampaigns.toLocaleString() : 12}
           </CardTitle>
@@ -66,13 +66,13 @@ export function SectionCards(props?: Partial<SectionCardsProps>) {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">Listings on platform</div>
-          <div className="text-muted-foreground">All statuses</div>
+          <div className="line-clamp-1 flex gap-2 font-medium">Annonces sur la plateforme</div>
+          <div className="text-muted-foreground">Tous les statuts</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Paid pledge volume</CardDescription>
+          <CardDescription>Volume des promesses payées</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {hasLive ? paidPledgeDisplay : "$0.00"}
           </CardTitle>
@@ -84,10 +84,10 @@ export function SectionCards(props?: Partial<SectionCardsProps>) {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Sum of PAID pledges
+            Somme des promesses PAYÉES
             <TrendingUpIcon className="size-4" />
           </div>
-          <div className="text-muted-foreground">Smallest currency unit in DB</div>
+          <div className="text-muted-foreground">Unité monétaire minimale en base</div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
@@ -103,7 +103,7 @@ export function SectionCards(props?: Partial<SectionCardsProps>) {
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 font-medium">Pending work</div>
+          <div className="line-clamp-1 font-medium">Travail en attente</div>
           <div className="text-muted-foreground">{hasLive ? pendingDetail : "—"}</div>
         </CardFooter>
       </Card>

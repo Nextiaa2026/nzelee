@@ -11,30 +11,30 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const STEPS: WizardStep[] = [
-  { label: "Document Type" },
-  { label: "ID Number" },
-  { label: "Front side" },
-  { label: "Back side" },
+  { label: "Type de document" },
+  { label: "Numéro d'ID" },
+  { label: "Recto" },
+  { label: "Verso" },
   { label: "Selfie" },
-  { label: "Review" },
+  { label: "Révision" },
 ];
 
 const TITLES = [
-  "Select your ID",
-  "Enter ID number",
-  "Front of your ID",
-  "Back of your ID",
-  "Identity check",
-  "Ready to submit",
+  "Sélectionnez votre ID",
+  "Entrez le numéro d'ID",
+  "Recto de votre ID",
+  "Verso de votre ID",
+  "Contrôle d'identité",
+  "Prêt à soumettre",
 ];
 
 const SUBTITLES = [
-  "Choose the government-issued document you will use for identity verification.",
-  "Enter the unique identification number as it appears on your chosen document.",
-  "Take a clear photo of the front side of your document. Ensure all text is readable.",
-  "Flip your document over and take a photo of the back side. (Optional for Passports)",
-  "Finally, take a clear selfie of your face to match it with your identification.",
-  "Please review all information and documents before submitting for official review.",
+  "Choisissez le document officiel que vous utiliserez pour la vérification d'identité.",
+  "Entrez le numéro d'identification unique tel qu'il apparaît sur le document choisi.",
+  "Prenez une photo claire du recto de votre document. Assurez-vous que tout le texte est lisible.",
+  "Retournez votre document et prenez une photo du verso. (Optionnel pour les passeports)",
+  "Enfin, prenez un selfie clair de votre visage pour le faire correspondre à votre identification.",
+  "Veuillez vérifier toutes les informations et documents avant de les soumettre pour examen officiel.",
 ];
 
 export function KycView() {
@@ -57,7 +57,7 @@ export function KycView() {
           className="h-auto p-0 text-[11px] font-bold uppercase tracking-widest text-black/40 underline-offset-4 hover:bg-transparent hover:text-black hover:underline transition-colors"
           onClick={() => router.push("/dashboard")}
         >
-          Skip for now
+          Ignorer pour l&apos;instant
         </Button>
       }
     >

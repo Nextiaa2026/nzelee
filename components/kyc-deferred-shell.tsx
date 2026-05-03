@@ -17,14 +17,14 @@ export function KycDeferredShell({ children }: KycDeferredShellProps) {
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
         >
           <ArrowLeft className="size-4 opacity-80" aria-hidden />
-          Back to dashboard
+          Retour au tableau de bord
         </Link>
         <h1 className="mt-4 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-          Complete identity verification
+          Compléter la vérification d&apos;identité
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          You skipped this during onboarding. Finish KYC here when you are ready
-          to invest — same requirements, without the full profile wizard layout.
+          Vous avez passé cette étape lors de l&apos;onboarding. Terminez votre KYC ici quand vous serez prêt
+          à investir — mêmes exigences, sans la mise en page de l&apos;assistant de profil complet.
         </p>
       </div>
 

@@ -15,9 +15,9 @@ export default function DashboardTransactionsPage() {
 
   return (
     <DashboardPageShell
-      eyebrow="Activity"
+      eyebrow="Activité"
       title="Transactions"
-      description="Charges, refunds, and fees for your account. Loaded with React Query (mock); swap the hook for your ledger API."
+      description="Débits, remboursements et frais pour votre compte. Chargé avec React Query (mock) ; remplacez le hook par votre API de grand livre."
     >
       <MockQueryPlaceholder
         isPending={isPending}

@@ -80,12 +80,12 @@ export default function DashboardInvestmentsPage() {
 
   return (
     <DashboardPageShell
-      eyebrow="Portfolio"
-      title="Investments"
-      description="Your commitments across live campaigns in your account."
+      eyebrow="Portefeuille"
+      title="Investissements"
+      description="Vos engagements à travers les campagnes actives dans votre compte."
       actions={
         <Button className="shrink-0 bg-mint text-mint-foreground hover:bg-mint/90" asChild>
-          <Link href="/campaigns">New investment</Link>
+          <Link href="/campaigns">Nouvel investissement</Link>
         </Button>
       }
     >

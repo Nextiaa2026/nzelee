@@ -122,10 +122,10 @@ function FullBleedHero({ campaign }: { campaign: CampaignDetailsClientPayload })
           </div>
           <nav className="flex flex-wrap justify-end gap-x-4 gap-y-1 text-[11px] font-medium text-white/75 sm:text-xs">
             <Link href="/privacy-policy" className="hover:text-white">
-              Privacy Policy
+              Politique de confidentialité
             </Link>
             <Link href="/terms-of-service" className="hover:text-white">
-              Terms of Service
+              Conditions d&apos;utilisation
             </Link>
             <Link href="/contact" className="hover:text-white">
               Contact

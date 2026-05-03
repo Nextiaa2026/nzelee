@@ -30,7 +30,7 @@ const textareaClass = cn(
 const DEFAULT_FORM_ID = "withdrawal-request-form";
 
 function destinationLabel(destination: Values["destination"]) {
-  return destination === "bank" ? "Linked bank account" : "Digital wallet";
+  return destination === "bank" ? "Compte bancaire lié" : "Portefeuille numérique";
 }
 
 export function WithdrawalRequestForm({
@@ -74,24 +74,24 @@ export function WithdrawalRequestForm({
             toast.error(res.error.message);
             return;
           }
-          toast.success("Withdrawal request submitted", {
-            description: "It will stay pending until an administrator approves or rejects it.",
+          toast.success("Demande de retrait soumise", {
+            description: "Elle restera en attente jusqu'à ce qu'un administrateur l'approuve ou la rejette.",
           });
           form.reset({ amount: 100, destination: "bank", note: "" });
           onSuccess?.();
         } catch {
-          toast.error("Request failed. Try again.");
+          toast.error("La demande a échoué. Réessayez.");
         } finally {
           onPendingChange?.(false);
         }
       })}
     >
       <p className="text-xs text-muted-foreground">
-        Amounts are reviewed by an admin only. You cannot approve your own withdrawal.
+        Les montants sont examinés par un administrateur uniquement. Vous ne pouvez pas approuver votre propre retrait.
       </p>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5 sm:space-y-2">
-          <Label htmlFor="wd-amount">Amount (USD)</Label>
+          <Label htmlFor="wd-amount">Montant (USD)</Label>
           <Input
             id="wd-amount"
             type="number"
@@ -112,22 +112,22 @@ export function WithdrawalRequestForm({
             }
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Where to send" />
+              <SelectValue placeholder="Où envoyer" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="bank">Linked bank account</SelectItem>
-              <SelectItem value="wallet">Digital wallet</SelectItem>
+              <SelectItem value="bank">Compte bancaire lié</SelectItem>
+              <SelectItem value="wallet">Portefeuille numérique</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
       <div className="space-y-1.5 sm:space-y-2">
-        <Label htmlFor="wd-note">Note (optional)</Label>
+        <Label htmlFor="wd-note">Note (optionnel)</Label>
         <textarea id="wd-note" className={textareaClass} {...form.register("note")} />
       </div>
       {submitPlacement === "in-form" ? (
         <Button type="submit" disabled={form.formState.isSubmitting || mut.isPending}>
-          Request withdrawal
+          Demander le retrait
         </Button>
       ) : null}
     </form>

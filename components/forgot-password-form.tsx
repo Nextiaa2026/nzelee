@@ -41,7 +41,7 @@ export function ForgotPasswordForm({
       }
       setServerMessage(result.data.message);
     } catch (err) {
-      setSubmitError(getApiErrorMessage(err, "Could not process request."));
+      setSubmitError(getApiErrorMessage(err, "Impossible de traiter la demande."));
     }
   };
 
@@ -69,7 +69,7 @@ export function ForgotPasswordForm({
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Generating..." : "Send reset link"}
+            {isSubmitting ? "Génération..." : "Envoyer le lien de réinitialisation"}
           </Button>
         </form>
 

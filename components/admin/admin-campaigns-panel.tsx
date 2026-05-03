@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SearchInput } from "@/components/ui/search-input";
 import {
@@ -88,12 +89,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-function toDatetimeLocal(value: Date | string | null | undefined) {
+function toDatetimeValue(value: Date | string | null | undefined) {
   if (value === null || value === undefined) return "";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return date.toISOString();
 }
 
 const emptyDefaults: FormValues = {
@@ -148,8 +148,8 @@ function rowToForm(row: AdminCampaignRow): FormValues {
     isFeatured: row.isFeatured,
     status: row.status,
     coverImageUrl: row.coverImageUrl ?? "",
-    startsAt: toDatetimeLocal(row.startsAt),
-    endsAt: toDatetimeLocal(row.endsAt),
+    startsAt: toDatetimeValue(row.startsAt),
+    endsAt: toDatetimeValue(row.endsAt),
   };
 }
 
@@ -520,7 +520,7 @@ export function AdminCampaignsPanel() {
       },
       {
         accessorKey: "title",
-        header: "Listing",
+        header: "Titre",
       },
       {
         accessorKey: "slug",
@@ -533,7 +533,7 @@ export function AdminCampaignsPanel() {
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: "Statut",
         cell: ({ row }) => {
           const statusColors: Record<string, string> = {
             DRAFT: "bg-slate-500/10 text-slate-600 border-slate-500/20",
@@ -559,7 +559,7 @@ export function AdminCampaignsPanel() {
       },
       {
         accessorKey: "isFeatured",
-        header: "Featured",
+        header: "À la une",
         cell: ({ row }) =>
           row.original.isFeatured ? (
             <span className="rounded-md bg-mint/20 px-2 py-0.5 text-xs font-medium text-mint-foreground">
@@ -571,23 +571,23 @@ export function AdminCampaignsPanel() {
       },
       {
         id: "goal",
-        header: "Goal",
+        header: "Objectif",
         cell: ({ row }) =>
           formatMoney(row.original.goalAmount, row.original.currency),
       },
       {
         id: "raised",
-        header: "Raised",
+        header: "Collecté",
         cell: ({ row }) =>
           formatMoney(row.original.raisedAmount, row.original.currency),
       },
       {
         accessorKey: "currency",
-        header: "Currency",
+        header: "Devise",
       },
       {
         id: "window",
-        header: "Window",
+        header: "Période",
         cell: ({ row }) => (
           <span className="text-xs text-black/65">
             {formatDate(row.original.startsAt)} -{" "}
@@ -614,26 +614,26 @@ export function AdminCampaignsPanel() {
               <DropdownMenuItem
                 onClick={() => openPublicCampaign(row.original.slug)}
               >
-                Open public page
+                Ouvrir la page publique
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => void copyText(row.original.slug, "Slug")}
               >
-                Copy slug
+                Copier le slug
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => void copyText(row.original.id, "Campaign id")}
+                onClick={() => void copyText(row.original.id, "ID de campagne")}
               >
-                Copy campaign id
+                Copier l&apos;ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => openInvestors(row.original)}>
                 <UsersIcon className="mr-2 size-4" />
-                Investors
+                Investisseurs
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => openEdit(row.original)}>
                 <PencilIcon className="mr-2 size-4" />
-                Edit
+                Modifier
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -641,7 +641,7 @@ export function AdminCampaignsPanel() {
                 onClick={() => void deleteRow(row.original.id)}
               >
                 <TrashIcon className="mr-2 size-4" />
-                Delete
+                Supprimer
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -690,7 +690,7 @@ export function AdminCampaignsPanel() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Search title or slug"
+            placeholder="Rechercher titre ou slug"
             className="h-9 w-72 rounded-md bg-white"
           />
           <Select
@@ -708,7 +708,7 @@ export function AdminCampaignsPanel() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              <SelectItem value="ALL">All status</SelectItem>
+              <SelectItem value="ALL">Tous les statuts</SelectItem>
               {campaignStatusValues.map((status) => (
                 <SelectItem key={status} value={status}>
                   {status}
@@ -724,7 +724,7 @@ export function AdminCampaignsPanel() {
           onClick={openCreate}
         >
           <PlusIcon className="size-4" />
-          New listing
+          Nouveau projet
         </Button>
       </div>
       <MockQueryPlaceholder
@@ -800,7 +800,7 @@ export function AdminCampaignsPanel() {
           ) : (
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
               <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
-                Cancel
+                Annuler
               </FullTopSheetCancelButton>
               <div className="flex items-center gap-2">
                 <Button
@@ -809,7 +809,7 @@ export function AdminCampaignsPanel() {
                   disabled={wizardStep === 0 || busy}
                   onClick={() => setWizardStep((step) => Math.max(0, step - 1))}
                 >
-                  Back
+                  Retour
                 </Button>
                 {wizardStep < 2 ? (
                   <Button
@@ -850,10 +850,10 @@ export function AdminCampaignsPanel() {
                     disabled={busy}
                   >
                     {busy
-                      ? "Saving…"
+                      ? "Enregistrement…"
                       : editingId
-                        ? "Save changes"
-                        : "Create listing"}
+                        ? "Enregistrer les modifications"
+                        : "Créer le projet"}
                   </Button>
                 )}
               </div>
@@ -923,11 +923,11 @@ export function AdminCampaignsPanel() {
             {wizardStep === 0 ? (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="camp-title">Title</Label>
+                  <Label htmlFor="camp-title">Titre</Label>
                   <Input id="camp-title" {...form.register("title")} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="camp-summary">Summary</Label>
+                  <Label htmlFor="camp-summary">Résumé</Label>
                   <Input id="camp-summary" {...form.register("summary")} />
                 </div>
                 <div className="space-y-2">
@@ -940,15 +940,15 @@ export function AdminCampaignsPanel() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="camp-sector">Sector</Label>
+                    <Label htmlFor="camp-sector">Secteur</Label>
                     <Input id="camp-sector" {...form.register("activitySector")} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="camp-owner">Project owner</Label>
+                    <Label htmlFor="camp-owner">Porteur de projet</Label>
                     <Input id="camp-owner" {...form.register("projectOwner")} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="camp-location">Location</Label>
+                    <Label htmlFor="camp-location">Localisation</Label>
                     <Input id="camp-location" {...form.register("locationLabel")} />
                   </div>
                 </div>
@@ -959,7 +959,7 @@ export function AdminCampaignsPanel() {
               <>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="camp-goal">Funding goal</Label>
+                    <Label htmlFor="camp-goal">Objectif de financement</Label>
                     <Input
                       id="camp-goal"
                       type="number"
@@ -969,7 +969,7 @@ export function AdminCampaignsPanel() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="camp-minimum">Minimum investment</Label>
+                    <Label htmlFor="camp-minimum">Investissement minimum</Label>
                     <Input
                       id="camp-minimum"
                       type="number"
@@ -983,7 +983,7 @@ export function AdminCampaignsPanel() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="camp-return">Target return (%)</Label>
+                    <Label htmlFor="camp-return">Rendement cible (%)</Label>
                     <Input
                       id="camp-return"
                       type="number"
@@ -991,7 +991,7 @@ export function AdminCampaignsPanel() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="camp-duration">Duration (months)</Label>
+                    <Label htmlFor="camp-duration">Durée (mois)</Label>
                     <Input
                       id="camp-duration"
                       type="number"
@@ -999,7 +999,7 @@ export function AdminCampaignsPanel() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="camp-currency">Currency</Label>
+                    <Label htmlFor="camp-currency">Devise</Label>
                     <Input id="camp-currency" {...form.register("currency")} />
                   </div>
                 </div>
@@ -1036,7 +1036,7 @@ export function AdminCampaignsPanel() {
                     checked={selectedIsVerified}
                     onCheckedChange={(v) => form.setValue("isVerified", v === true)}
                   />
-                  <Label htmlFor="camp-verified">Verified campaign</Label>
+                  <Label htmlFor="camp-verified">Campagne vérifiée</Label>
                 </div>
                 <div className="flex items-start gap-3 rounded-lg border p-3">
                   <Checkbox
@@ -1044,14 +1044,14 @@ export function AdminCampaignsPanel() {
                     checked={selectedIsFeatured}
                     onCheckedChange={(v) => form.setValue("isFeatured", v === true)}
                   />
-                  <Label htmlFor="camp-featured">Featured campaign</Label>
+                  <Label htmlFor="camp-featured">Campagne à la une</Label>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="camp-tags">Tags (comma separated)</Label>
+                  <Label htmlFor="camp-tags">Étiquettes (séparées par des virgules)</Label>
                   <Input id="camp-tags" {...form.register("tagsInput")} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="camp-impact">Impact points (line-separated)</Label>
+                  <Label htmlFor="camp-impact">Points d&apos;impact (un par ligne)</Label>
                   <textarea
                     id="camp-impact"
                     className={textareaClassName}
@@ -1059,7 +1059,7 @@ export function AdminCampaignsPanel() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="camp-gallery">Gallery URLs (line-separated)</Label>
+                  <Label htmlFor="camp-gallery">URLs de la galerie (une par ligne)</Label>
                   <textarea
                     id="camp-gallery"
                     className={textareaClassName}
@@ -1067,7 +1067,7 @@ export function AdminCampaignsPanel() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="camp-docs">Document URLs (line-separated)</Label>
+                  <Label htmlFor="camp-docs">URLs des documents (une par ligne)</Label>
                   <textarea
                     id="camp-docs"
                     className={textareaClassName}
@@ -1093,19 +1093,25 @@ export function AdminCampaignsPanel() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="camp-start">Starts (optional)</Label>
-                    <Input
-                      id="camp-start"
-                      type="datetime-local"
-                      {...form.register("startsAt")}
+                    <Label htmlFor="camp-start">Débute (optionnel)</Label>
+                    <DateTimePicker
+                      value={form.watch("startsAt")}
+                      onChange={(date) =>
+                        form.setValue("startsAt", date?.toISOString() ?? "", {
+                          shouldValidate: true,
+                        })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="camp-end">Ends (optional)</Label>
-                    <Input
-                      id="camp-end"
-                      type="datetime-local"
-                      {...form.register("endsAt")}
+                    <Label htmlFor="camp-end">Finit (optionnel)</Label>
+                    <DateTimePicker
+                      value={form.watch("endsAt")}
+                      onChange={(date) =>
+                        form.setValue("endsAt", date?.toISOString() ?? "", {
+                          shouldValidate: true,
+                        })
+                      }
                     />
                   </div>
                 </div>

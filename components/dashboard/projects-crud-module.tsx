@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import { isApiSuccess } from "@/lib/http/api-result";
 import { adminCreateCampaign, adminUpdateCampaign } from "@/lib/services/admin";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import type { UserCampaignProject } from "@/lib/services/user-projects";
 import { campaignStatusValues } from "@/lib/validations/admin-campaign";
 import { cn } from "@/lib/utils";
@@ -60,11 +61,11 @@ const textareaClassName = cn(
 );
 
 const formSchema = z.object({
-  title: z.string().trim().min(1, "Title is required").max(180),
-  summary: z.string().trim().min(1, "Summary is required").max(320),
-  description: z.string().trim().min(1, "Description is required"),
-  sector: z.string().trim().min(1, "Sector is required"),
-  projectOwner: z.string().trim().min(1, "Project owner is required").max(120),
+  title: z.string().trim().min(1, "Le titre est requis").max(180),
+  summary: z.string().trim().min(1, "Le résumé est requis").max(320),
+  description: z.string().trim().min(1, "La description est requise"),
+  sector: z.string().trim().min(1, "Le secteur est requis"),
+  projectOwner: z.string().trim().min(1, "Le porteur de projet est requis").max(120),
   tags: z.array(z.string().trim().min(1)),
   documents: z.array(
     z.object({
@@ -83,12 +84,11 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-function toDatetimeLocal(value: Date | string | null | undefined) {
+function toDatetimeValue(value: Date | string | null | undefined) {
   if (value === null || value === undefined) return "";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return date.toISOString();
 }
 
 const emptyDefaults: FormValues = {
@@ -122,8 +122,8 @@ function campaignToForm(row: UserCampaignProject): FormValues {
     isFeatured: row.isFeatured,
     status: row.status,
     coverImageUrl: row.coverImageUrl ?? "",
-    startsAt: toDatetimeLocal(row.startsAt),
-    endsAt: toDatetimeLocal(row.endsAt),
+    startsAt: toDatetimeValue(row.startsAt),
+    endsAt: toDatetimeValue(row.endsAt),
   };
 }
 
@@ -188,14 +188,14 @@ export function ProjectsCrudModule({
     mutationFn: adminCreateCampaign,
     onSuccess: (res) => {
       if (isApiSuccess(res)) {
-        toast.success("Project created");
+        toast.success("Projet créé");
         router.refresh();
         setSheetOpen(false);
       } else {
         toast.error(res.error.message);
       }
     },
-    onError: () => toast.error("Request failed"),
+    onError: () => toast.error("La requête a échoué"),
   });
 
   const updateMut = useMutation({
@@ -208,14 +208,14 @@ export function ProjectsCrudModule({
     }) => adminUpdateCampaign(id, body),
     onSuccess: (res) => {
       if (isApiSuccess(res)) {
-        toast.success("Project updated");
+        toast.success("Projet mis à jour");
         router.refresh();
         setSheetOpen(false);
       } else {
         toast.error(res.error.message);
       }
     },
-    onError: () => toast.error("Request failed"),
+    onError: () => toast.error("La requête a échoué"),
   });
 
   const busy = createMut.isPending || updateMut.isPending;
@@ -318,7 +318,7 @@ export function ProjectsCrudModule({
         if (oldCover && oldCover !== newUrl) {
           await deleteCoverByUrl(oldCover);
         }
-        toast.success("Image uploaded");
+        toast.success("Image téléchargée");
         return;
       }
       const msg =
@@ -328,14 +328,14 @@ export function ProjectsCrudModule({
         (json as { ok: boolean }).ok === false &&
         "error" in json
           ? ((json as { error?: { message?: string } }).error?.message ??
-            "Upload failed")
-          : "Upload failed";
+            "Échec du téléchargement")
+          : "Échec du téléchargement";
       toast.error(msg);
       throw new Error(msg);
     } catch (e) {
-      const err = e instanceof Error ? e : new Error("Upload failed");
+      const err = e instanceof Error ? e : new Error("Échec du téléchargement");
       if (err.message === "Failed to fetch" || err.name === "TypeError") {
-        toast.error("Network error. Try again.");
+        toast.error("Erreur réseau. Réessayez.");
       }
       throw err;
     } finally {
@@ -382,15 +382,14 @@ export function ProjectsCrudModule({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="hidden font-display text-2xl font-semibold tracking-tight text-foreground md:block md:text-3xl">
-            Projects
+            Projets
           </h1>
           <p className="mt-0 max-w-2xl text-sm text-muted-foreground md:mt-2">
-            Campaigns you created (owner view). Create and update use the
-            four-step sheet below.
+            Campagnes que vous avez créées (vue propriétaire). La création et la mise à jour utilisent le formulaire en quatre étapes ci-dessous.
           </p>
         </div>
         <Button type="button" onClick={openCreate}>
-          New project
+          Nouveau projet
         </Button>
       </div>
 
@@ -417,7 +416,7 @@ export function ProjectsCrudModule({
                     type="button"
                     onClick={() => openUpdate(campaign.id)}
                   >
-                    Open
+                    Ouvrir
                   </Button>
                 </CardFooter>
               </Card>
@@ -427,21 +426,21 @@ export function ProjectsCrudModule({
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>No campaigns yet</CardTitle>
+            <CardTitle>Aucune campagne pour le moment</CardTitle>
             <CardDescription>
-              Start a draft with title, summary, funding goal, visibility, and
-              cover image before going live.
+              Commencez un brouillon avec un titre, un résumé, un objectif de financement, une visibilité et
+              une image de couverture avant de publier.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Campaigns you create (as creator) appear here and in the Projects
-              menu in the top bar.
+              Les campagnes que vous créez (en tant que créateur) apparaissent ici et dans le menu Projets
+              de la barre supérieure.
             </p>
           </CardContent>
           <CardFooter>
             <Button type="button" variant="secondary" onClick={openCreate}>
-              Create draft
+              Créer un brouillon
             </Button>
           </CardFooter>
         </Card>
@@ -450,19 +449,19 @@ export function ProjectsCrudModule({
       <FullTopSheet
         open={sheetOpen}
         onOpenChange={setSheetOpen}
-        title={mode === "create" ? "New project" : "Update project"}
+        title={mode === "create" ? "Nouveau projet" : "Modifier le projet"}
         description={sheetDescription}
         bodyClassName="gap-4"
         footer={
           mode === "update" && !selectedCampaign ? (
             <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
-              Close
+              Fermer
             </FullTopSheetCancelButton>
           ) : (
             <div className="flex w-full flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap gap-2">
                 <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
-                  Cancel
+                  Annuler
                 </FullTopSheetCancelButton>
                 {step > 0 && (
                   <Button
@@ -471,7 +470,7 @@ export function ProjectsCrudModule({
                     onClick={handleBack}
                     disabled={busy}
                   >
-                    Back
+                    Retour
                   </Button>
                 )}
               </div>
@@ -481,7 +480,7 @@ export function ProjectsCrudModule({
                   onClick={() => void handleNext()}
                   disabled={busy}
                 >
-                  Continue
+                  Continuer
                 </Button>
               ) : (
                 <Button
@@ -490,10 +489,10 @@ export function ProjectsCrudModule({
                   disabled={busy}
                 >
                   {busy
-                    ? "Saving…"
+                    ? "Enregistrement…"
                     : mode === "create"
-                      ? "Create project"
-                      : "Save changes"}
+                      ? "Créer le projet"
+                      : "Enregistrer les modifications"}
                 </Button>
               )}
             </div>
@@ -502,7 +501,7 @@ export function ProjectsCrudModule({
       >
         {mode === "update" && !selectedCampaign ? (
           <p className="text-sm text-muted-foreground">
-            Campaign not found. Close this sheet and select another project.
+            Campagne non trouvée. Fermez ce volet et sélectionnez un autre projet.
           </p>
         ) : (
           <form
@@ -665,7 +664,7 @@ export function ProjectsCrudModule({
               <div className="grid gap-4">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="proj-goal">Funding goal</Label>
+                    <Label htmlFor="proj-goal">Objectif de financement</Label>
                     <Input
                       id="proj-goal"
                       type="number"
@@ -680,7 +679,7 @@ export function ProjectsCrudModule({
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="proj-currency">Currency</Label>
+                    <Label htmlFor="proj-currency">Devise</Label>
                     <Input
                       id="proj-currency"
                       maxLength={12}
@@ -693,21 +692,27 @@ export function ProjectsCrudModule({
                     )}
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="proj-start">Starts (optional)</Label>
-                    <Input
-                      id="proj-start"
-                      type="datetime-local"
-                      {...form.register("startsAt")}
+                    <Label htmlFor="proj-start">Débute (optionnel)</Label>
+                    <DateTimePicker
+                      value={form.watch("startsAt")}
+                      onChange={(date) =>
+                        form.setValue("startsAt", date?.toISOString() ?? "", {
+                          shouldValidate: true,
+                        })
+                      }
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="proj-end">Ends (optional)</Label>
-                    <Input
-                      id="proj-end"
-                      type="datetime-local"
-                      {...form.register("endsAt")}
+                    <Label htmlFor="proj-end">Finit (optionnel)</Label>
+                    <DateTimePicker
+                      value={form.watch("endsAt")}
+                      onChange={(date) =>
+                        form.setValue("endsAt", date?.toISOString() ?? "", {
+                          shouldValidate: true,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -717,7 +722,7 @@ export function ProjectsCrudModule({
             {step === 2 && (
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label>Status</Label>
+                  <Label>Statut</Label>
                   <Select
                     value={form.watch("status")}
                     onValueChange={(v) =>
@@ -727,7 +732,7 @@ export function ProjectsCrudModule({
                     }
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder="Statut" />
                     </SelectTrigger>
                     <SelectContent>
                       {campaignStatusValues.map((s) => (
@@ -749,9 +754,9 @@ export function ProjectsCrudModule({
                     }
                   />
                   <div className="space-y-1">
-                    <Label htmlFor="proj-featured">Featured campaign</Label>
+                    <Label htmlFor="proj-featured">Campagne à la une</Label>
                     <p className="text-xs text-muted-foreground">
-                      Featured campaigns are prioritized in public showcases.
+                      Les campagnes à la une sont prioritaires dans les vitrines publiques.
                     </p>
                   </div>
                 </div>
@@ -760,7 +765,7 @@ export function ProjectsCrudModule({
 
             {step === 3 && (
               <div className="space-y-2">
-                <Label>Cover image</Label>
+                <Label>Image de couverture</Label>
                 <FileDropZone
                   accept="image/*"
                   remoteUrl={form.watch("coverImageUrl")?.trim() || null}
@@ -774,7 +779,7 @@ export function ProjectsCrudModule({
                       void deleteCoverByUrl(current);
                     }
                   }}
-                  hint="Drag an image or click. Uploads use the same Cloudinary flow as admin listings."
+                  hint="Faites glisser une image ou cliquez. Les téléchargements utilisent le même flux Cloudinary que les annonces administrateur."
                 />
                 <input type="hidden" {...form.register("coverImageUrl")} />
               </div>

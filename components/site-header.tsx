@@ -18,16 +18,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 const titles: Record<string, string> = {
-  "/admin": "Overview",
-  "/admin/users": "Users",
-  "/admin/campaigns": "Listings",
-  "/admin/tickets": "Support Tickets",
-  "/admin/investments": "Investments",
+  "/admin": "Aperçu",
+  "/admin/users": "Utilisateurs",
+  "/admin/campaigns": "Annonces",
+  "/admin/tickets": "Tickets de support",
+  "/admin/investments": "Investissements",
   "/admin/transactions": "Transactions",
-  "/admin/withdrawals": "Withdrawals",
+  "/admin/withdrawals": "Retraits",
   "/admin/notifications": "Notifications",
-  "/admin/kyc": "KYC Reviews",
-  "/admin/properties": "Properties",
+  "/admin/kyc": "Vérifications KYC",
+  "/admin/properties": "Propriétés",
 };
 
 export function SiteHeader() {
@@ -73,7 +73,7 @@ export function SiteHeader() {
               <span>Notifications</span>
               {unreadCount > 0 && (
                 <Badge variant="secondary" className="rounded-md">
-                  {unreadCount} new
+                  {unreadCount} nouvelles
                 </Badge>
               )}
             </DropdownMenuLabel>
@@ -109,13 +109,13 @@ export function SiteHeader() {
                     href="/admin/notifications"
                     className="text-center w-full text-sm font-medium"
                   >
-                    View all notifications
+                    Voir toutes les notifications
                   </a>
                 </DropdownMenuItem>
               </>
             ) : (
               <div className="p-4 text-center text-sm text-muted-foreground">
-                No notifications
+                Aucune notification
               </div>
             )}
           </DropdownMenuContent>

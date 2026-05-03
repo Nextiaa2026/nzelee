@@ -46,10 +46,10 @@ function formatMoney(amountMinor: number, currency: string) {
 }
 
 function toTag(status: string, isFeatured: boolean) {
-  if (isFeatured) return "Featured";
-  if (status === "LIVE") return "New";
-  if (status === "FUNDED") return "Hot";
-  return "Growth";
+  if (isFeatured) return "À la une";
+  if (status === "LIVE") return "Nouveau";
+  if (status === "FUNDED") return "Financé";
+  return "Croissance";
 }
 
 export function CampaignsShowcase() {
@@ -110,15 +110,15 @@ export function CampaignsShowcase() {
                 variants={fadeUp}
                 className="inline-block rounded-full border border-foreground/15 bg-card px-4 py-1.5 text-xs text-foreground/80"
               >
-                Live campaigns
+                Campagnes en cours
               </motion.span>
               <motion.h2
                 variants={fadeUp}
                 className="mt-4 max-w-xl font-display text-4xl leading-tight text-foreground sm:text-5xl"
               >
-                Back curated listings
-                <br /> across{" "}
-                <span className="italic text-mint-foreground">{rows.length || 0}</span> live offers
+                Soutenez des projets sélectionnés
+                <br /> parmi{" "}
+                <span className="italic text-mint-foreground">{rows.length || 0}</span> offres actives
               </motion.h2>
             </motion.div>
             <motion.p
@@ -128,8 +128,8 @@ export function CampaignsShowcase() {
               transition={{ duration: 0.45, delay: 0.05 }}
               className="max-w-sm text-sm text-foreground/60"
             >
-              Nzelle focuses on property listings and structured offerings — transparent terms and
-              straightforward member tooling.
+              Nexiaa se concentre sur des annonces immobilières et des offres structurées — des conditions transparentes et
+              des outils membres simples.
             </motion.p>
           </div>
         </div>
@@ -146,7 +146,7 @@ export function CampaignsShowcase() {
           ))}
         </motion.div>
         {!loading && listings.length === 0 ? (
-          <p className="mt-8 text-sm text-foreground/60">No live campaigns right now.</p>
+          <p className="mt-8 text-sm text-foreground/60">Aucune campagne en cours pour le moment.</p>
         ) : null}
 
         <div className="mt-10 text-center">
@@ -155,7 +155,7 @@ export function CampaignsShowcase() {
               href="/campaigns"
               className="inline-flex items-center gap-2 rounded-full border border-foreground/20 bg-card px-6 py-2.5 text-sm text-foreground backdrop-blur transition-colors hover:bg-muted"
             >
-              Explore all campaigns
+              Explorer toutes les campagnes
               <ArrowRight className="size-4 shrink-0" strokeWidth={2} aria-hidden />
             </Link>
           </motion.div>

@@ -8,6 +8,7 @@ import {
   LogOut,
   Settings,
   ShieldCheck,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { CompanyBrandMark } from "@/components/company-brand-mark";
@@ -29,9 +30,11 @@ import { cn } from "@/lib/utils";
 export function DashboardAccountHeader({
   user,
   kycStatus,
+  isAdmin,
 }: {
   user: { name: string; email: string; avatar?: string };
   kycStatus?: string | null;
+  isAdmin?: boolean;
 }) {
   const { data: unread = 0 } = useUnreadNotificationCount();
 
@@ -68,7 +71,7 @@ export function DashboardAccountHeader({
   const kycDisplay = getKycStatusDisplay(kycStatus);
 
   return (
-    <header className="sticky top-0 z-40 border-t-4 border-t-deep-green border-b border-foreground/5 bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-t-4 border-t-mint border-b border-foreground/5 bg-white/95 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-2.5 md:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           {/* Removed mobile hamburger menu as we now have bottom nav */}
@@ -147,6 +150,17 @@ export function DashboardAccountHeader({
                   Paramètres
                 </Link>
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/admin"
+                    className="flex cursor-pointer items-center gap-2 text-deep-green font-medium"
+                  >
+                    <LayoutDashboard className="size-4 opacity-70" />
+                    Administration
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:bg-destructive/10 focus:text-destructive"

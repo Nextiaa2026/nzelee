@@ -16,7 +16,7 @@ import {
 import { formatCentsToUsd } from "@/lib/money";
 import type { UserWithdrawalRow } from "@/lib/services/user-withdrawals";
 
-const dateFmt = new Intl.DateTimeFormat(undefined, {
+const dateFmt = new Intl.DateTimeFormat("fr-FR", {
   year: "numeric",
   month: "short",
   day: "2-digit",
@@ -32,17 +32,17 @@ function formatDate(value: Date | string | null | undefined) {
 const columns: ColumnDef<UserWithdrawalRow, unknown>[] = [
   {
     accessorKey: "requestedAt",
-    header: "Requested",
+    header: "Demandé",
     cell: ({ row }) => formatDate(row.original.requestedAt),
   },
   {
     accessorKey: "amount",
-    header: "Amount",
+    header: "Montant",
     cell: ({ row }) => formatCentsToUsd(row.original.amount),
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: "Statut",
     cell: ({ row }) => (
       <Badge variant="secondary" className="font-normal">
         {row.original.status}
@@ -60,7 +60,7 @@ const columns: ColumnDef<UserWithdrawalRow, unknown>[] = [
   },
   {
     accessorKey: "completedAt",
-    header: "Completed",
+    header: "Terminé",
     cell: ({ row }) => (
       <span className="text-muted-foreground">{formatDate(row.original.completedAt)}</span>
     ),
@@ -79,10 +79,10 @@ const columns: ColumnDef<UserWithdrawalRow, unknown>[] = [
           <DropdownMenuItem
             onClick={async () => {
               await navigator.clipboard.writeText(row.original.id);
-              toast.success("Withdrawal id copied");
+              toast.success("ID de retrait copié");
             }}
           >
-            Copy request id
+            Copier l&apos;ID de demande
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -94,7 +94,7 @@ export function InvestorWithdrawalsTable({ data }: { data: UserWithdrawalRow[] }
   if (!data.length) {
     return (
       <div className="rounded-lg border border-black/10 bg-white p-6 text-sm text-black/60">
-        No withdrawals yet.
+        Aucun retrait pour le moment.
       </div>
     );
   }
@@ -116,11 +116,11 @@ export function InvestorWithdrawalsTable({ data }: { data: UserWithdrawalRow[] }
               </Badge>
             </div>
             <p className="mt-2 text-xs text-black/50">
-              Requested {formatDate(row.requestedAt)}
+              Demandé le {formatDate(row.requestedAt)}
             </p>
             <p className="mt-1 text-xs text-black/60">{row.destination}</p>
             <p className="mt-1 text-xs text-black/45">
-              Completed {formatDate(row.completedAt)}
+              Terminé le {formatDate(row.completedAt)}
             </p>
           </div>
         ))}

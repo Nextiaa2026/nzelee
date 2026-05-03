@@ -52,7 +52,7 @@ export function ResetPasswordForm({
       setSuccessMessage(result.data.message);
       setIsSuccess(true);
     } catch (err) {
-      setSubmitError(getApiErrorMessage(err, "Unable to reset password."));
+      setSubmitError(getApiErrorMessage(err, "Impossible de réinitialiser le mot de passe."));
     }
   };
 
@@ -63,7 +63,7 @@ export function ResetPasswordForm({
           <input type="hidden" value={token} {...register("token")} />
 
           <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="password">New password</Label>
+            <Label htmlFor="password">Nouveau mot de passe</Label>
             <PasswordInput
               id="password"
               autoComplete="new-password"
@@ -74,7 +74,7 @@ export function ResetPasswordForm({
             ) : null}
           </div>
           <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="confirmPassword">Confirm new password</Label>
+            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
             <PasswordInput
               id="confirmPassword"
               autoComplete="new-password"
@@ -99,7 +99,7 @@ export function ResetPasswordForm({
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Updating..." : "Update password"}
+            {isSubmitting ? "Mise à jour..." : "Mettre à jour le mot de passe"}
           </Button>
         </form>
 

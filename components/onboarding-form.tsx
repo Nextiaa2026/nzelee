@@ -125,7 +125,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
         }
       },
       onError: (e) => {
-        setError(e instanceof Error ? e.message : "Could not save. Try again.");
+        setError(e instanceof Error ? e.message : "Impossible d'enregistrer. Réessayez.");
       },
     });
   };
@@ -177,12 +177,12 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   htmlFor="displayName"
                   className="text-sm font-semibold text-black"
                 >
-                  Display name
+                  Nom d&apos;affichage
                 </Label>
                 <Input
                   id="displayName"
                   {...register("displayName")}
-                  placeholder="Your name"
+                  placeholder="Votre nom"
                   autoComplete="name"
                   className={cn(
                     errors.displayName && "border-red-500/50 bg-red-500/[0.02]",
@@ -194,7 +194,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   </p>
                 ) : (
                   <p className="text-xs text-black/40">
-                    Shown on your profile; you can change it anytime.
+                    Affiché sur votre profil ; vous pouvez le changer à tout moment.
                   </p>
                 )}
               </div>
@@ -206,7 +206,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   htmlFor="country"
                   className="text-sm font-semibold text-black"
                 >
-                  Country
+                  Pays
                 </Label>
                 <CountrySelect
                   id="country"
@@ -230,7 +230,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   htmlFor="dateOfBirth"
                   className="text-sm font-semibold text-black"
                 >
-                  Date of birth
+                  Date de naissance
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -246,7 +246,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                       {dobDate ? (
                         format(dobDate, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Choisir une date</span>
                       )}
                     </Button>
                   </PopoverTrigger>
@@ -275,8 +275,8 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   </p>
                 ) : (
                   <p className="text-[11px] leading-tight text-black/40">
-                    Must be 18+. Use the same date as on your ID for
-                    verification later.
+                    Doit avoir 18 ans et plus. Utilisez la même date que sur votre pièce d&apos;identité pour
+                    la vérification ultérieure.
                   </p>
                 )}
               </div>
@@ -288,7 +288,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   htmlFor="currency"
                   className="text-sm font-semibold text-black"
                 >
-                  Preferred currency
+                  Devise préférée
                 </Label>
                 <Select
                   value={currency ?? ""}
@@ -306,7 +306,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                       errors.currency && "ring-1 ring-red-500/30",
                     )}
                   >
-                    <SelectValue placeholder="Select a currency" />
+                    <SelectValue placeholder="Sélectionnez une devise" />
                   </SelectTrigger>
                   <SelectContent>
                     {investmentCurrencyCodes.map((code) => (
@@ -320,7 +320,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   <p className="text-[11px] text-red-500">{errors.currency.message}</p>
                 ) : (
                   <p className="text-xs text-black/40">
-                    Used for amounts and summaries across your account.
+                    Utilisée pour les montants et les résumés sur votre compte.
                   </p>
                 )}
               </div>
@@ -331,7 +331,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-black/5 bg-black/[0.01] p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-black/30">
-                      Name
+                      Nom
                     </span>
                     <p className="mt-1 text-base font-semibold text-black">
                       {displayName || "—"}
@@ -339,7 +339,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   </div>
                   <div className="rounded-2xl border border-black/5 bg-black/[0.01] p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-black/30">
-                      Country
+                      Pays
                     </span>
                     <p className="mt-1 text-base font-semibold text-black">
                       {country || "—"}
@@ -347,15 +347,15 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   </div>
                   <div className="rounded-2xl border border-black/5 bg-black/[0.01] p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-black/30">
-                      Age
+                      Âge
                     </span>
                     <p className="mt-1 text-base font-semibold text-black">
-                      {reviewAge !== null ? `${reviewAge} years` : "—"}
+                      {reviewAge !== null ? `${reviewAge} ans` : "—"}
                     </p>
                   </div>
                   <div className="rounded-2xl border border-black/5 bg-black/[0.01] p-4 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-black/30">
-                      Currency
+                      Devise
                     </span>
                     <p className="mt-1 text-base font-semibold text-black">
                       {currency || "—"}
@@ -363,8 +363,8 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   </div>
                 </div>
                 <p className="pt-2 text-center text-sm text-black/50">
-                  Continue to finish setup. You can verify your identity now or
-                  later from your dashboard.
+                  Continuez pour terminer la configuration. Vous pouvez vérifier votre identité maintenant ou
+                  plus tard depuis votre tableau de bord.
                 </p>
               </div>
             ) : null}
@@ -373,16 +373,16 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
               <div className="space-y-6">
                 <div className="mx-auto max-w-sm rounded-3xl border border-black/5 bg-black/[0.01] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
                   <p className="text-sm font-semibold text-black">
-                    Before you start
+                    Avant de commencer
                   </p>
                   <ul className="mt-3 space-y-3 text-sm text-black/60">
                     <li className="flex items-center gap-3">
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-mint" />
-                      Government-issued photo ID
+                      Pièce d&apos;identité avec photo
                     </li>
                     <li className="flex items-center gap-3">
                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-mint" />
-                      Selfie or liveness step
+                      Selfie ou étape de vivacité
                     </li>
                   </ul>
                 </div>
@@ -433,7 +433,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
               disabled={step === 0 || completeOnboardingMutation.isPending}
               onClick={() => onStepChange(Math.max(0, step - 1))}
             >
-              Back
+              Retour
             </Button>
 
             {isKycStep ? (
@@ -445,7 +445,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   disabled={completeOnboardingMutation.isPending}
                   onClick={handleSubmit((data) => onSubmit(data))}
                 >
-                  Finish without KYC
+                  Terminer sans KYC
                 </Button>
                 <Button
                   type="button"
@@ -458,7 +458,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                   {completeOnboardingMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    "Save & verify identity"
+                    "Enregistrer & vérifier l'identité"
                   )}
                 </Button>
               </div>
@@ -469,7 +469,7 @@ export function OnboardingForm({ step, onStepChange }: OnboardingFormProps) {
                 disabled={!stepValid || completeOnboardingMutation.isPending}
                 onClick={() => void handleNext()}
               >
-                Continue
+                Continuer
               </Button>
             )}
           </div>

@@ -9,17 +9,17 @@ export default async function CampaignsBrowsePage() {
   return (
     <main>
       <PageHero
-        eyebrow="Marketplace"
+        eyebrow="Place de marché"
         title={
           <>
-            Discover <span className="text-mint">campaigns</span>
+            Découvrez les <span className="text-mint">campagnes</span>
           </>
         }
-        subtitle="Live and funded raises you can watch or save to your account. Browse vetted campaigns from around the world."
+        subtitle="Collectes de fonds en cours et financées que vous pouvez suivre ou sauvegarder sur votre compte. Parcourez des campagnes vérifiées du monde entier."
       />
 
       <Suspense
-        fallback={<div className="container py-12">Loading campaigns...</div>}
+        fallback={<div className="container py-12">Chargement des campagnes...</div>}
       >
         <CampaignsPageClient
           campaigns={campaigns}

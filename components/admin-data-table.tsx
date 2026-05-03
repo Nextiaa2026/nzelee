@@ -87,8 +87,8 @@ export function AdminDataTable<TData extends { id: string }>({
 
   return (
     <div className={cn("space-y-3", className)}>
-      <div className="overflow-hidden rounded-lg border border-foreground/10 bg-card">
-        <Table className="[&_tr]:border-b [&_tr]:border-border/30">
+      <div className="overflow-x-auto rounded-lg border border-foreground/10 bg-card">
+        <Table className="min-w-full [&_tr]:border-b [&_tr]:border-border/30">
           <TableHeader className="bg-white">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow

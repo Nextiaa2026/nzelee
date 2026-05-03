@@ -17,11 +17,11 @@ export type PropertyListing = {
 };
 
 const tagAccent: Record<string, string> = {
-  Featured: "bg-mint text-black",
-  New: "bg-emerald-400 text-black",
-  Hot: "bg-amber-400 text-black",
-  Growth: "bg-lime-300 text-black",
-  Green: "bg-emerald-600 text-white",
+  "À la une": "bg-mint text-black",
+  "Nouveau": "bg-emerald-400 text-black",
+  "Financé": "bg-amber-400 text-black",
+  "Croissance": "bg-lime-300 text-black",
+  "Vert": "bg-emerald-600 text-white",
 };
 
 function tagClass(tag: string) {
@@ -60,7 +60,7 @@ export function PropertyListingCard({ listing }: { listing: PropertyListing }) {
           {tag}
         </span>
         <span className="absolute right-3 top-3 rounded-full bg-black/85 px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-white backdrop-blur">
-          Campaign
+          Campagne
         </span>
       </div>
       <div className="p-5">
@@ -69,19 +69,19 @@ export function PropertyListingCard({ listing }: { listing: PropertyListing }) {
 
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Raised</div>
+            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Collecté</div>
             <div className="font-display text-lg text-neutral-900">{raised}</div>
           </div>
           <div>
-            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Currency</div>
+            <div className="text-[10px] uppercase tracking-wider text-neutral-500">Devise</div>
             <div className="font-display text-lg">{currency}</div>
           </div>
         </div>
 
         <div className="mt-4">
           <div className="flex items-center justify-between text-[10px] text-neutral-500">
-            <span>{funded}% funded</span>
-            <span>Goal {goal}</span>
+            <span>{funded}% financé</span>
+            <span>Objectif {goal}</span>
           </div>
           <div className="mt-1.5 h-1.5 rounded-full bg-neutral-200">
             <motion.div
@@ -103,7 +103,7 @@ export function PropertyListingCard({ listing }: { listing: PropertyListing }) {
             href={`/campaigns/${slug}`}
             className="inline-flex w-full items-center justify-center gap-1 rounded-full bg-mint py-2.5 text-xs font-medium text-deep-green transition-colors hover:bg-mint/90"
           >
-            Invest now
+            Investir maintenant
             <ArrowRight className="size-3.5" />
           </Link>
         </motion.div>

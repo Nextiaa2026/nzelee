@@ -5,15 +5,15 @@ import { NotificationsPanel } from "@/components/dashboard/notifications-panel";
 
 export const metadata: Metadata = {
   title: "Notifications",
-  description: "Your account notifications.",
+  description: "Vos notifications de compte.",
 };
 
 export default function DashboardNotificationsPage() {
   return (
     <DashboardPageShell
-      eyebrow="Inbox"
+      eyebrow="Boîte de réception"
       title="Notifications"
-      description="Read and dismiss updates about your profile, verification, and activity."
+      description="Lisez et gérez les mises à jour concernant votre profil, votre vérification et votre activité."
     >
       <NotificationsPanel />
     </DashboardPageShell>

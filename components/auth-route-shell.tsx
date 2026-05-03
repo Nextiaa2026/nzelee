@@ -17,9 +17,9 @@ type AuthMeta = {
 function metaForPath(pathname: string): AuthMeta {
   if (pathname.startsWith("/register/verification-sent")) {
     return {
-      title: "Check your email",
+      title: "Vérifiez vos emails",
       subtitle:
-        "Enter the 6-digit code we sent you to finish creating your account.",
+        "Saisissez le code à 6 chiffres que nous vous avons envoyé pour terminer la création de votre compte.",
       side: "right",
       footer: (
         <>
@@ -27,14 +27,14 @@ function metaForPath(pathname: string): AuthMeta {
             href="/login"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Go to sign in
+            Aller à la connexion
           </Link>
           {" · "}
           <Link
             href="/register"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Use a different email
+            Utiliser un autre email
           </Link>
         </>
       ),
@@ -42,17 +42,17 @@ function metaForPath(pathname: string): AuthMeta {
   }
   if (pathname.startsWith("/register")) {
     return {
-      title: "Create your account",
-      subtitle: `Join ${SITE_NAME} to explore offerings and manage your commitments in one place.`,
+      title: "Créez votre compte",
+      subtitle: `Rejoignez ${SITE_NAME} pour explorer les offres et gérer vos engagements en un seul endroit.`,
       side: "right",
       footer: (
         <>
-          Already have an account?{" "}
+          Vous avez déjà un compte ?{" "}
           <Link
             href="/login"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Sign in
+            Se connecter
           </Link>
         </>
       ),
@@ -60,18 +60,18 @@ function metaForPath(pathname: string): AuthMeta {
   }
   if (pathname.startsWith("/forgot-password")) {
     return {
-      title: "Reset your password",
+      title: "Réinitialisez votre mot de passe",
       subtitle:
-        "We’ll email you a secure link to choose a new password if an account exists for that address.",
+        "Nous vous enverrons un lien sécurisé par email pour choisir un nouveau mot de passe si un compte existe pour cette adresse.",
       side: "right",
       footer: (
         <>
-          Remembered it?{" "}
+          Vous vous en souvenez ?{" "}
           <Link
             href="/login"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Sign in
+            Se connecter
           </Link>
         </>
       ),
@@ -79,9 +79,9 @@ function metaForPath(pathname: string): AuthMeta {
   }
   if (pathname.startsWith("/reset-password")) {
     return {
-      title: "Choose a new password",
+      title: "Choisissez un nouveau mot de passe",
       subtitle:
-        "Use at least 8 characters and a combination you do not reuse on other sites.",
+        "Utilisez au moins 8 caractères et une combinaison que vous n'utilisez pas sur d'autres sites.",
       side: "right",
       footer: (
         <>
@@ -89,7 +89,7 @@ function metaForPath(pathname: string): AuthMeta {
             href="/login"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Back to sign in
+            Retour à la connexion
           </Link>
         </>
       ),
@@ -97,9 +97,9 @@ function metaForPath(pathname: string): AuthMeta {
   }
   if (pathname.startsWith("/verify-email")) {
     return {
-      title: "Email verification",
+      title: "Vérification de l'email",
       subtitle:
-        "Enter the code from your inbox, or resend from sign-in with the same email.",
+        "Saisissez le code reçu dans votre boîte de réception, ou renvoyez-le depuis la connexion avec le même email.",
       side: "right",
       footer: (
         <>
@@ -107,32 +107,32 @@ function metaForPath(pathname: string): AuthMeta {
             href="/register/verification-sent"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Enter code
+            Saisir le code
           </Link>
           {" · "}
           <Link
             href="/login"
             className="font-medium text-deep-green hover:underline hover:opacity-90"
           >
-            Sign in
+            Se connecter
           </Link>
         </>
       ),
     };
   }
   return {
-    title: "Welcome back",
+    title: "Bon retour parmi nous",
     subtitle:
-      "Continue with Google or your email and password to open your account.",
+      "Continuez avec Google ou votre email et mot de passe pour accéder à votre compte.",
     side: "right",
     footer: (
       <>
-        New here?{" "}
+        Nouveau ici ?{" "}
         <Link
           href="/register"
           className="font-medium text-deep-green hover:underline hover:opacity-90"
         >
-          Create an account
+          Créer un compte
         </Link>
       </>
     ),
@@ -151,7 +151,7 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
           href="/"
           className="text-sm text-black/55 transition hover:text-black/90 dark:text-white/55 dark:hover:text-white/90"
         >
-          Back to site
+          Retour au site
         </Link>
       </div>
 

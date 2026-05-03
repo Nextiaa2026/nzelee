@@ -14,20 +14,20 @@ import {
 
 const labelMap: Record<string, string> = {
   admin: "Admin",
-  dashboard: "Account",
-  campaigns: "Campaigns",
-  users: "Users",
-  investments: "Investments",
+  dashboard: "Compte",
+  campaigns: "Campagnes",
+  users: "Utilisateurs",
+  investments: "Investissements",
   transactions: "Transactions",
-  withdrawals: "Withdrawals",
+  withdrawals: "Retraits",
   notifications: "Notifications",
-  settings: "Settings",
-  projects: "Projects",
-  saved: "Saved",
-  markets: "Markets",
+  settings: "Paramètres",
+  projects: "Projets",
+  saved: "Favoris",
+  markets: "Marchés",
   kyc: "KYC",
   onboarding: "Onboarding",
-  investors: "Investors",
+  investors: "Investisseurs",
 };
 
 function toLabel(segment: string) {
@@ -43,7 +43,7 @@ export function AppBreadcrumb({ className }: { className?: string }) {
       <Breadcrumb className={className}>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbPage>Home</BreadcrumbPage>
+            <BreadcrumbPage>Accueil</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -55,7 +55,7 @@ export function AppBreadcrumb({ className }: { className?: string }) {
       <BreadcrumbList className="inline-flex rounded-full border border-black/15 bg-black/5 px-3.5 py-1.5 text-xs text-black/70">
         <BreadcrumbItem>
           <BreadcrumbLink asChild className="text-black/70 hover:text-black/90">
-            <Link href="/">Home</Link>
+            <Link href="/">Accueil</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {parts.map((segment, idx) => {

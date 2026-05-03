@@ -142,10 +142,10 @@ export function PWAInstaller() {
             
             <div className="flex-1 pr-4">
               <h3 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-                Install {SITE_NAME}
+                Installer {SITE_NAME}
               </h3>
               <p className="mt-1.5 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                Install our app for a faster, seamless experience and easy access to your investments.
+                Installez notre application pour une expérience plus rapide et un accès facile à vos investissements.
               </p>
               
               <div className="mt-6">
@@ -155,13 +155,13 @@ export function PWAInstaller() {
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm dark:bg-zinc-800">
                         <Share className="h-4 w-4 text-blue-500" />
                       </div>
-                      <span>Tap the share button in your browser</span>
+                      <span>Appuyez sur le bouton de partage dans votre navigateur</span>
                     </div>
                     <div className="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 text-xs font-medium text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm dark:bg-zinc-800 text-lg">
                         +
                       </div>
-                      <span>Select &quot;Add to Home Screen&quot;</span>
+                      <span>Sélectionnez &quot;Sur l&apos;écran d&apos;accueil&quot;</span>
                     </div>
                   </div>
                 ) : (
@@ -170,7 +170,7 @@ export function PWAInstaller() {
                     className="h-11 w-full gap-2 rounded-xl bg-emerald-600 text-base font-semibold text-white transition-all hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] dark:bg-emerald-500 dark:hover:bg-emerald-600 shadow-[0_4px_14px_0_rgba(16,185,129,0.39)]"
                   >
                     <Download className="h-5 w-5" />
-                    Install Now
+                    Installer maintenant
                   </Button>
                 )}
               </div>

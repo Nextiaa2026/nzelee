@@ -6,8 +6,8 @@ import { ProjectsCrudModule } from "@/components/dashboard/projects-crud-module"
 import { listMyCampaignProjects } from "@/lib/services/user-projects";
 
 export const metadata: Metadata = {
-  title: "Projects",
-  description: "Manage listings you publish as an administrator.",
+  title: "Projets",
+  description: "Gérez les annonces que vous publiez en tant qu'administrateur.",
 };
 
 type ProjectsPageProps = {

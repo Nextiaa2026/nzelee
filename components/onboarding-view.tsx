@@ -12,12 +12,12 @@ import {
 } from "@/components/onboarding-wizard-shell";
 
 const STEPS: WizardStep[] = [
-  { label: "Display name" },
-  { label: "Country" },
-  { label: "Date of birth" },
-  { label: "Currency" },
-  { label: "Review" },
-  { label: "Identity (optional)" },
+  { label: "Nom d'affichage" },
+  { label: "Pays" },
+  { label: "Date de naissance" },
+  { label: "Devise" },
+  { label: "Révision" },
+  { label: "Identité (optionnel)" },
 ];
 
 export function OnboardingView() {

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Browse campaigns",
-  description: "Explore live and funded campaigns on Zeller. Save listings to your dashboard.",
+  title: "Parcourir les campagnes",
+  description: "Explorez les campagnes en cours et financées sur Nexiaa. Enregistrez les annonces dans votre tableau de bord.",
 };
 
 export default function CampaignsLayout({ children }: { children: React.ReactNode }) {

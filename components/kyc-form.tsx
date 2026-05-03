@@ -107,13 +107,13 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
         error?: { message: string };
       };
       if (!res.ok || !json.ok) {
-        throw new Error(json.error?.message ?? "Could not submit verification.");
+        throw new Error(json.error?.message ?? "Impossible de soumettre la vérification.");
       }
-      toast.success("Verification submitted. We will review your documents shortly.");
+      toast.success("Vérification soumise. Nous examinerons vos documents sous peu.");
       router.push("/dashboard");
       router.refresh();
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Could not save. Try again.";
+      const message = e instanceof Error ? e.message : "Impossible d'enregistrer. Réessayez.";
       setError(message);
       toast.error(message);
     } finally {
@@ -143,7 +143,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
         const url = await uploadKycImage(file);
         setValue(field, url, { shouldValidate: true });
       } catch (e) {
-        const message = e instanceof Error ? e.message : "Upload failed";
+        const message = e instanceof Error ? e.message : "Le téléchargement a échoué";
         toast.error(message);
         throw e;
       } finally {
@@ -168,7 +168,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
             {step === 0 ? (
               <div className="space-y-1.5 sm:space-y-2">
                 <Label className="text-sm font-semibold text-black">
-                  Document type
+                  Type de document
                 </Label>
                 <Select
                   onValueChange={(val) =>
@@ -176,18 +176,18 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                   }
                 >
                   <SelectTrigger className="h-11 w-full rounded-md border-0 bg-black/4 px-3 py-2 text-sm text-foreground shadow-none transition-colors outline-none hover:bg-black/6 focus:ring-2 focus:ring-ring/25">
-                    <SelectValue placeholder="Select ID type" />
+                    <SelectValue placeholder="Sélectionnez le type d'ID" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border border-black/5 shadow-xl">
-                    <SelectItem value="PASSPORT">Passport</SelectItem>
-                    <SelectItem value="ID_CARD">National ID Card</SelectItem>
+                    <SelectItem value="PASSPORT">Passeport</SelectItem>
+                    <SelectItem value="ID_CARD">Carte d&apos;identité nationale</SelectItem>
                     <SelectItem value="DRIVERS_LICENSE">
-                      Driver&apos;s License
+                      Permis de conduire
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-[11px] text-black/40">
-                  Choose the document you have ready for upload.
+                  Choisissez le document que vous avez prêt à télécharger.
                 </p>
               </div>
             ) : null}
@@ -198,7 +198,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                   htmlFor="idNumber"
                   className="text-sm font-semibold text-black"
                 >
-                  ID Number
+                  Numéro d&apos;ID
                 </Label>
                 <Input
                   id="idNumber"
@@ -212,7 +212,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                   </p>
                 ) : (
                   <p className="text-[11px] text-black/40">
-                    Enter the number exactly as it appears on your ID.
+                    Entrez le numéro exactement tel qu&apos;il apparaît sur votre ID.
                   </p>
                 )}
               </div>
@@ -222,10 +222,10 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
               <div className="space-y-3">
                 <div className="space-y-1">
                   <Label className="text-sm font-semibold text-black">
-                    Front of ID
+                    Recto de l&apos;ID
                   </Label>
                   <p className="text-[11px] text-black/40">
-                    Ensure all text is clearly readable and no glare.
+                    Assurez-vous que tout le texte est clairement lisible et sans reflet.
                   </p>
                 </div>
                 <FileDropZone
@@ -234,7 +234,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                   onClear={() => setValue("frontIdUrl", "")}
                   isUploading={uploadingField === "frontIdUrl"}
                   className="border-0 bg-black/4"
-                  hint="JPG, PNG, or WebP — max size follows your account limit. Photos must be sharp and well lit."
+                  hint="JPG, PNG ou WebP — la taille maximale suit la limite de votre compte. Les photos doivent être nettes et bien éclairées."
                 />
               </div>
             ) : null}
@@ -248,10 +248,10 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                     </div>
                     <div className="space-y-1">
                       <p className="font-semibold text-black">
-                        Not required for Passport
+                        Non requis pour le Passeport
                       </p>
                       <p className="text-xs text-black/40">
-                        Passports only require the main information page.
+                        Les passeports ne nécessitent que la page d&apos;informations principale.
                       </p>
                     </div>
                     <Button
@@ -259,17 +259,17 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                       className="text-mint font-semibold"
                       onClick={handleNext}
                     >
-                      Skip this step
+                      Passer cette étape
                     </Button>
                   </div>
                 ) : (
                   <>
                     <div className="space-y-1">
                       <Label className="text-sm font-semibold text-black">
-                        Back of ID
+                        Verso de l&apos;ID
                       </Label>
                       <p className="text-[11px] text-black/40">
-                        Upload the reverse side of your identification card.
+                        Téléchargez le verso de votre carte d&apos;identification.
                       </p>
                     </div>
                     <FileDropZone
@@ -278,7 +278,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                       onClear={() => setValue("backIdUrl", "")}
                       isUploading={uploadingField === "backIdUrl"}
                       className="border-0 bg-black/4"
-                      hint="Same requirements as the front: clear, in focus, full card visible."
+                      hint="Mêmes exigences que pour le recto : clair, net, carte entière visible."
                     />
                   </>
                 )}
@@ -289,10 +289,10 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
               <div className="space-y-3">
                 <div className="space-y-1">
                   <Label className="text-sm font-semibold text-black">
-                    Liveness check (Selfie)
+                    Contrôle de vivacité (Selfie)
                   </Label>
                   <p className="text-[11px] text-black/40">
-                    Take a clear photo of yourself looking at the camera.
+                    Prenez une photo claire de vous en regardant la caméra.
                   </p>
                 </div>
                 <FileDropZone
@@ -302,7 +302,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                   isUploading={uploadingField === "selfieUrl"}
                   className="border-0 bg-black/4"
                   accept="image/*"
-                  hint="Face the camera in good light. No filters or sunglasses."
+                  hint="Faites face à la caméra dans une bonne lumière. Pas de filtres ni de lunettes de soleil."
                 />
               </div>
             ) : null}
@@ -319,11 +319,11 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
                 </motion.div>
                 <div className="space-y-2">
                   <p className="text-xl font-display font-bold text-black tracking-tight">
-                    Ready to submit
+                    Prêt à soumettre
                   </p>
                   <p className="text-sm text-black/50 max-w-[250px] mx-auto">
-                    Please review your documents before finishing. Once submitted,
-                    changes cannot be made until review is complete.
+                    Veuillez vérifier vos documents avant de terminer. Une fois soumis,
+                    les modifications ne peuvent plus être effectuées jusqu&apos;à ce que l&apos;examen soit terminé.
                   </p>
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
               disabled={step === 0 || pending}
               onClick={() => onStepChange(Math.max(0, step - 1))}
             >
-              Back
+              Retour
             </Button>
 
             <Button
@@ -388,9 +388,9 @@ export function KycForm({ step, onStepChange }: KycFormProps) {
               {pending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : step === KYC_STEP_COUNT - 1 ? (
-                "Submit Verification"
+                "Soumettre la vérification"
               ) : (
-                "Continue"
+                "Continuer"
               )}
             </Button>
           </div>

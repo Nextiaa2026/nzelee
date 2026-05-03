@@ -166,10 +166,10 @@ export function CampaignsPageClient({
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="mb-8">
           <h2 className="line-clamp-1 font-display text-2xl">
-            Active Campaigns
+            Campagnes actives
           </h2>
           <p className="mt-1 line-clamp-2 text-sm text-foreground/60">
-            Explore opportunities and back projects you believe in
+            Explorez les opportunités et soutenez les projets auxquels vous croyez
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export function CampaignsPageClient({
               <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40" />
               <Input
                 type="search"
-                placeholder="Search campaigns..."
+                placeholder="Rechercher des campagnes..."
                 value={searchQuery}
                 onChange={(e) => handleSearchChange(e.target.value)}
                 disabled={isPending}
@@ -198,10 +198,10 @@ export function CampaignsPageClient({
                   className="border-foreground/15"
                 >
                   <ChevronLeftIcon className="h-4 w-4" />
-                  <span className="ml-1">Previous</span>
+                  <span className="ml-1">Précédent</span>
                 </Button>
                 <span className="text-sm text-foreground/60">
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} sur {totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -210,7 +210,7 @@ export function CampaignsPageClient({
                   disabled={currentPage === totalPages || isPending}
                   className="border-foreground/15"
                 >
-                  <span className="mr-1">Next</span>
+                  <span className="mr-1">Suivant</span>
                   <ChevronRightIcon className="h-4 w-4" />
                 </Button>
               </div>
@@ -221,7 +221,7 @@ export function CampaignsPageClient({
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 text-sm text-foreground/60">
               <FilterIcon className="h-4 w-4" />
-              <span className="font-medium">Filters:</span>
+              <span className="font-medium">Filtres:</span>
             </div>
 
             <Select
@@ -230,10 +230,10 @@ export function CampaignsPageClient({
               disabled={isPending}
             >
               <SelectTrigger className="h-9 w-[140px] border-foreground/15">
-                <SelectValue placeholder="Currency" />
+                <SelectValue placeholder="Devise" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Currencies</SelectItem>
+                <SelectItem value="all">Toutes les devises</SelectItem>
                 {currencies.map((currency) => (
                   <SelectItem key={currency} value={currency}>
                     {currency}
@@ -248,14 +248,14 @@ export function CampaignsPageClient({
               disabled={isPending}
             >
               <SelectTrigger className="h-9 w-[160px] border-foreground/15">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder="Trier par" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="featured">Featured First</SelectItem>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="progress">Most Funded</SelectItem>
-                <SelectItem value="goal-high">Highest Goal</SelectItem>
-                <SelectItem value="goal-low">Lowest Goal</SelectItem>
+                <SelectItem value="featured">En vedette d&apos;abord</SelectItem>
+                <SelectItem value="newest">Plus récent d&apos;abord</SelectItem>
+                <SelectItem value="progress">Plus financé</SelectItem>
+                <SelectItem value="goal-high">Objectif le plus élevé</SelectItem>
+                <SelectItem value="goal-low">Objectif le plus bas</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -265,8 +265,8 @@ export function CampaignsPageClient({
           <div className="rounded-2xl border border-dashed bg-muted/30 px-6 py-12 text-center">
             <p className="text-sm text-muted-foreground">
               {campaigns.length === 0
-                ? "No live campaigns yet. Check back soon, or create one from your dashboard."
-                : "No campaigns match your search or filter."}
+                ? "Aucune campagne en direct pour le moment. Revenez bientôt ou créez-en une depuis votre tableau de bord."
+                : "Aucune campagne ne correspond à votre recherche ou à vos filtres."}
             </p>
           </div>
         ) : (
@@ -306,10 +306,10 @@ export function CampaignsPageClient({
                   className="border-foreground/15"
                 >
                   <ChevronLeftIcon className="h-4 w-4" />
-                  <span className="ml-1">Previous</span>
+                  <span className="ml-1">Précédent</span>
                 </Button>
                 <span className="text-sm text-foreground/60">
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} sur {totalPages}
                 </span>
                 <Button
                   variant="outline"
@@ -318,7 +318,7 @@ export function CampaignsPageClient({
                   disabled={currentPage === totalPages || isPending}
                   className="border-foreground/15"
                 >
-                  <span className="mr-1">Next</span>
+                  <span className="mr-1">Suivant</span>
                   <ChevronRightIcon className="h-4 w-4" />
                 </Button>
               </div>
@@ -331,7 +331,7 @@ export function CampaignsPageClient({
             href="/contact"
             className="inline-block rounded-full bg-deep-green px-6 py-3 text-sm text-deep-green-foreground transition hover:opacity-90"
           >
-            Talk to an advisor
+            Parler à un conseiller
           </Link>
         </div>
       </section>

@@ -11,9 +11,9 @@ export default function DashboardWithdrawalsPage() {
 
   return (
     <DashboardPageShell
-      eyebrow="Treasury"
-      title="Withdrawals"
-      description="Cash out to your bank or digital wallet. Requests stay pending until an administrator approves or rejects them."
+      eyebrow="Trésorerie"
+      title="Retraits"
+      description="Retirez vos fonds vers votre banque ou portefeuille numérique. Les demandes restent en attente jusqu'à ce qu'un administrateur les approuve ou les rejette."
       actions={<WithdrawalRequestSheet />}
     >
       <MockQueryPlaceholder

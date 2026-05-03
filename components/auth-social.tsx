@@ -37,7 +37,7 @@ export type AuthGoogleButtonProps = React.ComponentProps<"button">;
  */
 export function AuthGoogleButton({
   className,
-  children = "Continue with Google",
+  children = "Continuer avec Google",
   ...props
 }: AuthGoogleButtonProps) {
   return (
@@ -59,7 +59,7 @@ export function AuthGoogleButton({
 }
 
 export function AuthOAuthDivider({
-  label = "Or with email",
+  label = "Ou avec email",
   className,
 }: {
   label?: string;

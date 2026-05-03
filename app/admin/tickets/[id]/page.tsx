@@ -58,11 +58,11 @@ export default async function AdminTicketDetailPage({
           href="/admin/tickets"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          ← Back to tickets
+          ← Retour aux tickets
         </Link>
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">
-        Support Ticket #{ticket.id.slice(0, 8)}
+        Ticket de support #{ticket.id.slice(0, 8)}
       </h1>
       <AdminTicketDetailView ticket={ticket} />
     </div>

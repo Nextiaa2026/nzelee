@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 export default function SavedCampaignsPage() {
   return (
     <DashboardPageShell
-      eyebrow="Bookmarks"
-      title="Saved campaigns"
-      description="Bookmarks for campaigns you want to follow or revisit later."
+      eyebrow="Favoris"
+      title="Campagnes sauvegardées"
+      description="Campagnes que vous souhaitez suivre ou consulter plus tard."
       actions={
         <Button variant="secondary" size="sm" asChild>
-          <Link href="/campaigns">Browse campaigns</Link>
+          <Link href="/campaigns">Parcourir les campagnes</Link>
         </Button>
       }
     >

@@ -15,6 +15,7 @@ import { profileSettingsSchema } from "@/lib/validations/marketing-forms";
 import { cn } from "@/lib/utils";
 import { useUpdateProfile } from "@/hooks/use-profile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Camera, Loader2 } from "lucide-react";
 
 type Values = z.infer<typeof profileSettingsSchema>;
@@ -56,7 +57,7 @@ export function ProfileSettingsForm({
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Image too large (max 2MB)");
+      toast.error("Image trop volumineuse (max 2Mo)");
       return;
     }
 
@@ -71,16 +72,16 @@ export function ProfileSettingsForm({
       });
 
       if (!res.ok) {
-        throw new Error("Failed to upload image");
+        throw new Error("Échec du téléchargement de l'image");
       }
 
       const data = await res.json();
       if (data.url) {
         form.setValue("image", data.url, { shouldDirty: true });
-        toast.success("Profile image updated locally. Save changes to apply.");
+        toast.success("Image de profil mise à jour localement. Enregistrez les modifications pour les appliquer.");
       }
     } catch {
-      toast.error("Failed to upload profile image");
+      toast.error("Échec du téléchargement de l'image de profil");
     } finally {
       setUploadingAvatar(false);
     }
@@ -92,12 +93,12 @@ export function ProfileSettingsForm({
       onSubmit={form.handleSubmit((values) => {
         updateProfile.mutate(values, {
           onSuccess: () => {
-            toast.success("Profile updated");
+            toast.success("Profil mis à jour");
             router.refresh();
           },
           onError: (error) => {
             toast.error(
-              error instanceof Error ? error.message : "Could not save",
+              error instanceof Error ? error.message : "Impossible d'enregistrer",
             );
           },
         });
@@ -131,9 +132,9 @@ export function ProfileSettingsForm({
           </label>
         </div>
         <div className="text-sm">
-          <p className="font-medium">Profile Image</p>
+          <p className="font-medium">Image de profil</p>
           <p className="text-muted-foreground text-xs mt-1 max-w-[200px]">
-            Click the image to upload a new avatar. JPG, PNG or WEBP (max 2MB).
+            Cliquez sur l&apos;image pour télécharger un nouvel avatar. JPG, PNG ou WEBP (max 2Mo).
           </p>
         </div>
       </div>
@@ -142,11 +143,11 @@ export function ProfileSettingsForm({
         <Label>Email</Label>
         <Input {...form.register("email")} disabled readOnly className="bg-muted/50" />
         <p className="text-xs text-muted-foreground">
-          Email changes are not available here.
+          La modification de l&apos;email n&apos;est pas disponible ici.
         </p>
       </div>
       <div className="space-y-1.5 sm:space-y-2">
-        <Label htmlFor="prof-name">Display name</Label>
+        <Label htmlFor="prof-name">Nom d&apos;affichage</Label>
         <Input
           id="prof-name"
           {...form.register("displayName")}
@@ -160,7 +161,7 @@ export function ProfileSettingsForm({
         )}
       </div>
       <div className="space-y-1.5 sm:space-y-2">
-        <Label htmlFor="prof-org">Organization (optional)</Label>
+        <Label htmlFor="prof-org">Organisation (optionnel)</Label>
         <Input 
           id="prof-org" 
           {...form.register("organization")} 
@@ -173,7 +174,7 @@ export function ProfileSettingsForm({
         )}
       </div>
       <div className="space-y-1.5 sm:space-y-2">
-        <Label htmlFor="prof-country">Country (ISO-2, optional)</Label>
+        <Label htmlFor="prof-country">Pays (ISO-2, optionnel)</Label>
         <Input
           id="prof-country"
           {...form.register("country")}
@@ -188,13 +189,22 @@ export function ProfileSettingsForm({
         )}
       </div>
       <div className="space-y-1.5 sm:space-y-2">
-        <Label htmlFor="prof-dob">Date of birth (optional)</Label>
-        <Input 
-          id="prof-dob" 
-          type="date" 
-          {...form.register("dateOfBirth")} 
-          className="h-12 rounded-2xl bg-black/5 border-0 focus-visible:ring-deep-green/20 px-5"
-        />
+        <Label htmlFor="prof-dob">Date de naissance (optionnel)</Label>
+        {(() => {
+          const dob = form.watch("dateOfBirth");
+          return (
+            <DatePicker
+              date={dob ? new Date(dob) : undefined}
+              onDateChange={(date) =>
+                form.setValue("dateOfBirth", date ? date.toISOString().slice(0, 10) : "", {
+                  shouldDirty: true,
+                })
+              }
+              className="h-12 rounded-2xl bg-black/5 border-0 focus-visible:ring-deep-green/20 px-5"
+              placeholder="Choisir une date"
+            />
+          );
+        })()}
         {form.formState.errors.dateOfBirth && (
           <p className="text-xs font-medium text-red-500 px-1">
             {form.formState.errors.dateOfBirth.message}
@@ -206,7 +216,7 @@ export function ProfileSettingsForm({
         disabled={updateProfile.isPending}
         className="w-full h-12 rounded-2xl bg-deep-green font-bold text-white shadow-lg shadow-deep-green/10 hover:bg-deep-green/90 active:scale-95 transition-all"
       >
-        {updateProfile.isPending ? "Saving…" : "Save changes"}
+        {updateProfile.isPending ? "Enregistrement…" : "Enregistrer les modifications"}
       </Button>
     </form>
   );

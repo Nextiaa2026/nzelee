@@ -103,6 +103,12 @@ export function AdminUsersTable({ data }: { data: AdminUserRow[] }) {
         cell: ({ row }) => formatDateLong(row.original.createdAt),
       },
       {
+        accessorKey: "lastLoginAt",
+        header: "Last Login",
+        cell: ({ row }) =>
+          row.original.lastLoginAt ? formatDateLong(row.original.lastLoginAt) : "Never",
+      },
+      {
         id: "actions",
         header: "",
         cell: ({ row }) => (

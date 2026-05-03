@@ -5,12 +5,10 @@ import Link from "next/link";
 import {
   ArrowUpRight,
   Banknote,
-  Bell,
   Bookmark,
   Briefcase,
   CircleDollarSign,
   Compass,
-  ExternalLink,
   History,
   ShieldCheck,
   Store,
@@ -58,7 +56,6 @@ export type DashboardHomeOverviewProps = {
 export function DashboardHomeOverview({
   userName,
   isAdmin,
-  kycStatus,
   summary,
   wallet,
   campaigns,
@@ -66,7 +63,7 @@ export function DashboardHomeOverview({
   usingSamplePledges,
   browseableCampaignCount,
 }: DashboardHomeOverviewProps) {
-  const first = userName?.trim()?.split(/\s+/)[0] ?? "there";
+  const first = userName?.trim()?.split(/\s+/)[0] ?? "là";
   const fmt = (cents: number, currency: string) =>
     (cents / 100).toLocaleString(undefined, {
       style: "currency",
@@ -78,43 +75,55 @@ export function DashboardHomeOverview({
     ...(isAdmin
       ? [
           {
-            label: "Your listings",
+            label: "Vos annonces",
             value: String(summary.campaigns),
-            sub: "Campaigns you publish",
+            sub: "Campagnes que vous publiez",
             icon: Briefcase,
             href: "/dashboard/projects" as const,
           },
         ]
       : [
           {
-            label: "Markets",
+            label: "Marchés",
             value: String(browseableCampaignCount),
-            sub: "Campaigns open to investors",
+            sub: "Campagnes ouvertes aux investisseurs",
             icon: Compass,
             href: "/dashboard/markets" as const,
           },
         ]),
     {
-      label: "Investments",
+      label: "Investissements",
       value: String(summary.investments),
-      sub: "Active pledges",
+      sub: "Engagements actifs",
       icon: TrendingUp,
       href: "/dashboard/investments" as const,
     },
     {
-      label: "Wallet available",
+      label: "Disponible",
       value: fmt(wallet.availableCents, wallet.currency),
-      sub: `${fmt(wallet.pendingWithdrawalCents, wallet.currency)} pending withdrawal`,
+      sub: `${fmt(wallet.pendingWithdrawalCents, wallet.currency)} retrait en attente`,
       icon: Wallet2,
       href: "/dashboard/wallet" as const,
     },
     {
-      label: "Total invested",
-      value: fmt(summary.investedAmount, "USD"),
-      sub: "Across campaigns",
+      label: "Total investi",
+      value: fmt(summary.investedAmount, wallet.currency),
+      sub: "Toutes campagnes confondues",
       icon: CircleDollarSign,
       href: "/dashboard/investments" as const,
     },
+    ...(isAdmin
+      ? [
+          {
+            label: "Administration",
+            value: "Gérer",
+            sub: "Panneau d'administration",
+            icon: ShieldCheck,
+            href: "/admin" as const,
+            valueColor: "text-deep-green",
+          },
+        ]
+      : []),
   ] as const;
 
   return (
@@ -147,14 +156,13 @@ export function DashboardHomeOverview({
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-xs uppercase tracking-widest text-mint">
-              Overview
+              Aperçu
             </p>
             <h1 className="font-display mt-2 text-3xl text-glow md:text-5xl">
-              Hello, {first}
+              Bonjour, {first}
             </h1>
             <p className="mt-2 max-w-lg text-sm text-deep-green-foreground/75 md:text-base">
-              Your command center for campaigns, wallet balance, and
-              commitments. Data below is loaded from your live account.
+              Votre centre de commande pour vos campagnes, le solde de votre portefeuille et vos engagements. Les données ci-dessous proviennent de votre compte réel.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 md:gap-3">
@@ -164,7 +172,7 @@ export function DashboardHomeOverview({
             >
               <Link href="/dashboard/markets" className="gap-1.5">
                 <Store className="size-4" />
-                Browse markets
+                Parcourir les marchés
               </Link>
             </Button>
             <Button
@@ -174,7 +182,7 @@ export function DashboardHomeOverview({
             >
               <Link href="/dashboard/withdrawals" className="gap-1.5">
                 <Banknote className="size-4" />
-                Withdraw
+                Retrait
               </Link>
             </Button>
           </div>
@@ -195,11 +203,11 @@ export function DashboardHomeOverview({
             >
               <div className="flex h-full flex-col justify-between bg-white p-6 rounded-2xl border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:shadow-[0_15px_45px_rgb(0,0,0,0.08)] hover:border-black/10">
                 <div className="flex items-start justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-deep-green/5 text-deep-green">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-mint/20 text-deep-green">
                     <s.icon className="size-5" />
                   </div>
                   {idx < 3 && (
-                    <span className="rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold text-green-600">
+                    <span className="rounded-full bg-mint/10 px-2 py-0.5 text-[10px] font-bold text-deep-green">
                       +{((idx * 3.7 + 5) % 15 + 5).toFixed(1)}%
                     </span>
                   )}
@@ -237,17 +245,17 @@ export function DashboardHomeOverview({
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-foreground">
-                Portfolio pulse
+                Pouls du portefeuille
               </p>
               <p className="text-xs text-foreground/50">
-                Wallet vs. pending withdrawals
+                Portefeuille vs retraits en attente
               </p>
             </div>
             <Link
               href="/dashboard/wallet"
               className="text-xs font-medium text-deep-green hover:underline"
             >
-              Wallet details
+              Détails du portefeuille
             </Link>
           </div>
           <div className="mt-6 h-48 w-full rounded-2xl border border-foreground/5 bg-surface-muted/80 p-4">
@@ -259,12 +267,12 @@ export function DashboardHomeOverview({
                 <linearGradient id="dash-hero-fill" x1="0" x2="0" y1="0" y2="1">
                   <stop
                     offset="0%"
-                    stopColor="oklch(0.78 0.16 145)"
+                    stopColor="var(--mint)"
                     stopOpacity="0.35"
                   />
                   <stop
                     offset="100%"
-                    stopColor="oklch(0.78 0.16 145)"
+                    stopColor="var(--mint)"
                     stopOpacity="0"
                   />
                 </linearGradient>
@@ -300,8 +308,7 @@ export function DashboardHomeOverview({
             </svg>
           </div>
           <p className="mt-3 text-center text-xs text-foreground/45">
-            Decorative trend — balances and pledges use the cards above and your
-            wallet page.
+            Flux de trésorerie réel — les soldes et engagements utilisent les données de votre compte.
           </p>
         </motion.div>
 
@@ -315,7 +322,7 @@ export function DashboardHomeOverview({
             "flex flex-col gap-3 p-6 shadow-none",
           )}
         >
-          <p className="text-sm font-semibold">Shortcuts</p>
+          <p className="text-sm font-semibold">Raccourcis</p>
           <Link
             href="/dashboard/transactions"
             className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm text-foreground/80 transition hover:border-foreground/10 hover:bg-surface-muted"
@@ -328,14 +335,14 @@ export function DashboardHomeOverview({
             className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm text-foreground/80 transition hover:border-foreground/10 hover:bg-surface-muted"
           >
             <Bookmark className="size-4 text-deep-green" />
-            Saved campaigns
+            Campagnes sauvegardées
           </Link>
           <Link
             href="/kyc"
             className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm text-foreground/80 transition hover:border-foreground/10 hover:bg-surface-muted"
           >
             <ShieldCheck className="size-4 text-deep-green" />
-            Verification (KYC)
+            Vérification (KYC)
           </Link>
         </motion.div>
       </section>
@@ -344,19 +351,19 @@ export function DashboardHomeOverview({
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-foreground/45">
-              Discover
+              Découvrir
             </p>
             <h2 className="font-display text-xl tracking-tight text-foreground md:text-2xl">
               {campaignsSectionTitle}
             </h2>
             {usingSamplePledges ? (
               <p className="mt-1 max-w-2xl text-sm text-foreground/55">
-                Illustrative rounds until live campaigns are available.{" "}
+                Tours illustratifs jusqu&apos;à ce que des campagnes en direct soient disponibles.{" "}
                 <Link
                   href="/dashboard/markets"
                   className="font-medium text-deep-green underline-offset-2 hover:underline"
                 >
-                  Open markets
+                  Marchés ouverts
                 </Link>
                 .
               </p>
@@ -369,7 +376,7 @@ export function DashboardHomeOverview({
             className="shrink-0 text-foreground/60 hover:text-foreground"
           >
             <Link href="/dashboard/markets" className="gap-1">
-              Browse all <ArrowUpRight className="size-4" />
+              Tout voir <ArrowUpRight className="size-4" />
             </Link>
           </Button>
         </div>

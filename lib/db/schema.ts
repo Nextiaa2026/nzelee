@@ -79,6 +79,7 @@ export const users = pgTable("users", {
   dateOfBirth: date("date_of_birth", { mode: "date" }),
   organization: varchar("organization", { length: 120 }),
   phone: varchar("phone", { length: 20 }),
+  lastLoginAt: timestamp("last_login_at", { mode: "date" }),
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });

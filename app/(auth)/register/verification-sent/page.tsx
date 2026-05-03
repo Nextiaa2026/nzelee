@@ -11,9 +11,9 @@ export default async function RegisterVerificationSentPage({ searchParams }: Pro
   return (
     <div className="flex w-full flex-col gap-6 text-left">
       <p className="text-sm text-black/65">
-        We sent a 6-digit code to your email—enter it below to finish signup. Check spam, or use{" "}
-        <span className="font-medium text-black">Resend code</span> here or{" "}
-        <span className="font-medium text-black">Resend verification</span> on sign-in.
+        Nous avons envoyé un code à 6 chiffres à votre adresse email — saisissez-le ci-dessous pour terminer l&apos;inscription. Vérifiez vos spams, ou utilisez{" "}
+        <span className="font-medium text-black">Renvoyer le code</span> ici ou{" "}
+        <span className="font-medium text-black">Renvoyer la vérification</span> lors de la connexion.
       </p>
 
       <VerifyEmailOtpForm initialEmail={displayEmail} />

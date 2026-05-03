@@ -81,15 +81,15 @@ export function InvestorInvestmentsTable({
         buildInvestmentCheckoutCallbackUrl(),
       );
       if (!isApiSuccess(r)) {
-        toast.error(r.error?.message ?? "Could not start payment.");
+        toast.error(r.error?.message ?? "Impossible de démarrer le paiement.");
         return;
       }
       const url = r.data.notch?.authorizationUrl;
       if (url) {
-        toast.message("Redirecting to Notch Pay…");
+        toast.message("Redirection vers Notch Pay…");
         window.location.assign(url);
       } else {
-        toast.error("No checkout URL returned.");
+        toast.error("Aucune URL de paiement retournée.");
       }
     } finally {
       setRepayBusyId(null);
@@ -101,33 +101,33 @@ export function InvestorInvestmentsTable({
       {
         accessorKey: "createdAt",
         header: "Date",
-        cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
+        cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString("fr-FR"),
       },
       {
         accessorKey: "campaignTitle",
-        header: "Listing",
+        header: "Annonce",
       },
       {
         accessorKey: "amount",
-        header: "Amount",
+        header: "Montant",
         cell: ({ row }) =>
           formatMoney(row.original.amount, row.original.currency),
       },
       {
         accessorKey: "status",
-        header: "Status",
+        header: "Statut",
         cell: ({ row }) => (
           <Badge variant="outline" className="font-normal">
-            {row.original.status}
+            {pledgeStatusLabel(row.original.status)}
           </Badge>
         ),
       },
       {
         accessorKey: "paymentStatus",
-        header: "Payment",
+        header: "Paiement",
         cell: ({ row }) => (
           <span className="text-xs text-muted-foreground">
-            {row.original.paymentStatus ?? "—"}
+            {paymentStatusLabel(row.original.paymentStatus)}
           </span>
         ),
       },
@@ -143,14 +143,14 @@ export function InvestorInvestmentsTable({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setSheetRow(row.original)}>
-                View details
+                Voir détails
               </DropdownMenuItem>
               {row.original.canOpenCheckout ? (
                 <DropdownMenuItem
                   disabled={repayBusyId === row.original.id}
                   onClick={() => void openRepay(row.original)}
                 >
-                  {repayBusyId === row.original.id ? "Opening…" : "Pay / retry"}
+                  {repayBusyId === row.original.id ? "Ouverture…" : "Payer / réessayer"}
                 </DropdownMenuItem>
               ) : null}
             </DropdownMenuContent>
@@ -164,7 +164,7 @@ export function InvestorInvestmentsTable({
   if (!data.length) {
     return (
       <div className="rounded-lg border border-black/10 bg-white p-6 text-sm text-black/60">
-        No investments yet.
+        Aucun investissement pour le moment.
       </div>
     );
   }
@@ -303,7 +303,7 @@ export function InvestorInvestmentsTable({
               id={row.campaignId}
               title={row.campaignTitle}
               slug={row.campaignSlug}
-              summary={`Your investment on ${new Date(row.createdAt).toLocaleDateString()}`}
+              summary={`Votre investissement le ${new Date(row.createdAt).toLocaleDateString("fr-FR")}`}
               coverImageUrl={null}
               raisedAmount={row.amount}
               goalAmount={row.amount}
@@ -324,7 +324,7 @@ export function InvestorInvestmentsTable({
                 className="flex-1"
                 onClick={() => setSheetRow(row)}
               >
-                Details
+                Détails
               </Button>
               {row.canOpenCheckout ? (
                 <Button
@@ -334,7 +334,7 @@ export function InvestorInvestmentsTable({
                   disabled={repayBusyId === row.id}
                   onClick={() => void openRepay(row)}
                 >
-                  Pay
+                  Payer
                 </Button>
               ) : null}
             </div>

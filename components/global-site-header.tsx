@@ -21,9 +21,9 @@ import { BRAND_LOGOS } from "@/lib/brand-logos";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/campaigns", label: "Campaigns" },
-  { href: "/services", label: "What we do" },
-  { href: "/about", label: "About us" },
+  { href: "/campaigns", label: "Campagnes" },
+  { href: "/services", label: "Ce que nous faisons" },
+  { href: "/about", label: "À propos" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -110,7 +110,7 @@ export function GlobalSiteHeader() {
     <nav className="hidden items-center gap-6 text-sm md:flex">
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger className={resourcesTriggerClass}>
-          Resources
+          Ressources
           <ChevronDownIcon className="size-3.5" />
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -119,28 +119,28 @@ export function GlobalSiteHeader() {
         >
           <DropdownMenuItem asChild>
             <Link href="/investors" className="cursor-pointer">
-              Investors
+              Investisseurs
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/help" className="cursor-pointer">
-              Help
+              Aide
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/careers" className="cursor-pointer">
-              Careers
+              Carrières
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/press" className="cursor-pointer">
-              Press
+              Presse
             </Link>
           </DropdownMenuItem>
           {session?.user?.role === "ADMIN" ? (
             <DropdownMenuItem asChild>
               <Link href="/dashboard/projects" className="cursor-pointer">
-                Your projects
+                Vos projets
               </Link>
             </DropdownMenuItem>
           ) : null}
@@ -178,10 +178,10 @@ export function GlobalSiteHeader() {
         <Avatar className="size-9">
           <AvatarImage
             src={session?.user?.image ?? ""}
-            alt={session?.user?.name ?? "Account"}
+            alt={session?.user?.name ?? "Compte"}
           />
           <AvatarFallback className="bg-mint text-xs font-semibold text-deep-green">
-            {(session?.user?.name ?? "Account")
+            {(session?.user?.name ?? "Compte")
               .split(" ")
               .map((part) => part[0])
               .join("")
@@ -192,28 +192,28 @@ export function GlobalSiteHeader() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-56">
         <DropdownMenuLabel className="truncate">
-          {session?.user?.email ?? "Signed in"}
+          {session?.user?.email ?? "Connecté"}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/dashboard">Account</Link>
+          <Link href="/dashboard">Compte</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/markets">Markets</Link>
+          <Link href="/dashboard/markets">Marchés</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/saved">Saved campaigns</Link>
+          <Link href="/dashboard/saved">Campagnes sauvegardées</Link>
         </DropdownMenuItem>
         {session?.user?.role === "ADMIN" ? (
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/projects">Your projects</Link>
+            <Link href="/dashboard/projects">Vos projets</Link>
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuItem asChild>
           <Link href="/dashboard/notifications">Notifications</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings">Account settings</Link>
+          <Link href="/dashboard/settings">Paramètres du compte</Link>
         </DropdownMenuItem>
         {session?.user?.role === "ADMIN" ? (
           <>
@@ -225,7 +225,7 @@ export function GlobalSiteHeader() {
         ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => void signOut({ callbackUrl: "/" })}>
-          Sign out
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -241,7 +241,7 @@ export function GlobalSiteHeader() {
           : "border border-white/20 bg-white text-black hover:bg-white/90",
       )}
     >
-      Sign in
+      Connexion
     </Link>
   );
 

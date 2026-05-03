@@ -46,7 +46,7 @@ type CheckoutViewProps = {
 
 const checkoutSchema = z
   .object({
-    amount: z.string().min(1, "Amount is required"),
+    amount: z.string().min(1, "Le montant est requis"),
     customAmount: z.string().optional(),
     paymentMethod: z.enum(["MOBILE_MONEY", "CARD", "BANK"]),
     mobileOperator: z.enum(["ORANGE_MONEY", "MTN_MOMO"]).optional(),
@@ -65,7 +65,7 @@ const checkoutSchema = z
     },
     {
       message:
-        "Mobile operator and valid phone number are required for mobile money payments",
+        "L'opérateur mobile et un numéro de téléphone valide sont requis pour les paiements mobile money",
       path: ["phoneNumber"],
     },
   );
@@ -126,13 +126,13 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
 
   const onSubmit = form.handleSubmit(async (data) => {
     if (!kycApproved) {
-      toast.error("Please complete KYC verification first");
+      toast.error("Veuillez d'abord compléter la vérification KYC");
       router.push("/kyc");
       return;
     }
 
     if (data.paymentMethod !== "MOBILE_MONEY") {
-      toast.info("This payment method is coming soon");
+      toast.info("Ce mode de paiement sera bientôt disponible");
       return;
     }
 
@@ -150,27 +150,27 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
         checkoutCallbackUrl: buildInvestmentCheckoutCallbackUrl(),
       });
       if (!response.ok) {
-        toast.error(response.error?.message ?? "Payment failed");
+        toast.error(response.error?.message ?? "Le paiement a échoué");
         return;
       }
 
       const checkoutUrl = response.data.notch?.authorizationUrl;
       if (checkoutUrl) {
-        toast.success("Redirecting to Notch Pay", {
-          description: "Complete checkout on the secure payment page.",
+        toast.success("Redirection vers Notch Pay", {
+          description: "Finalisez le paiement sur la page sécurisée.",
         });
         window.location.assign(checkoutUrl);
         return;
       }
 
-      toast.success("Payment recorded", {
-        description: "You can follow status from your investments list.",
+      toast.success("Paiement enregistré", {
+        description: "Vous pouvez suivre le statut depuis votre liste d'investissements.",
       });
       router.push(`/dashboard/investments`);
     } catch (error) {
-      toast.error("Payment failed", {
+      toast.error("Le paiement a échoué", {
         description:
-          error instanceof Error ? error.message : "Please try again",
+          error instanceof Error ? error.message : "Veuillez réessayer",
       });
     }
   });
@@ -185,11 +185,11 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
             className="flex items-center gap-2 text-sm text-foreground/60 hover:text-foreground"
           >
             <ChevronLeftIcon className="h-4 w-4" />
-            Back
+            Retour
           </Link>
           <div className="flex items-center gap-2 text-sm text-foreground/60">
             <LockIcon className="h-4 w-4" />
-            <span>Payment Secured</span>
+            <span>Paiement sécurisé</span>
           </div>
         </div>
       </header>
@@ -367,7 +367,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                       <p className="text-xs text-gray-400">Visa, Mastercard</p>
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      Coming Soon
+                      Bientôt disponible
                     </Badge>
                   </button>
 
@@ -390,7 +390,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                       </p>
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      Coming Soon
+                      Bientôt disponible
                     </Badge>
                   </button>
                 </div>
@@ -490,7 +490,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Processing...
+                  Traitement en cours...
                 </span>
               ) : (
                 <>
@@ -563,7 +563,7 @@ export function CheckoutView({ campaign, kycApproved }: CheckoutViewProps) {
                   </div>
                   <div>
                     <p className="text-sm italic text-foreground/80">
-                      &ldquo;Zeller m&apos;a permis de diversifier mon épargne
+                      &ldquo;Nexiaa m&apos;a permis de diversifier mon épargne
                       tout en soutenant l&apos;impact direct.&rdquo;
                     </p>
                     <p className="mt-2 text-xs font-medium text-foreground/60">

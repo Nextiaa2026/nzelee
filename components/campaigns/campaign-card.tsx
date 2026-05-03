@@ -69,7 +69,7 @@ export function CampaignCard({
           </span>
           {isDemo && (
             <span className="rounded-full bg-foreground/90 px-3 py-1 text-xs text-background backdrop-blur">
-              Demo
+              Démo
             </span>
           )}
         </div>
