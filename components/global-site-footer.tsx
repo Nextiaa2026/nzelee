@@ -1,32 +1,31 @@
 import Link from "next/link";
-
-import { SITE_NAME } from "@/lib/brand";
+import { CompanyBrandMark } from "@/components/company-brand-mark";
 
 const footerCols = [
   {
-    title: "Company",
+    title: "Entreprise",
     links: [
-      { href: "/about", label: "About us" },
+      { href: "/about", label: "À propos" },
       { href: "/services", label: "Services" },
-      { href: "/careers", label: "Careers" },
-      { href: "/press", label: "Press" },
+      { href: "/careers", label: "Carrières" },
+      { href: "/press", label: "Presse" },
     ],
   },
   {
-    title: "Legal",
+    title: "Légal",
     links: [
-      { href: "/terms-of-service", label: "Terms of Service" },
-      { href: "/privacy-policy", label: "Privacy Policy" },
-      { href: "/cookie-policy", label: "Cookie Policy" },
+      { href: "/terms-of-service", label: "Conditions d'utilisation" },
+      { href: "/privacy-policy", label: "Politique de confidentialité" },
+      { href: "/cookie-policy", label: "Politique relative aux cookies" },
     ],
   },
   {
-    title: "Support",
+    title: "Assistance",
     links: [
-      { href: "/help", label: "Help center" },
-      { href: "/contact", label: "Contact us" },
-      { href: "/login", label: "Sign in" },
-      { href: "/register", label: "Create account" },
+      { href: "/help", label: "Centre d'aide" },
+      { href: "/contact", label: "Contactez-nous" },
+      { href: "/login", label: "Se connecter" },
+      { href: "/register", label: "Créer un compte" },
     ],
   },
 ];
@@ -37,12 +36,9 @@ export function GlobalSiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid gap-10 border-b border-deep-green-foreground/10 pb-12 lg:grid-cols-[1.3fr_1fr_1fr_1fr]">
           <div>
-            <p className="font-display text-lg font-bold tracking-tight text-foreground">
-              {SITE_NAME}
-            </p>
+            <CompanyBrandMark variant="horizontalLightBg" className="mb-4" />
             <p className="mt-3 max-w-md text-sm text-foreground/70">
-              Private-market investing with structured listings, clean investor tooling, and
-              transparent compliance-first workflows.
+              Investissement sur le marché privé avec des annonces structurées, des outils pour investisseurs clairs et des flux de travail transparents axés sur la conformité.
             </p>
           </div>
 
@@ -63,7 +59,7 @@ export function GlobalSiteFooter() {
         </div>
 
         <p className="pt-10 text-center text-xs text-foreground/45">
-          © {new Date().getFullYear()} All rights reserved.
+          © {new Date().getFullYear()} Tous droits réservés.
         </p>
       </div>
     </footer>

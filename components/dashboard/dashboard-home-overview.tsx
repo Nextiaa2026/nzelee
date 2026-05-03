@@ -201,25 +201,25 @@ export function DashboardHomeOverview({
               href={s.href}
               className="block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint/50 focus-visible:ring-offset-2"
             >
-              <div className="flex h-full flex-col justify-between bg-white p-6 rounded-2xl border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:shadow-[0_15px_45px_rgb(0,0,0,0.08)] hover:border-black/10">
+              <div className="flex h-full flex-col justify-between bg-mint p-6 rounded-2xl border border-mint/20 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all hover:shadow-[0_15px_45px_rgb(0,0,0,0.1)] hover:scale-[1.02]">
                 <div className="flex items-start justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-mint/20 text-deep-green">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/30 text-deep-green">
                     <s.icon className="size-5" />
                   </div>
                   {idx < 3 && (
-                    <span className="rounded-full bg-mint/10 px-2 py-0.5 text-[10px] font-bold text-deep-green">
+                    <span className="rounded-full bg-white/40 px-2 py-0.5 text-[10px] font-bold text-deep-green">
                       +{((idx * 3.7 + 5) % 15 + 5).toFixed(1)}%
                     </span>
                   )}
                 </div>
                 <div className="mt-4">
-                  <p className="text-sm text-gray-600">{s.label}</p>
+                  <p className="text-sm font-medium text-deep-green/70">{s.label}</p>
                   <p
                     className={cn(
-                      "font-display mt-1 text-2xl font-semibold tracking-tight",
+                      "font-display mt-1 text-2xl font-bold tracking-tight",
                       "valueColor" in s && typeof s.valueColor === "string"
                         ? s.valueColor
-                        : "text-gray-900",
+                        : "text-deep-green",
                     )}
                   >
                     {s.value}
