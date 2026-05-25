@@ -101,11 +101,12 @@ export function MobileBottomNav() {
   const dashboardItemsList = getDashboardNavItems(); 
 
 
-  // Don't show on auth pages, admin, or onboarding
+  // Don't show on auth pages, admin, dashboard (sidebar layout), or onboarding
   if (
     pathname?.startsWith("/login") ||
     pathname?.startsWith("/register") ||
     pathname?.startsWith("/admin") ||
+    pathname?.startsWith("/dashboard") ||
     pathname?.startsWith("/onboarding") ||
     pathname?.startsWith("/kyc")
   ) {

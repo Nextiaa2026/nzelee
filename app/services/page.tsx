@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -12,8 +11,8 @@ export default function ServicesPage() {
     <main>
       <PageHero
         eyebrow="Services"
-        title="What we offer"
-        subtitle="Platform capabilities for discovery, diligence, and ongoing portfolio management."
+        title="Ce que nous proposons"
+        subtitle="Des outils pour découvrir les opportunités, mener votre diligence et gérer votre portefeuille au fil du temps."
       />
 
       <section className="mx-auto -mt-16 max-w-3xl px-4 pb-24">
@@ -26,23 +25,27 @@ export default function ServicesPage() {
             [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-foreground [&_h2]:mt-8 [&_h2]:mb-3
             [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_li]:text-sm"
         >
-          <h2>For investors</h2>
+          <h2>Pour les investisseurs</h2>
           <ul>
-            <li>Structured listings and transparent fee schedules</li>
-            <li>Dashboards for commitments, transactions, and withdrawals</li>
-            <li>Identity and eligibility workflows where required</li>
+            <li>Annonces structurées et grilles tarifaires transparentes</li>
+            <li>
+              Tableaux de bord pour les engagements, transactions et retraits
+            </li>
+            <li>
+              Parcours d&apos;identité et d&apos;éligibilité lorsque requis
+            </li>
           </ul>
-          <h2>For administrators</h2>
+          <h2>Pour les administrateurs</h2>
           <ul>
-            <li>Campaign and pledge management</li>
-            <li>User administration and reporting</li>
+            <li>Gestion des campagnes et des promesses</li>
+            <li>Administration des utilisateurs et rapports</li>
           </ul>
           <div className="flex flex-wrap gap-3 pt-4">
             <Button asChild>
-              <Link href="/register">Create an account</Link>
+              <Link href="/register">Créer un compte</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/contact">Talk to us</Link>
+              <Link href="/contact">Nous contacter</Link>
             </Button>
           </div>
         </motion.article>

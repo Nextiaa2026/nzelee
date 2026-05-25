@@ -39,17 +39,18 @@ export type DashboardSidebarUser = {
 
 const navMain = [
   {
-    title: "Overview",
+    title: "Aperçu",
     url: "/admin",
     icon: <Hugeicon icon={DashboardSquare01Icon} />,
+    exact: true,
   },
   {
-    title: "Users",
+    title: "Utilisateurs",
     url: "/admin/users",
     icon: <Hugeicon icon={UserMultipleIcon} />,
   },
   {
-    title: "Campaigns",
+    title: "Campagnes",
     url: "/admin/campaigns",
     icon: <Hugeicon icon={Rocket01Icon} />,
   },
@@ -59,7 +60,7 @@ const navMain = [
     icon: <Hugeicon icon={CustomerSupportIcon} />,
   },
   {
-    title: "Investments",
+    title: "Investissements",
     url: "/admin/investments",
     icon: <Hugeicon icon={HandCoinsIcon} />,
   },
@@ -69,12 +70,12 @@ const navMain = [
     icon: <Hugeicon icon={TransactionIcon} />,
   },
   {
-    title: "Withdrawals",
+    title: "Retraits",
     url: "/admin/withdrawals",
     icon: <Hugeicon icon={BankIcon} />,
   },
   {
-    title: "KYC Reviews",
+    title: "Vérifications KYC",
     url: "/admin/kyc",
     icon: <Hugeicon icon={SecurityLockIcon} />,
   },
@@ -87,7 +88,7 @@ const navMain = [
 
 const navSecondary = [
   {
-    title: "Home",
+    title: "Accueil",
     url: "/",
     icon: <Hugeicon icon={Home09Icon} />,
   },
@@ -121,7 +122,7 @@ export function AppSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain items={navMain} basePath="/admin" showQuickCreate={false} />
         <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

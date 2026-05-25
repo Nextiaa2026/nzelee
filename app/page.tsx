@@ -37,196 +37,72 @@ const stagger = {
   show: { transition: { staggerChildren: 0.08 } },
 };
 
-function HeroBento() {
-  const card =
-    "relative overflow-hidden rounded-2xl border border-deep-green-foreground/15 bg-deep-green/35 p-4 text-left text-deep-green-foreground shadow-sm backdrop-blur-md sm:p-5";
-
-  return (
-    <motion.div
-      variants={fadeUp}
-      className="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none"
-    >
-      <div className="grid auto-rows-[minmax(88px,auto)] grid-cols-2 gap-3 sm:gap-4">
-        {/* Folder-style tab on tall card */}
-        <div
-          className={`${card} row-span-2 flex flex-col justify-between pt-8 sm:pt-9`}
-        >
-          <div
-            className="absolute left-4 top-0 flex h-7 items-center rounded-b-lg bg-mint/90 px-3 text-[10px] font-semibold uppercase tracking-wider text-deep-green"
-            aria-hidden
-          >
-            Portfolio
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-deep-green-foreground/60">
-              Tous les comptes
-            </p>
-            <p className="mt-1 font-display text-3xl sm:text-4xl">+24.6%</p>
-            <p className="mt-1 text-xs text-deep-green-foreground/70">
-              Rendement pondéré, 12 derniers mois
-            </p>
-          </div>
-          <div className="mt-4 flex items-end justify-between gap-2 border-t border-deep-green-foreground/10 pt-4">
-            <div>
-              <p className="text-[10px] uppercase text-deep-green-foreground/50">
-                Valeur nette
-              </p>
-              <p className="font-display text-lg">$184,320</p>
-            </div>
-            <span className="rounded-full bg-mint/30 px-2.5 py-1 text-[10px] font-medium text-deep-green">
-              En direct
-            </span>
-          </div>
-        </div>
-
-        <div className={`${card} flex flex-col justify-center`}>
-          <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
-            Marchés
-          </p>
-          <p className="mt-1 font-display text-xl">TSLA</p>
-          <p className="mt-0.5 text-sm text-mint">+3.21%</p>
-          <p className="text-xs text-deep-green-foreground/65">$248.50</p>
-        </div>
-
-        <div className={`${card} flex flex-col justify-center`}>
-          <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
-            Frais
-          </p>
-          <p className="mt-1 font-display text-xl">$0</p>
-          <p className="text-xs text-deep-green-foreground/70">
-            Commissions sur actions &amp; ETFs
-          </p>
-        </div>
-
-        <div
-          className={`${card} col-span-2 sm:flex sm:items-center sm:justify-between sm:gap-4`}
-        >
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-deep-green-foreground/55">
-              Une seule app
-            </p>
-            <p className="mt-1 font-display text-lg leading-snug sm:text-xl">
-              Immobilier, opportunités &amp; campagnes de financement
-            </p>
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2 sm:mt-0">
-            {["Immobilier", "Financement", "Campagnes"].map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-deep-green-foreground/20 bg-deep-green/50 px-2.5 py-1 text-[10px] font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className={`${card} col-span-2 grid gap-3 sm:grid-cols-2`}>
-          <div className="rounded-xl bg-deep-green/50 p-3 ring-1 ring-deep-green-foreground/10">
-            <p className="text-[10px] uppercase text-deep-green-foreground/55">
-              Sécurité
-            </p>
-            <p className="mt-1 text-sm font-medium leading-snug">
-              Chiffrement bancaire &amp; contrôles de garde
-            </p>
-          </div>
-          <div className="rounded-xl bg-deep-green/50 p-3 ring-1 ring-deep-green-foreground/10">
-            <p className="text-[10px] uppercase text-deep-green-foreground/55">
-              Assistance
-            </p>
-            <p className="mt-1 text-sm font-medium leading-snug">
-              Des humains, 24/7 quand vous avez besoin de réponses
-            </p>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-hero-bg pb-20 pt-28 text-deep-green-foreground md:pb-28 md:pt-32 lg:pb-32 lg:pt-36">
-      {/* Animated glow blobs */}
-      <motion.div
-        className="pointer-events-none absolute -left-20 top-20 h-[500px] w-[500px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, oklch(0.78 0.16 145 / 0.35), transparent 70%)",
-        }}
-        animate={{ x: [0, 40, 0], y: [0, -20, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="pointer-events-none absolute -right-32 top-40 h-[600px] w-[600px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, oklch(0.78 0.16 145 / 0.25), transparent 70%)",
-        }}
-        animate={{ x: [0, -30, 0], y: [0, 30, 0] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <div className="relative mx-auto max-w-6xl px-4">
+    <section className="relative flex min-h-[min(72vh,640px)] flex-col bg-hero-bg pt-24 text-deep-green-foreground md:min-h-[min(68vh,720px)] md:pt-28 lg:pt-32">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col px-4">
         <motion.div
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="mt-12 grid gap-12 lg:mt-16 lg:grid-cols-2 lg:items-center lg:gap-14"
+          className="flex flex-1 flex-col justify-center py-8 md:py-12"
         >
-          <motion.div variants={fadeUp} className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 rounded-full border border-deep-green-foreground/20 bg-deep-green/40 px-4 py-1.5 text-xs backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
+          <motion.div variants={fadeUp} className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-deep-green-foreground/15 bg-deep-green/50 px-4 py-1.5 text-xs text-deep-green-foreground/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-mint" aria-hidden />
               Investir. Grandir. Recommencer.
             </span>
 
-            <h1 className="mt-6 font-display text-xl leading-[1.12] tracking-tight sm:text-3xl lg:text-5xl xl:text-6xl">
-              Dites bonjour à
-              <br className="sm:hidden" />
-              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-mint px-3 py-0.5 text-deep-green sm:-translate-y-1 sm:gap-2 sm:px-4 sm:py-1.5">
-                <motion.span
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                  className="inline-flex"
+            <h1 className="mt-6 font-display text-[2rem] font-semibold leading-[1.08] tracking-tight sm:text-4xl lg:text-[2.75rem] xl:text-6xl">
+              Dites bonjour à{" "}
+              <span className="inline-flex items-center gap-2 rounded-full bg-mint px-3 py-1 text-deep-green sm:px-4 sm:py-1.5">
+                <Wallet
+                  className="size-4 shrink-0 sm:size-5"
+                  strokeWidth={2}
                   aria-hidden
-                >
-                  <Wallet
-                    className="size-4 shrink-0 sm:size-6"
-                    strokeWidth={2}
-                  />
-                </motion.span>
+                />
                 l&apos;investissement
               </span>
               <br />
               plus intelligent pour tous
             </h1>
 
-            <p className="mx-auto mt-8 max-w-md text-base text-deep-green-foreground/70 lg:mx-0">
-              Découvrez des opportunités immobilières et des campagnes de financement
-              vétifées — le tout depuis une application magnifiquement simple.
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-deep-green-foreground/75">
+              Découvrez des opportunités immobilières et des campagnes de
+              financement vérifiées — le tout depuis une application
+              magnifiquement simple.
             </p>
 
-            <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="rounded-full bg-mint px-7 py-3.5 text-sm font-medium text-deep-green"
-              >
-                Commencer à investir
-              </motion.button>
-              <motion.a
-                href="#campaigns"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="rounded-full border border-deep-green-foreground/25 bg-deep-green/30 px-7 py-3.5 text-sm font-medium text-deep-green-foreground backdrop-blur"
-              >
-                Parcourir les campagnes
-              </motion.a>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href="/register"
+                  className="inline-flex rounded-full bg-mint px-7 py-3.5 text-sm font-semibold text-deep-green transition-colors hover:bg-mint/90"
+                >
+                  Commencer à investir
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
+                <Link
+                  href="/campaigns"
+                  className="inline-flex rounded-full border border-deep-green-foreground/30 px-7 py-3.5 text-sm font-medium text-deep-green-foreground transition-colors hover:border-deep-green-foreground/45 hover:bg-deep-green/20"
+                >
+                  Parcourir les campagnes
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
-
-          <HeroBento />
         </motion.div>
+
+        <motion.p
+          variants={fadeUp}
+          initial="hidden"
+          animate="show"
+          className="pb-8 text-sm text-deep-green-foreground/50 md:pb-10"
+        >
+          L&apos;inscription des membres et les informations réglementaires sont
+          mises à jour selon l&apos;évolution des règles applicables.
+        </motion.p>
       </div>
     </section>
   );

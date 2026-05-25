@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -11,9 +10,9 @@ export default function HelpPage() {
   return (
     <main>
       <PageHero
-        eyebrow="Support"
-        title="Help center"
-        subtitle="Quick answers to common platform, onboarding, and policy questions."
+        eyebrow="Assistance"
+        title="Centre d'aide"
+        subtitle="Réponses rapides sur la plateforme, l'inscription et nos politiques."
       />
 
       <section className="mx-auto -mt-16 max-w-3xl px-4 pb-24">
@@ -26,84 +25,86 @@ export default function HelpPage() {
             [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-foreground [&_h2]:mt-8 [&_h2]:mb-3
             [&_ul]:list-disc [&_ul]:space-y-3 [&_ul]:pl-5 [&_li]:text-sm"
         >
-          <h2>Frequently asked questions</h2>
+          <h2>Questions fréquentes</h2>
           <ul>
             <li>
               <strong className="text-foreground">
-                Who can invest on Zeller?
+                Qui peut investir sur Nzelee ?
               </strong>
               <br />
-              Zeller currently supports accredited investors, with identity
-              checks completed during onboarding and before funding.
+              Nzelee accompagne les membres qui terminent l&apos;inscription et
+              respectent les règles d&apos;éligibilité de chaque offre, avec des
+              contrôles d&apos;identité avant le financement.
             </li>
             <li>
               <strong className="text-foreground">
-                How long does setup take?
+                Combien de temps prend la configuration ?
               </strong>
               <br />
-              Creating an account usually takes minutes. Verification review is
-              typically completed within one business day.
+              La création de compte prend quelques minutes. La vérification est
+              en général traitée sous un jour ouvré.
             </li>
             <li>
               <strong className="text-foreground">
-                Can I skip KYC at onboarding?
+                Puis-je reporter le KYC à l&apos;inscription ?
               </strong>
               <br />
-              Yes. You can defer KYC and complete it later from Verification in
-              your profile menu (or /kyc) before your first investment.
+              Oui. Vous pouvez le compléter plus tard depuis Vérification dans
+              votre profil (ou /kyc) avant votre premier investissement.
             </li>
             <li>
               <strong className="text-foreground">
-                Where do I see transactions?
+                Où voir mes transactions ?
               </strong>
               <br />
-              Use your dashboard transaction and investment pages for status,
-              history, and payout records.
+              Utilisez les pages Transactions et Investissements de votre
+              tableau de bord pour l&apos;historique et le statut.
             </li>
             <li>
               <strong className="text-foreground">
-                Are returns guaranteed?
+                Les rendements sont-ils garantis ?
               </strong>
               <br />
-              No. All investments carry risk, including possible loss of
-              principal.
+              Non. Tout investissement comporte un risque, y compris une perte
+              en capital.
             </li>
             <li>
               <strong className="text-foreground">
-                Where can I read legal terms?
+                Où lire les conditions légales ?
               </strong>
               <br />
-              Review our{" "}
+              Consultez nos{" "}
               <Link
                 href="/terms-of-service"
                 className="font-medium text-foreground underline underline-offset-4"
               >
-                Terms of Service
+                Conditions d&apos;utilisation
               </Link>
-              ,{" "}
+              , notre{" "}
               <Link
                 href="/privacy-policy"
                 className="font-medium text-foreground underline underline-offset-4"
               >
-                Privacy Policy
-              </Link>
-              , and{" "}
+                Politique de confidentialité
+              </Link>{" "}
+              et notre{" "}
               <Link
                 href="/cookie-policy"
                 className="font-medium text-foreground underline underline-offset-4"
               >
-                Cookie Policy
+                Politique relative aux cookies
               </Link>
               .
             </li>
           </ul>
-          <h2>Need more help?</h2>
+          <h2>Besoin d&apos;aide supplémentaire ?</h2>
           <p>
-            Our team can help with onboarding, account, and product questions.
+            Notre équipe peut vous aider pour l&apos;inscription, votre compte
+            et l&apos;utilisation de la plateforme.
           </p>
           <div className="pt-2">
             <Button asChild>
-              <Link href="/contact">Contact support</Link>
+              <Link href="/contact">Contacter le support</Link>
             </Button>
           </div>
         </motion.article>

@@ -7,10 +7,10 @@ import { LineChart, PiggyBank, ShieldCheck, Timer } from "lucide-react";
 import { CompanyBrandMark } from "@/components/company-brand-mark";
 
 const ROTATING_COPY = [
-  "Three campaigns hit their minimums last week — backers saw updates in real time.",
-  "You always see ticket size, fees, and key dates before you confirm a pledge.",
-  "Verification and eligibility rules are spelled out so you know what unlocks investing.",
-  "Campaign pages separate marketing from the structured facts: minimums, risks, and timelines.",
+  "Trois campagnes ont atteint leur minimum la semaine dernière — les contributeurs ont suivi les mises à jour en direct.",
+  "Vous voyez toujours le ticket, les frais et les dates clés avant de confirmer une promesse.",
+  "Les règles de vérification et d'éligibilité sont détaillées pour savoir ce qui débloque l'investissement.",
+  "Chaque page sépare le marketing des faits structurés : minimums, risques et calendriers.",
 ];
 
 const TILES: {
@@ -24,37 +24,37 @@ const TILES: {
 }[] = [
   {
     Icon: LineChart,
-    title: "Pipeline pulse",
-    body: "Live pledges across open campaigns this week.",
-    metric: "$2.1M",
-    metricLabel: "indicative volume",
+    title: "Pouls du pipeline",
+    body: "Promesses en direct sur les campagnes ouvertes cette semaine.",
+    metric: "2,1 M$",
+    metricLabel: "volume indicatif",
     surface: "bg-mint text-deep-green",
     iconWrap: "bg-deep-green/15 text-deep-green",
   },
   {
     Icon: Timer,
-    title: "Closing windows",
-    body: "Countdowns stay visible so you never miss a deadline.",
-    metric: "3 live",
-    metricLabel: "ending in under 14 days",
+    title: "Fenêtres de clôture",
+    body: "Les comptes à rebours restent visibles pour ne manquer aucune échéance.",
+    metric: "3 actives",
+    metricLabel: "fin sous 14 jours",
     surface: "bg-amber-200 text-foreground",
     iconWrap: "bg-foreground/10 text-foreground",
   },
   {
     Icon: ShieldCheck,
-    title: "Checks first",
-    body: "KYC and jurisdiction gates only when an offer requires them.",
-    metric: "~1 day",
-    metricLabel: "typical review",
+    title: "Contrôles d'abord",
+    body: "KYC et critères de juridiction uniquement si l'offre l'exige.",
+    metric: "~1 jour",
+    metricLabel: "examen type",
     surface: "bg-deep-green text-deep-green-foreground",
     iconWrap: "bg-deep-green-foreground/15 text-deep-green-foreground",
   },
   {
     Icon: PiggyBank,
-    title: "Clear economics",
-    body: "Minimums and platform economics are shown before checkout.",
-    metric: "From $95",
-    metricLabel: "seen on listings",
+    title: "Économie claire",
+    body: "Minimums et frais affichés avant le paiement.",
+    metric: "Dès 95 $",
+    metricLabel: "sur les annonces",
     surface: "bg-foreground text-background",
     iconWrap: "bg-background/15 text-background",
   },
@@ -84,12 +84,12 @@ export function AuthHeroPanel() {
         <div className="mb-8 w-full max-w-md">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-deep-green-foreground/20 bg-deep-green/40 px-3 py-1.5 text-xs font-medium text-deep-green-foreground/90 backdrop-blur-sm">
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-mint" />
-            Regulated crowdfunding access
+            Accès réglementé au financement participatif
           </div>
           <h2 className="mt-6 text-center font-display text-3xl font-bold leading-tight tracking-tight text-deep-green-foreground xl:text-4xl">
-            Invest in curated
+            Investissez dans des
             <br />
-            company campaigns.
+            campagnes sélectionnées.
           </h2>
 
           <div className="relative mx-auto mt-5 min-h-13 max-w-lg text-center text-sm leading-relaxed text-deep-green-foreground/70">
@@ -164,7 +164,8 @@ export function AuthHeroPanel() {
         </div>
 
         <p className="mx-auto mt-10 max-w-md text-center text-[11px] text-deep-green-foreground/55">
-          Member onboarding and disclosures are updated as rules change.
+          L&apos;inscription des membres et les informations réglementaires sont
+          mises à jour selon l&apos;évolution des règles applicables.
         </p>
       </div>
     </div>

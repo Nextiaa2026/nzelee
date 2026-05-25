@@ -15,38 +15,38 @@ import {
 
 const adminSections = [
   {
-    title: "Users",
-    description: "Accounts, roles, and access.",
+    title: "Utilisateurs",
+    description: "Comptes, rôles et accès.",
     href: "/admin/users",
   },
   {
-    title: "Listings",
-    description: "Campaigns and investable projects.",
+    title: "Annonces",
+    description: "Campagnes et projets investissables.",
     href: "/admin/campaigns",
   },
   {
-    title: "Investments",
-    description: "Investor commitments across listings.",
+    title: "Investissements",
+    description: "Engagements des investisseurs sur les annonces.",
     href: "/admin/investments",
   },
   {
     title: "Transactions",
-    description: "Charges, refunds, payouts, and fees.",
+    description: "Prélèvements, remboursements, paiements et frais.",
     href: "/admin/transactions",
   },
   {
-    title: "Withdrawals",
-    description: "Payout requests and withdrawal pipeline.",
+    title: "Retraits",
+    description: "Demandes de paiement et pipeline de retrait.",
     href: "/admin/withdrawals",
   },
   {
-    title: "KYC Reviews",
-    description: "Approve or reject investor verification submissions.",
+    title: "Vérifications KYC",
+    description: "Approuver ou rejeter les dossiers investisseurs.",
     href: "/admin/kyc",
   },
   {
     title: "Notifications",
-    description: "Send in-app notices to one user or all users.",
+    description: "Envoyer des alertes à un utilisateur ou à tous.",
     href: "/admin/notifications",
   },
 ];
@@ -82,14 +82,14 @@ export default async function AdminOverviewPage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <div className="px-4 lg:px-6">
-            <h1 className="text-2xl font-semibold tracking-tight">Admin</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Administration</h1>
           </div>
           <AdminDashboardStats />
           <div className="px-4 lg:px-6">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <h2 className="text-lg font-medium">Featured campaigns</h2>
+              <h2 className="text-lg font-medium">Campagnes à la une</h2>
               <Button asChild size="sm" variant="outline">
-                <Link href="/admin/campaigns">Manage listings</Link>
+                <Link href="/admin/campaigns">Gérer les annonces</Link>
               </Button>
             </div>
             {featuredCampaigns.length ? (
@@ -140,7 +140,7 @@ export default async function AdminOverviewPage() {
                             {formatMoney(campaign.raisedAmount, campaign.currency)}
                           </span>
                           <Button asChild size="sm" variant="outline">
-                            <Link href={`/campaigns/${campaign.slug}`}>Open</Link>
+                            <Link href={`/campaigns/${campaign.slug}`}>Ouvrir</Link>
                           </Button>
                         </div>
                       </CardContent>
@@ -151,13 +151,13 @@ export default async function AdminOverviewPage() {
             ) : (
               <Card className="shadow-none">
                 <CardContent className="p-6 text-sm text-black/60">
-                  No featured campaigns yet.
+                  Aucune campagne à la une pour le moment.
                 </CardContent>
               </Card>
             )}
           </div>
           <div className="px-4 lg:px-6">
-            <h2 className="mb-3 text-lg font-medium">Admin directories</h2>
+            <h2 className="mb-3 text-lg font-medium">Répertoires admin</h2>
             <div className="grid gap-3 sm:grid-cols-2">
               {adminSections.map((section) => (
                 <Card key={section.href} className="shadow-none">
@@ -167,7 +167,7 @@ export default async function AdminOverviewPage() {
                       <CardDescription>{section.description}</CardDescription>
                     </div>
                     <Button asChild size="sm" variant="outline">
-                      <Link href={section.href}>Open</Link>
+                      <Link href={section.href}>Ouvrir</Link>
                     </Button>
                   </CardHeader>
                 </Card>

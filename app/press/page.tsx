@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -10,9 +9,9 @@ export default function PressPage() {
   return (
     <main>
       <PageHero
-        eyebrow="Press"
-        title="Media & Press"
-        subtitle="Media kit and announcements will appear here. For press inquiries, use the contact form."
+        eyebrow="Presse"
+        title="Médias & presse"
+        subtitle="Le kit média et les annonces seront publiés ici. Pour toute demande presse, utilisez le formulaire de contact."
       />
 
       <section className="mx-auto -mt-16 max-w-3xl px-4 pb-24">
@@ -25,21 +24,21 @@ export default function PressPage() {
             [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-foreground [&_h2]:mt-8 [&_h2]:mb-3
             [&_p]:my-3 [&_p]:leading-relaxed"
         >
-          <h2>Media contact</h2>
+          <h2>Contact presse</h2>
           <p>
-            Please email your request through our{" "}
+            Envoyez votre demande via notre{" "}
             <Link
               href="/contact"
               className="font-medium text-foreground underline underline-offset-4"
             >
-              contact page
+              page de contact
             </Link>{" "}
-            and include &quot;Press&quot; in the subject line.
+            en indiquant « Presse » dans l&apos;objet.
           </p>
-          <h2>Brand</h2>
+          <h2>Marque</h2>
           <p>
-            Logo and brand guidelines can be shared on request once a formal
-            press relationship is established.
+            Le logo et les directives de marque peuvent être partagés sur demande
+            une fois une relation presse formalisée.
           </p>
         </motion.article>
       </section>

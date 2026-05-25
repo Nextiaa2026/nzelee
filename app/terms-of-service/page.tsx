@@ -3,47 +3,51 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/page-shell";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
+  title: "Conditions d'utilisation",
   description:
-    "Rules for using Zeller's campaign marketplace, accounts, and investor features.",
+    "Règles d'utilisation de la place de marché Nzelee, des comptes et des fonctionnalités investisseur.",
 };
 
 export default function TermsOfServicePage() {
   return (
-    <LegalLayout title="Terms of Service" updated="April 2026">
+    <LegalLayout title="Conditions d'utilisation" updated="Avril 2026">
       <p>
-        These Terms govern your use of Zeller—the product you use to discover{" "}
-        <strong>campaigns</strong>, place <strong>pledges</strong>, manage your
-        account, and (for creators) publish and operate listings. By registering
-        or continuing to use the platform, you agree to these Terms and to any
-        policies linked from them.
+        Les présentes conditions régissent votre utilisation de Nzelee — la
+        plateforme pour découvrir des <strong>campagnes</strong>, passer des{" "}
+        <strong>promesses</strong>, gérer votre compte et (pour les porteurs)
+        publier des annonces. En vous inscrivant ou en continuant à utiliser le
+        service, vous acceptez ces conditions et les politiques qui y sont
+        liées.
       </p>
 
-      <h2>Eligibility and accounts</h2>
+      <h2>Éligibilité et comptes</h2>
       <p>
-        You must be legally capable of entering a contract in your jurisdiction
-        and must keep your account credentials secure.
+        Vous devez être juridiquement capable de conclure un contrat dans votre
+        juridiction et garder vos identifiants confidentiels.
       </p>
 
-      <h2>Investment risk disclosure</h2>
+      <h2>Avertissement sur les risques</h2>
       <p>
-        All investments involve risk, including loss of principal. Nothing on
-        Zeller is personalized legal, tax, or investment advice.
+        Tout investissement comporte un risque, y compris une perte en capital.
+        Rien sur Nzelee ne constitue un conseil juridique, fiscal ou
+        d&apos;investissement personnalisé.
       </p>
 
-      <h2>Acceptable use</h2>
+      <h2>Usage acceptable</h2>
       <ul>
-        <li>No unlawful, fraudulent, or abusive activity.</li>
-        <li>No attempts to bypass security controls or rate limits.</li>
+        <li>Aucune activité illégale, frauduleuse ou abusive.</li>
+        <li>Aucune tentative de contourner les contrôles de sécurité ou les limites.</li>
         <li>
-          No misrepresentation of identity, eligibility, or KYC information.
+          Aucune fausse déclaration d&apos;identité, d&apos;éligibilité ou
+          d&apos;informations KYC.
         </li>
       </ul>
 
-      <h2>Changes and updates</h2>
+      <h2>Modifications</h2>
       <p>
-        We may update these Terms as services evolve. Material updates will be
-        communicated in-app or via email where required.
+        Nous pouvons mettre à jour ces conditions au fil de l&apos;évolution des
+        services. Les changements importants seront communiqués dans
+        l&apos;application ou par e-mail lorsque requis.
       </p>
     </LegalLayout>
   );

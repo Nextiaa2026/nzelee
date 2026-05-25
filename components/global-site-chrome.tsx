@@ -31,7 +31,14 @@ export function GlobalSiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       {!hideOnPrefix && !hideOnExact && !hideOnNestedAuth && !isInvestPage && <GlobalSiteHeader />}
-      <div className={cn("flex-1", !pathname.startsWith("/admin") && "pb-16 md:pb-0")}>
+      <div
+        className={cn(
+          "flex-1",
+          !pathname.startsWith("/admin") &&
+            !pathname.startsWith("/dashboard") &&
+            "pb-16 md:pb-0",
+        )}
+      >
         {children}
       </div>
       {!hideOnPrefix && !hideOnExact && !hideOnNestedAuth && !isInvestPage && <GlobalSiteFooter />}

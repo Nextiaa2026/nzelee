@@ -141,8 +141,9 @@ export function CampaignsPageClient({
           className="flex flex-wrap items-center justify-between gap-4 rounded-full border border-foreground/10 bg-surface p-2 pl-5"
         >
           {/* <p className="text-sm text-foreground/60">
-            {filteredCampaigns.length} campaign
-            {filteredCampaigns.length !== 1 ? "s" : ""} available
+            {filteredCampaigns.length} campagne
+            {filteredCampaigns.length > 1 ? "s" : ""} disponible
+            {filteredCampaigns.length > 1 ? "s" : ""}
           </p>
           <div className="flex gap-1 rounded-full bg-surface-muted p-1">
             {FILTERS.map((f) => (

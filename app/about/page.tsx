@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { AboutPageClient } from "./about-client";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "À propos",
   description:
-    "Learn about our mission to make investing accessible to everyone",
+    "Découvrez notre mission : rendre l'investissement accessible à tous",
 };
 
 export default function AboutPage() {

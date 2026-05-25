@@ -1,14 +1,24 @@
 import { redirect } from "next/navigation";
 
-import { DashboardAccountHeader } from "@/components/dashboard/dashboard-account-header";
-import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
-import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { DashboardProviders } from "@/components/dashboard-providers";
+import { DashboardSiteHeader } from "@/components/dashboard-site-header";
+import { InvestorAppSidebar } from "@/components/investor-app-sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
-import { getUserEligibilityProfile } from "@/lib/services/user-eligibility";
 
-/**
- * Signed-in area — compact header + small sidebar (lg+) + main column.
- */
+const dashboardSidebarStyle = {
+  "--sidebar-width": "calc(var(--spacing) * 72)",
+  "--header-height": "calc(var(--spacing) * 16)",
+  "--sidebar": "var(--deep-green)",
+  "--sidebar-foreground": "var(--deep-green-foreground)",
+  "--sidebar-primary": "var(--mint)",
+  "--sidebar-primary-foreground": "var(--mint-foreground)",
+  "--sidebar-accent": "var(--mint)",
+  "--sidebar-accent-foreground": "var(--mint-foreground)",
+  "--sidebar-border": "oklch(1 0 0 / 0.14)",
+  "--sidebar-ring": "var(--mint)",
+} as React.CSSProperties;
+
 export default async function UserDashboardLayout({
   children,
 }: {
@@ -25,26 +35,22 @@ export default async function UserDashboardLayout({
     redirect("/onboarding");
   }
 
-  const eligibility = session.user.id
-    ? await getUserEligibilityProfile(session.user.id)
-    : null;
-
   return (
-    <div className="min-h-svh bg-[#f7fcf8] text-foreground">
-      <DashboardAccountHeader
+    <DashboardProviders style={dashboardSidebarStyle}>
+      <InvestorAppSidebar
         user={{
           name: session.user.name ?? "Membre",
           email: session.user.email ?? "",
-          avatar: session.user.image ?? undefined,
+          avatar: session.user.image ?? "",
         }}
-        kycStatus={eligibility?.kycStatus ?? null}
         isAdmin={session.user.role === "ADMIN"}
       />
-      <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-24 pt-4 md:px-6 md:pb-24 md:pt-6 lg:grid-cols-[240px_1fr] lg:items-start">
-        <DashboardSidebar />
-        <main className="min-w-0">{children}</main>
-      </div>
-      <MobileBottomNav />
-    </div>
+      <SidebarInset className="flex min-h-screen flex-col bg-[#f7fcf8]">
+        <DashboardSiteHeader />
+        <div className="flex flex-1 flex-col bg-[#f7fcf8] p-4 md:p-6">
+          {children}
+        </div>
+      </SidebarInset>
+    </DashboardProviders>
   );
 }

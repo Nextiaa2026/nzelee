@@ -6,16 +6,16 @@ import { FaqSection } from "@/components/faq";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Frequently asked questions about Zeller accounts, investing, and compliance.",
+    "Questions fréquentes sur les comptes Nzelee, l'investissement et la conformité.",
 };
 
 export default function FaqPage() {
   return (
     <main>
       <PageHero
-        eyebrow="Help Center"
-        title="Frequently Asked Questions"
-        subtitle="Find answers to common questions about Zeller, investing, and more."
+        eyebrow="Centre d'aide"
+        title="Questions fréquentes"
+        subtitle="Trouvez des réponses sur Nzelee, l'investissement et la plateforme."
       />
       <FaqSection className="-mt-16 py-16 md:py-20" />
     </main>

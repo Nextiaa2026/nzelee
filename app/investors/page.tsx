@@ -9,9 +9,16 @@ import {
 } from "@/lib/services/top-investors";
 
 export const metadata: Metadata = {
-  title: "Top Investors Leaderboard",
+  title: "Classement des investisseurs",
   description:
-    "Discover top-ranked investors on FlowFin, their portfolios, and the projects they back.",
+    "Découvrez les investisseurs les mieux classés sur Nzelee, leurs portefeuilles et les projets qu'ils soutiennent.",
+};
+
+const tierLabels: Record<TopInvestorRow["tier"], string> = {
+  Diamond: "Diamant",
+  Platinum: "Platine",
+  Gold: "Or",
+  Silver: "Argent",
 };
 
 const tierStyle: Record<TopInvestorRow["tier"], string> = {
@@ -21,17 +28,25 @@ const tierStyle: Record<TopInvestorRow["tier"], string> = {
   Silver: "bg-foreground/10 text-foreground",
 };
 
+const tierFilters = [
+  { key: "All", label: "Tous" },
+  { key: "Diamond", label: "Diamant" },
+  { key: "Platinum", label: "Platine" },
+  { key: "Gold", label: "Or" },
+  { key: "Silver", label: "Argent" },
+] as const;
+
 function Header() {
   return (
     <PageHero
-      eyebrow="Live leaderboard"
+      eyebrow="Classement en direct"
       title={
         <>
-          Top investors,{" "}
-          <span className="text-mint">ranked by performance</span>
+          Meilleurs investisseurs,{" "}
+          <span className="text-mint">classés par performance</span>
         </>
       }
-      subtitle="Browse the community leaderboard. See who is leading by YTD returns, portfolio size, and the projects they are backing."
+      subtitle="Parcourez le classement communautaire : rendements depuis le début de l'année, taille de portefeuille et projets soutenus."
     />
   );
 }
@@ -65,7 +80,7 @@ function PodiumCard({ investor }: { investor: TopInvestorRow }) {
       <div className="grid w-full grid-cols-2 gap-2 pt-2">
         <div className="neumorph-inset p-3">
           <div className="text-[10px] uppercase tracking-wider text-foreground/50">
-            Portfolio
+            Portefeuille
           </div>
           <div className="font-display text-lg">{investor.portfolio}</div>
         </div>
@@ -88,10 +103,10 @@ function Podium({ investors }: { investors: TopInvestorRow[] }) {
     <section className="bg-background py-20">
       <div className="mx-auto max-w-6xl px-4">
         <p className="text-center text-xs uppercase tracking-widest text-foreground/50">
-          Hall of fame
+          Temple de la renommée
         </p>
         <h2 className="mx-auto mt-3 max-w-xl text-center font-display text-4xl sm:text-5xl">
-          This week&apos;s top performers
+          Les meilleures performances de la semaine
         </h2>
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {top3.map((inv) => (
@@ -110,20 +125,20 @@ function Leaderboard({ investors }: { investors: TopInvestorRow[] }) {
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-widest text-foreground/50">
-              Full ranking
+              Classement complet
             </p>
             <h2 className="mt-2 font-display text-3xl sm:text-4xl">
-              All investors
+              Tous les investisseurs
             </h2>
           </div>
           <div className="flex gap-2 text-xs">
-            {["All", "Diamond", "Platinum", "Gold", "Silver"].map((t, i) => (
+            {tierFilters.map((t, i) => (
               <button
-                key={t}
+                key={t.key}
                 type="button"
                 className={`rounded-full px-4 py-2 ${i === 0 ? "bg-foreground text-background" : "border border-foreground/15 text-foreground/70"}`}
               >
-                {t}
+                {t.label}
               </button>
             ))}
           </div>
@@ -131,12 +146,12 @@ function Leaderboard({ investors }: { investors: TopInvestorRow[] }) {
 
         <div className="overflow-hidden rounded-3xl bg-surface-muted">
           <div className="hidden grid-cols-12 gap-4 border-b border-foreground/10 px-6 py-4 text-[11px] uppercase tracking-wider text-foreground/50 md:grid">
-            <div className="col-span-1">Rank</div>
-            <div className="col-span-3">Investor</div>
-            <div className="col-span-2">Tier</div>
-            <div className="col-span-2">Portfolio</div>
+            <div className="col-span-1">Rang</div>
+            <div className="col-span-3">Investisseur</div>
+            <div className="col-span-2">Niveau</div>
+            <div className="col-span-2">Portefeuille</div>
             <div className="col-span-1">YTD</div>
-            <div className="col-span-3">Top projects</div>
+            <div className="col-span-3">Projets phares</div>
           </div>
           {investors.map((inv) => (
             <div
@@ -161,7 +176,7 @@ function Leaderboard({ investors }: { investors: TopInvestorRow[] }) {
                 <span
                   className={`rounded-full px-3 py-1 text-xs ${tierStyle[inv.tier]}`}
                 >
-                  {inv.tier}
+                  {tierLabels[inv.tier]}
                 </span>
               </div>
               <div className="col-span-2 font-display text-xl">
@@ -193,16 +208,17 @@ function CTA() {
     <section className="px-4 pb-16">
       <div className="mx-auto max-w-6xl rounded-3xl bg-mint p-12 text-center">
         <h2 className="mx-auto max-w-3xl font-display text-4xl text-mint-foreground sm:text-5xl">
-          Want to climb the ranks?
+          Envie de grimper au classement ?
         </h2>
         <p className="mx-auto mt-4 max-w-md text-sm text-mint-foreground/70">
-          Join FlowFin, build your portfolio, and let your performance speak.
+          Rejoignez Nzelee, construisez votre portefeuille et laissez vos
+          résultats parler.
         </p>
         <Link
-          href="/"
+          href="/register"
           className="mt-8 inline-block rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background"
         >
-          Start investing
+          Commencer à investir
         </Link>
       </div>
     </section>

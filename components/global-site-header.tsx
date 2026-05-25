@@ -115,31 +115,46 @@ export function GlobalSiteHeader() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="center"
-          className="min-w-44 rounded-xl border-white/10 bg-[#111] text-white"
+          className="min-w-44 rounded-xl border border-deep-green/15 bg-mint p-1.5 text-deep-green shadow-lg ring-0"
         >
-          <DropdownMenuItem asChild>
-            <Link href="/investors" className="cursor-pointer">
+          <DropdownMenuItem
+            asChild
+            className="rounded-lg text-deep-green focus:bg-deep-green/10 focus:text-deep-green data-highlighted:bg-deep-green/10 data-highlighted:text-deep-green"
+          >
+            <Link href="/investors" className="cursor-pointer font-medium">
               Investisseurs
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/help" className="cursor-pointer">
+          <DropdownMenuItem
+            asChild
+            className="rounded-lg text-deep-green focus:bg-deep-green/10 focus:text-deep-green data-highlighted:bg-deep-green/10 data-highlighted:text-deep-green"
+          >
+            <Link href="/help" className="cursor-pointer font-medium">
               Aide
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/careers" className="cursor-pointer">
+          <DropdownMenuItem
+            asChild
+            className="rounded-lg text-deep-green focus:bg-deep-green/10 focus:text-deep-green data-highlighted:bg-deep-green/10 data-highlighted:text-deep-green"
+          >
+            <Link href="/careers" className="cursor-pointer font-medium">
               Carrières
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/press" className="cursor-pointer">
+          <DropdownMenuItem
+            asChild
+            className="rounded-lg text-deep-green focus:bg-deep-green/10 focus:text-deep-green data-highlighted:bg-deep-green/10 data-highlighted:text-deep-green"
+          >
+            <Link href="/press" className="cursor-pointer font-medium">
               Presse
             </Link>
           </DropdownMenuItem>
           {session?.user?.role === "ADMIN" ? (
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/projects" className="cursor-pointer">
+            <DropdownMenuItem
+              asChild
+              className="rounded-lg text-deep-green focus:bg-deep-green/10 focus:text-deep-green data-highlighted:bg-deep-green/10 data-highlighted:text-deep-green"
+            >
+              <Link href="/dashboard/projects" className="cursor-pointer font-medium">
                 Vos projets
               </Link>
             </DropdownMenuItem>
@@ -251,15 +266,16 @@ export function GlobalSiteHeader() {
     return (
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 bg-deep-green",
+          "fixed inset-x-0 top-0 z-50 bg-transparent",
           "transition-[padding,background-color] duration-300 ease-out",
         )}
       >
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-6 md:py-8">
-
-          {brand}
-          {nav}
-          <div className="flex items-center gap-2 pl-2">{accountControl}</div>
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-5 md:py-6">
+          <div className="justify-self-start">{brand}</div>
+          <div className="justify-self-center">{nav}</div>
+          <div className="flex items-center justify-self-end gap-2">
+            {accountControl}
+          </div>
         </div>
       </header>
     );
@@ -268,7 +284,7 @@ export function GlobalSiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-transparent px-4 py-4 transition-[padding] duration-300 md:py-5">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-center">
-        <div className="flex min-h-14 w-full max-w-3xl items-center justify-between rounded-full border border-white/10 bg-deep-green px-4 py-3 text-white shadow-xl ring-1 ring-black/10 transition-all duration-300 md:min-h-16 md:px-6 md:py-3.5">
+        <div className="flex min-h-14 w-full items-center justify-between rounded-full border border-white/10 bg-deep-green px-4 py-3 text-white shadow-xl ring-1 ring-black/10 transition-all duration-300 md:min-h-16 md:px-8 md:py-3.5 lg:px-10">
 
           {brand}
           {nav}

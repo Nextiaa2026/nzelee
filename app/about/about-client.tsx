@@ -12,11 +12,11 @@ import { httpClient } from "@/lib/http/client";
 const VALUES = [
   {
     t: "Transparence",
-    d: "Pas de frais cachés. Chaque coût, risque et rendement est affiché d&apos;avance — toujours.",
+    d: "Pas de frais cachés. Chaque coût, risque et rendement est affiché d'avance — toujours.",
   },
   {
     t: "Accessibilité",
-    d: "Commencez avec 10 $. Nous pensons que la création de patrimoine ne devrait jamais dépendre d&apos;un solde minimum.",
+    d: "Commencez avec 10 $. Nous pensons que la création de patrimoine ne devrait jamais dépendre d'un solde minimum.",
   },
   {
     t: "Pensée à long terme",
@@ -90,14 +90,14 @@ export function AboutPageClient() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="overflow-hidden rounded-3xl border border-foreground/10 bg-surface p-6 text-center transition-transform hover:-translate-y-2"
+              className="overflow-hidden rounded-3xl border border-deep-green/12 bg-white p-6 text-center shadow-sm ring-1 ring-mint/20 transition-transform hover:-translate-y-1 hover:border-mint/40"
             >
               <p
                 className={`font-display text-4xl text-deep-green ${isLoading ? "animate-pulse" : ""}`}
               >
                 {s.v}
               </p>
-              <p className="mt-1 text-xs uppercase tracking-widest text-foreground/50">
+              <p className="mt-1 text-xs font-medium uppercase tracking-widest text-deep-green/55">
                 {s.l}
               </p>
             </motion.div>
@@ -113,7 +113,7 @@ export function AboutPageClient() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             src={landingImages.deskFlatlay}
-            alt="Our workspace"
+            alt="Notre espace de travail"
             className="h-[420px] w-full rounded-3xl object-cover"
           />
           <motion.div
@@ -122,25 +122,25 @@ export function AboutPageClient() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-xs uppercase tracking-widest text-deep-green">
+            <p className="text-xs font-semibold uppercase tracking-widest text-mint">
               Notre histoire
             </p>
-            <h2 className="font-display mt-3 text-4xl">
+            <h2 className="font-display mt-3 text-4xl text-deep-green">
               D&apos;une table de cuisine à un mouvement.
             </h2>
-            <p className="mt-5 text-foreground/70">
+            <p className="mt-5 text-deep-green/70">
               En 2021, nos fondateurs ont vu leurs amis et leur famille lutter pour accéder aux mêmes opportunités dont les institutions profitaient chaque jour. Nous avons construit Nzelle pour renverser la situation — en regroupant le capital, en réduisant les frais et en apportant des investissements de qualité institutionnelle à toute personne disposant d&apos;un téléphone.
             </p>
-            <p className="mt-3 text-foreground/70">
+            <p className="mt-3 text-deep-green/70">
               Aujourd&apos;hui, des centaines de milliers d&apos;investisseurs font confiance à Nzelle pour faire fructifier leur patrimoine à travers les actions, les ETFs, la crypto et l&apos;immobilier tokenisé.
             </p>
           </motion.div>
         </div>
       </section>
 
-      <section className="bg-surface-muted py-24">
+      <section className="bg-deep-green/[0.04] py-24">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="font-display text-center text-4xl">
+          <h2 className="font-display text-center text-4xl text-deep-green">
             Ce que nous défendons
           </h2>
           <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -151,13 +151,17 @@ export function AboutPageClient() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="neumorph-pop p-7"
+                className="rounded-3xl border border-deep-green/10 bg-white p-7 shadow-sm ring-1 ring-mint/15"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-mint/30 font-display text-deep-green">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-mint font-display text-lg font-semibold text-deep-green">
                   {i + 1}
                 </div>
-                <h3 className="font-display mt-4 text-2xl">{v.t}</h3>
-                <p className="mt-2 text-sm text-foreground/65">{v.d}</p>
+                <h3 className="font-display mt-4 text-2xl text-deep-green">
+                  {v.t}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-deep-green/65">
+                  {v.d}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -165,27 +169,47 @@ export function AboutPageClient() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-24">
-        <h2 className="font-display text-center text-4xl">Explorer</h2>
-        <p className="mt-3 text-center text-foreground/60">
-          Consultez les annonces en direct sur le répertoire des campagnes, ou ouvrez votre tableau de bord après vous être connecté.
+        <h2 className="font-display text-center text-4xl text-deep-green">
+          Explorer
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-center text-deep-green/60">
+          Consultez les annonces en direct sur le répertoire des campagnes, ou
+          ouvrez votre tableau de bord après vous être connecté.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Button asChild>
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Button
+            asChild
+            className="h-12 rounded-full bg-mint px-10 text-sm font-semibold text-deep-green hover:bg-mint/90"
+          >
             <Link href="/campaigns">Voir les campagnes</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant="outline"
+            className="h-12 rounded-full border-deep-green/25 bg-white px-10 text-sm font-medium text-deep-green hover:border-mint/50 hover:bg-mint/10"
+          >
             <Link href="/register">S&apos;inscrire</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant="outline"
+            className="h-12 rounded-full border-deep-green/25 bg-white px-10 text-sm font-medium text-deep-green hover:border-mint/50 hover:bg-mint/10"
+          >
             <Link href="/login">Se connecter</Link>
           </Button>
         </div>
-        <p className="mt-6 text-center text-sm text-foreground/50">
-          <Link href="/terms-of-service" className="hover:text-foreground">
+        <p className="mt-8 text-center text-sm text-deep-green/50">
+          <Link
+            href="/terms-of-service"
+            className="font-medium hover:text-deep-green"
+          >
             Conditions d&apos;utilisation
           </Link>
           {" · "}
-          <Link href="/privacy-policy" className="hover:text-foreground">
+          <Link
+            href="/privacy-policy"
+            className="font-medium hover:text-deep-green"
+          >
             Politique de confidentialité
           </Link>
         </p>

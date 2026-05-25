@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { OfflineContent } from "./offline-content";
 
 export const metadata: Metadata = {
-  title: "Offline",
-  description: "You are currently offline",
+  title: "Hors ligne",
+  description: "Vous êtes actuellement hors ligne",
 };
 
 export const viewport: Viewport = {

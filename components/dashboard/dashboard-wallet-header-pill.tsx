@@ -23,13 +23,13 @@ export function DashboardWalletHeaderPill() {
     <Link
       href="/dashboard/wallet"
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/[0.02] px-3 py-1.5 text-xs font-medium tabular-nums text-foreground transition-colors hover:border-mint/30 hover:bg-mint/10 sm:text-sm",
+        "inline-flex items-center gap-2 rounded-full border border-deep-green/15 bg-mint/15 px-3 py-1.5 text-xs font-medium tabular-nums text-deep-green transition-colors hover:border-mint/40 hover:bg-mint/25 sm:text-sm",
         isError && "opacity-70",
       )}
     >
-      <Wallet className="size-3.5 shrink-0 text-mint-foreground" aria-hidden />
-      <span className="hidden text-black/50 sm:inline">Wallet</span>
-      <span className="font-semibold text-foreground">{formatted}</span>
+      <Wallet className="size-3.5 shrink-0 text-deep-green" aria-hidden />
+      <span className="hidden text-deep-green/60 sm:inline">Portefeuille</span>
+      <span className="font-semibold text-deep-green">{formatted}</span>
     </Link>
   );
 }

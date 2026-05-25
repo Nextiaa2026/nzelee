@@ -1,6 +1,5 @@
 "use client";
 
-import type { Metadata } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -11,13 +10,14 @@ export default function CareersPage() {
   return (
     <main>
       <PageHero
-        eyebrow="Careers"
+        eyebrow="Carrières"
         title={
           <>
-            Join the <span className="text-mint">Zeller team</span>
+            Rejoignez l&apos;équipe{" "}
+            <span className="text-mint">Nzelee</span>
           </>
         }
-        subtitle="We are building tools for private-market investing. Roles will be posted here as we grow."
+        subtitle="Nous construisons des outils pour l'investissement sur les marchés privés. Les postes seront publiés ici au fil de notre croissance."
       />
 
       <section className="mx-auto -mt-16 max-w-3xl px-4 pb-24">
@@ -29,23 +29,23 @@ export default function CareersPage() {
           className="neumorph space-y-5 p-8 text-foreground/80 md:p-12"
         >
           <p>
-            There are no open roles listed at the moment. When we hire, you will
-            find engineering, product, compliance, and operations positions on
-            this page.
+            Aucun poste n&apos;est ouvert pour le moment. Lorsque nous
+            recruterons, vous trouverez ici des offres en ingénierie, produit,
+            conformité et opérations.
           </p>
           <p>
-            In the meantime, you can reach us through{" "}
+            En attendant, contactez-nous via la page{" "}
             <Link
               href="/contact"
               className="font-medium text-foreground underline underline-offset-4"
             >
-              contact
+              Contact
             </Link>{" "}
-            with a CV or portfolio link.
+            avec un CV ou un lien portfolio.
           </p>
           <div className="pt-4">
             <Button asChild variant="outline">
-              <Link href="/contact">Get in touch</Link>
+              <Link href="/contact">Nous écrire</Link>
             </Button>
           </div>
         </motion.article>

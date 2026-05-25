@@ -26,53 +26,53 @@ const stagger = {
 
 export const faqGroups = [
   {
-    name: "Getting started",
+    name: "Premiers pas",
     items: [
       {
-        q: "Who can invest on Zeller?",
-        a: "Zeller supports members who complete onboarding and meet eligibility rules for each offering. Some opportunities are limited by jurisdiction or investor category; details appear in each campaign’s documents.",
+        q: "Qui peut investir sur Nzelee ?",
+        a: "Nzelee accompagne les membres qui terminent l'inscription et respectent les règles d'éligibilité de chaque offre. Certaines opportunités sont limitées par juridiction ou catégorie d'investisseur ; les détails figurent dans les documents de chaque campagne.",
       },
       {
-        q: "How long does account setup take?",
-        a: "Creating an account takes a few minutes. Email verification is immediate once you enter your code. Identity (KYC) review is typically completed within one business day when you submit documents.",
+        q: "Combien de temps prend la création de compte ?",
+        a: "Quelques minutes suffisent. La vérification e-mail est immédiate après saisie du code. L'examen KYC est en général traité sous un jour ouvré une fois les documents envoyés.",
       },
       {
-        q: "Is there a minimum investment?",
-        a: "Minimums are set per campaign. You will see the minimum commitment on each offering before you subscribe.",
+        q: "Y a-t-il un investissement minimum ?",
+        a: "Les minimums sont fixés par campagne. Vous voyez le montant minimum sur chaque offre avant de vous engager.",
       },
     ],
   },
   {
-    name: "Fees & returns",
+    name: "Frais & rendements",
     items: [
       {
-        q: "What fees does Zeller charge?",
-        a: "Fees depend on the product. Platform and processing fees, if any, are disclosed in the offering materials and checkout flow before you confirm a commitment.",
+        q: "Quels frais Nzelee applique-t-il ?",
+        a: "Les frais dépendent du produit. Les frais de plateforme et de traitement, le cas échéant, sont indiqués dans les documents de l'offre et au moment du paiement avant confirmation.",
       },
       {
-        q: "Are returns guaranteed?",
-        a: "No. Crowdfunding and private investments involve risk, including loss of principal. Any projections or past performance figures are illustrative, not guarantees.",
+        q: "Les rendements sont-ils garantis ?",
+        a: "Non. Le financement participatif et les investissements privés comportent un risque, y compris une perte en capital. Toute projection ou performance passée est illustrative, sans garantie.",
       },
       {
-        q: "How do distributions work?",
-        a: "When an investment pays distributions, they are described in the offering documents (schedule, waterfall, and tax reporting). Use your dashboard to track activity as features roll out.",
+        q: "Comment fonctionnent les distributions ?",
+        a: "Lorsqu'un investissement verse des distributions, le calendrier et les modalités sont décrits dans les documents de l'offre. Suivez l'activité depuis votre tableau de bord.",
       },
     ],
   },
   {
-    name: "Compliance & security",
+    name: "Conformité & sécurité",
     items: [
       {
-        q: "How is my data protected?",
-        a: "We use industry-standard encryption in transit (HTTPS) and secure storage practices. Only limited staff can access verification data, and we do not sell your personal information.",
+        q: "Comment mes données sont-elles protégées ?",
+        a: "Nous utilisons un chiffrement standard en transit (HTTPS) et des pratiques de stockage sécurisées. Seul un personnel limité accède aux données de vérification ; nous ne vendons pas vos informations personnelles.",
       },
       {
-        q: "Why do I need to complete KYC?",
-        a: "Know Your Customer checks help us meet anti–money laundering rules and protect the community. You can defer KYC at the end of onboarding and finish it anytime from Verification in your profile menu (or the /kyc page) before funding.",
+        q: "Pourquoi dois-je compléter le KYC ?",
+        a: "Les contrôles Know Your Customer nous aident à respecter la lutte contre le blanchiment et à protéger la communauté. Vous pouvez reporter le KYC à la fin de l'inscription et le terminer depuis Vérification dans votre profil (ou /kyc) avant de financer.",
       },
       {
-        q: "What if my KYC is rejected?",
-        a: "We will explain the reason when possible (e.g. unreadable ID or mismatch with your profile). You can usually re-submit corrected documents.",
+        q: "Que se passe-t-il si mon KYC est refusé ?",
+        a: "Nous expliquons la raison lorsque c'est possible (pièce illisible, incohérence avec le profil, etc.). Vous pouvez en général renvoyer des documents corrigés.",
       },
     ],
   },
@@ -105,25 +105,25 @@ export function FaqSection({ className, hideHeader = false }: FaqSectionProps) {
         {!hideHeader && (
           <motion.div variants={fadeUp} className="text-center">
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-              Help center
+              Centre d&apos;aide
             </p>
             <h2 className="mx-auto mt-3 max-w-2xl font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-              Frequently asked questions
+              Questions fréquentes
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Can&apos;t find what you&apos;re looking for?{" "}
+              Vous ne trouvez pas votre réponse ?{" "}
               <Link
                 href="/contact"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
-                Contact us
+                Contactez-nous
               </Link>{" "}
-              or visit the{" "}
+              ou consultez le{" "}
               <Link
                 href="/help"
                 className="font-medium text-primary underline-offset-4 hover:underline"
               >
-                help center
+                centre d&apos;aide
               </Link>
               .
             </p>

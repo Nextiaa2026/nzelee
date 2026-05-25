@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { signOut } from "next-auth/react"
 import {
   Avatar,
@@ -22,7 +23,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import {
-  CreditCardIcon,
   Logout01Icon,
   MoreVerticalIcon,
   Notification01Icon,
@@ -33,12 +33,16 @@ import { Hugeicon } from "@/components/hugeicon";
 
 export function NavUser({
   user,
+  settingsHref = "/dashboard/settings",
+  notificationsHref = "/dashboard/notifications",
 }: {
   user: {
     name: string
     email: string
     avatar: string
   }
+  settingsHref?: string
+  notificationsHref?: string
 }) {
   const { isMobile } = useSidebar()
 
@@ -90,21 +94,21 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="gap-2">
-                <Hugeicon icon={UserCircleIcon} size={18} className="opacity-70" />
-                Compte
+              <DropdownMenuItem asChild className="gap-2">
+                <Link href={settingsHref}>
+                  <Hugeicon icon={UserCircleIcon} size={18} className="opacity-70" />
+                  Paramètres
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
-                <Hugeicon icon={CreditCardIcon} size={18} className="opacity-70" />
-                Facturation
-              </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
-                <Hugeicon
-                  icon={Notification01Icon}
-                  size={18}
-                  className="opacity-70"
-                />
-                Notifications
+              <DropdownMenuItem asChild className="gap-2">
+                <Link href={notificationsHref}>
+                  <Hugeicon
+                    icon={Notification01Icon}
+                    size={18}
+                    className="opacity-70"
+                  />
+                  Notifications
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

@@ -3,41 +3,42 @@ import type { Metadata } from "next";
 import { LegalLayout } from "@/components/page-shell";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy",
+  title: "Politique relative aux cookies",
   description:
-    "Cookies and similar tech on Zeller for sign-in, campaigns, and analytics.",
+    "Cookies et technologies similaires sur Nzelee pour la connexion, les campagnes et l'analyse.",
 };
 
 export default function CookiePolicyPage() {
   return (
-    <LegalLayout title="Cookie Policy" updated="April 2026">
+    <LegalLayout title="Politique relative aux cookies" updated="Avril 2026">
       <p>
-        This policy describes how Zeller uses cookies and similar technologies
-        to keep sessions secure, remember preferences, and understand how the
-        campaign experience is used—so we can improve performance without
-        sacrificing core functionality.
+        Cette politique décrit comment Nzelee utilise les cookies et technologies
+        similaires pour sécuriser les sessions, mémoriser les préférences et
+        comprendre l&apos;usage de la plateforme — afin d&apos;améliorer les
+        performances sans compromettre les fonctionnalités essentielles.
       </p>
 
-      <h2>What are cookies?</h2>
+      <h2>Qu&apos;est-ce qu&apos;un cookie ?</h2>
       <p>
-        Cookies are small text files placed on your device to support
-        authentication, functionality, analytics, and security.
+        Un cookie est un petit fichier texte placé sur votre appareil pour
+        l&apos;authentification, les fonctionnalités, l&apos;analyse et la
+        sécurité.
       </p>
 
-      <h2>Types of cookies we use</h2>
-      <h3>Strictly necessary</h3>
-      <p>Required for sign-in, security, and core campaign flows.</p>
+      <h2>Types de cookies utilisés</h2>
+      <h3>Strictement nécessaires</h3>
+      <p>Requis pour la connexion, la sécurité et les parcours de campagne.</p>
 
-      <h3>Functional</h3>
-      <p>Remember settings and UI preferences.</p>
+      <h3>Fonctionnels</h3>
+      <p>Mémorisent les paramètres et préférences d&apos;interface.</p>
 
-      <h3>Analytics</h3>
-      <p>Measure usage trends and reliability (where enabled).</p>
+      <h3>Analytiques</h3>
+      <p>Mesurent les tendances d&apos;usage et la fiabilité (lorsque activés).</p>
 
-      <h2>Managing cookies</h2>
+      <h2>Gérer les cookies</h2>
       <p>
-        You can control cookies through browser settings. Disabling required
-        cookies may impact essential site functionality.
+        Vous pouvez les contrôler via les paramètres du navigateur. Désactiver
+        les cookies requis peut affecter des fonctions essentielles du site.
       </p>
     </LegalLayout>
   );
