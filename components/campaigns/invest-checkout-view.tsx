@@ -25,6 +25,7 @@ import {
   CampaignDisplayCurrencyProvider,
   useCampaignDisplayCurrency,
 } from "@/components/campaigns/campaign-currency-toggle";
+import { GalleryLightbox } from "@/components/campaigns/gallery-lightbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,14 +84,6 @@ function heroSrc(c: InvestCheckoutCampaign) {
   return c.galleryImages[0]?.url?.trim() ?? null;
 }
 
-function galleryExtras(c: InvestCheckoutCampaign, hero: string | null) {
-  const h = hero?.trim() ?? "";
-  return c.galleryImages.filter((g) => {
-    const u = g.url?.trim() ?? "";
-    return u.length > 0 && u !== h;
-  });
-}
-
 function investmentErrorMessage(message: string) {
   if (message.includes("invest in your own campaign")) {
     return "Vous ne pouvez pas investir dans votre propre campagne.";
@@ -126,7 +119,22 @@ function CheckoutSummary({
       : 0;
   const sector = sectorLabel(campaign.activitySector);
   const img = heroSrc(campaign);
-  const extras = galleryExtras(campaign, img);
+  const lightboxImages = React.useMemo(() => {
+    const seen = new Set<string>();
+    const out: Array<{ url: string; alt: string }> = [];
+    const push = (url: string | null | undefined, alt: string) => {
+      const u = url?.trim();
+      if (!u || seen.has(u)) return;
+      seen.add(u);
+      out.push({ url: u, alt });
+    };
+    push(img, campaign.title);
+    for (const [i, g] of campaign.galleryImages.entries()) {
+      push(g.url, g.alt || `${campaign.title} — ${i + 1}`);
+    }
+    return out;
+  }, [campaign.galleryImages, campaign.title, img]);
+  const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
   const exp = currencyMinorExponent(campaign.currency);
   const totalBaseMinor = Math.round(amountMajor * 10 ** exp);
   const totalDisplayMinor = convertFromBase(totalBaseMinor);
@@ -135,15 +143,20 @@ function CheckoutSummary({
     amountMajor > 0 ? formatInDisplay(totalDisplayMinor) : "—";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="overflow-hidden rounded-2xl border border-deep-green/10 bg-white shadow-sm">
-        <div className="relative aspect-[21/9] w-full bg-deep-green/10 md:aspect-[2/1]">
+        <button
+          type="button"
+          disabled={!img}
+          onClick={() => img && setLightboxIndex(0)}
+          className="relative aspect-[21/9] w-full bg-deep-green/10 text-left md:aspect-[2/1]"
+        >
           {img ? (
             <Image
               src={img}
               alt={campaign.title}
               fill
-              className="object-cover"
+              className="object-cover transition hover:scale-[1.02]"
               sizes="(max-width: 1024px) 100vw, 400px"
               priority
             />
@@ -152,8 +165,8 @@ function CheckoutSummary({
               Aucune image de campagne
             </div>
           )}
-        </div>
-        <div className="space-y-4 p-6">
+        </button>
+        <div className="space-y-5 p-6">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <h2 className="font-sans text-xl font-semibold text-deep-green">
               {campaign.title}
@@ -164,18 +177,23 @@ function CheckoutSummary({
               </span>
             ) : null}
           </div>
-          <div className="flex items-center justify-between gap-2 text-xs text-deep-green/50">
-            <span>Objectif</span>
-            <span className="font-medium text-deep-green">
-              {formatInDisplay(goal)}
-            </span>
+
+          <div>
+            <div className="flex items-center justify-between gap-2 text-xs text-deep-green/50">
+              <span>Objectif</span>
+              <span className="font-medium text-deep-green">
+                {formatInDisplay(goal)}
+              </span>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-neutral-200">
+              <div
+                className="h-full rounded-full bg-mint"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-deep-green/45">{progress}% financé</p>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-neutral-200">
-            <div
-              className="h-full rounded-full bg-mint"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+
           <CampaignCurrencyToggle className="border-t border-deep-green/10 pt-4" />
 
           <div className="space-y-3 border-t border-deep-green/10 pt-4 text-sm">
@@ -184,8 +202,8 @@ function CheckoutSummary({
               <span className="font-semibold text-deep-green">{investLine}</span>
             </div>
             <div className="flex justify-between text-deep-green/70">
-              <span>Frais de plateforme (0%)</span>
-              <span className="font-semibold text-deep-green">OFFERT</span>
+              <span>Frais de plateforme</span>
+              <span className="font-semibold text-deep-green">Offerts</span>
             </div>
             <div className="flex justify-between border-t border-deep-green/10 pt-3 text-base font-semibold text-deep-green">
               <span>Total à payer</span>
@@ -197,7 +215,7 @@ function CheckoutSummary({
             type="submit"
             form="invest-checkout-form"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-deep-green py-5 text-base font-semibold text-white hover:bg-deep-green/90"
+            className="w-full rounded-full bg-deep-green py-5 text-base font-semibold text-white shadow-sm hover:bg-deep-green/90"
           >
             <Lock className="mr-2 inline size-4" aria-hidden />
             {isSubmitting ? "Envoi…" : "Confirmer l'investissement"}
@@ -208,29 +226,37 @@ function CheckoutSummary({
         </div>
       </div>
 
-      {extras.length > 0 ? (
+      {lightboxImages.length > 1 ? (
         <div className="rounded-2xl border border-deep-green/10 bg-white p-4 shadow-sm">
           <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-deep-green/45">
             Galerie
           </p>
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {extras.slice(0, 8).map((g, i) => (
-              <div
+            {lightboxImages.slice(0, 8).map((g, i) => (
+              <button
                 key={`${g.url}-${i}`}
-                className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-neutral-100 ring-1 ring-deep-green/10"
+                type="button"
+                onClick={() => setLightboxIndex(i)}
+                className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg bg-neutral-100 ring-1 ring-deep-green/10 transition hover:ring-deep-green/35"
               >
                 <Image
                   src={g.url}
-                  alt={g.alt || `${campaign.title} — ${i + 1}`}
+                  alt={g.alt}
                   fill
                   className="object-cover"
                   sizes="112px"
                 />
-              </div>
+              </button>
             ))}
           </div>
         </div>
       ) : null}
+
+      <GalleryLightbox
+        images={lightboxImages}
+        openIndex={lightboxIndex}
+        onOpenChange={setLightboxIndex}
+      />
     </div>
   );
 }
@@ -364,18 +390,18 @@ function InvestCheckoutInner({
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start">
           <div className="min-w-0 space-y-6">
             <section className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
-              <h2 className="font-sans text-lg font-semibold text-deep-green">
-                À propos du projet
-              </h2>
-              <div className="mt-4 space-y-3 text-sm leading-relaxed text-deep-green/70">
-                <p className="font-medium text-deep-green">{campaign.summary}</p>
-                {campaign.description.split("\n").map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-                <p className="text-xs text-deep-green/50">
-                  Fenêtre : {formatDateRange(campaign.startsAt, campaign.endsAt)}
-                </p>
-              </div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-deep-green/45">
+                Projet
+              </p>
+              <h1 className="mt-2 font-sans text-2xl font-semibold text-deep-green md:text-3xl">
+                {campaign.title}
+              </h1>
+              <p className="mt-3 text-sm leading-relaxed text-deep-green/70">
+                {campaign.summary}
+              </p>
+              <p className="mt-3 text-xs text-deep-green/45">
+                Fenêtre : {formatDateRange(campaign.startsAt, campaign.endsAt)}
+              </p>
             </section>
 
             {!kycApproved ? (
@@ -407,8 +433,8 @@ function InvestCheckoutInner({
                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-deep-green/45">
                   {"Processus d'investissement"}
                 </p>
-                <h2 className="mt-2 font-sans text-2xl font-semibold text-deep-green md:text-3xl">
-                  {campaign.title}
+                <h2 className="mt-2 font-sans text-xl font-semibold text-deep-green">
+                  Configurez votre contribution
                 </h2>
               </div>
 

@@ -5,7 +5,7 @@
  *
  * Run: `bun run scripts/seed.ts` or `npm run db:seed`
  */
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { disconnectDb, db } from "../lib/db";
 import {
@@ -21,6 +21,221 @@ import { hashPassword } from "../lib/security/password";
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@nexiaa.local";
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe123!";
 const ADMIN_NAME = process.env.SEED_ADMIN_NAME ?? "Seed Admin";
+
+/** Themed Unsplash media per seed campaign — not generic demo placeholders. */
+const CAMPAIGN_MEDIA: Record<
+  string,
+  { cover: string; gallery: string[] }
+> = {
+  "seed-solar-microgrid": {
+    cover:
+      "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1497435334941-8c272d1c57b4?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-urban-food-lab": {
+    cover:
+      "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-coastal-cleanup": {
+    cover:
+      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1621451538883-78a92ffe4b06?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1484291470158-b8f8d608850d?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-tech-education-hub": {
+    cover:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-clean-water-initiative": {
+    cover:
+      "https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1541252260730-0412e8e2108e?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1594398901394-4e34939a4fd0?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1621451538883-78a92ffe4b06?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-renewable-transport": {
+    cover:
+      "https://images.unsplash.com/photo-1593941707881-a56bbc8df4e5?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1593941707881-a56bbc8df4e5?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-affordable-housing": {
+    cover:
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-local-brewery": {
+    cover:
+      "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1436076863939-06870fe779c2?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1571615177094-ab4f36e99d4e?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-arts-center": {
+    cover:
+      "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1513364776573-bfa4deb7fbb0?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1499781350541-7783f6c6a0c8?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-mobile-health-clinic": {
+    cover:
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1631217868264-e5b90bb7e629?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-recycling-facility": {
+    cover:
+      "https://images.unsplash.com/photo-1532996122724-e3c354a0b4bd?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1532996122724-e3c354a0b4bd?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-youth-sports-complex": {
+    cover:
+      "https://images.unsplash.com/photo-1461896836934-ffe607ba6850?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1461896836934-ffe607ba6850?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-local-food-market": {
+    cover:
+      "https://images.unsplash.com/photo-1488459716781-31db5253d4d4?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1488459716781-31db5253d4d4?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1579113800032-c38bd763322c?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-wildlife-sanctuary": {
+    cover:
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-community-radio": {
+    cover:
+      "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1516280440619-369756ea7cd1?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-bike-share-program": {
+    cover:
+      "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-makerspace-lab": {
+    cover:
+      "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1581092162384-8987c1d64718?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-senior-center": {
+    cover:
+      "https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1576765608535-5f04d1e3d043?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-urban-garden-network": {
+    cover:
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1591857177580-dc82b99c95e1?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+  "seed-music-school": {
+    cover:
+      "https://images.unsplash.com/photo-1514320291840-309541f378d0?auto=format&fit=crop&w=1600&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1514320291840-309541f378d0?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1200&q=80",
+    ],
+  },
+};
+
+function mediaForCampaign(slug: string, title: string, index: number) {
+  const themed = CAMPAIGN_MEDIA[slug];
+  if (themed) {
+    return {
+      coverImageUrl: themed.cover,
+      galleryImages: themed.gallery.map((url, i) => ({
+        url,
+        alt: `${title} — photo ${i + 1}`,
+      })),
+    };
+  }
+  const fallbacks = [
+    landingImages.property1,
+    landingImages.property2,
+    landingImages.property3,
+    landingImages.property4,
+  ];
+  const cover = fallbacks[index % fallbacks.length]!;
+  return {
+    coverImageUrl: cover,
+    galleryImages: fallbacks.map((url, i) => ({
+      url,
+      alt: `${title} — photo ${i + 1}`,
+    })),
+  };
+}
 
 const SEED_CAMPAIGNS = [
   {
@@ -437,27 +652,23 @@ function structuredCampaignFields(
   const durationMonths = 12 + (index % 4) * 6;
   const targetReturnRate = 8 + (index % 7);
   const impactPoints = [
-    `Create local impact through ${c.title.toLowerCase()}.`,
-    "Deploy funding in verified milestones with transparent reporting.",
+    `Créer un impact local durable grâce à « ${c.title} ».`,
+    "Déployer les fonds selon des jalons vérifiés, avec un reporting transparent.",
   ];
-  const coverImageUrl = DEFAULT_COVERS[index % DEFAULT_COVERS.length];
-  const galleryImages = DEFAULT_GALLERY.map((url, i) => ({
-    url,
-    alt: `${c.title} gallery image ${i + 1}`,
-  }));
+  const media = mediaForCampaign(c.slug, c.title, index);
   const documents = [
     { name: "Investment Memo", url: "https://example.com/docs/investment-memo.pdf" },
     { name: "Financial Projections", url: "https://example.com/docs/projections.pdf" },
   ];
   return {
-    coverImageUrl,
+    coverImageUrl: media.coverImageUrl,
     locationLabel: "Nakuru County, Kenya",
     isVerified: c.status !== "DRAFT",
     minimumInvestmentAmount: minAmount,
     targetReturnRate,
     durationMonths,
     impactPoints,
-    galleryImages,
+    galleryImages: media.galleryImages,
     documents,
   };
 }
@@ -637,7 +848,7 @@ async function seedInvestorPledges(investorIds: Map<string, string>) {
       creatorId: campaigns.creatorId,
     })
     .from(campaigns)
-    .where(eq(campaigns.status, "LIVE"));
+    .where(inArray(campaigns.status, ["LIVE", "FUNDED"]));
 
   if (!liveCampaigns.length) return;
 

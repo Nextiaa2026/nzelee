@@ -64,7 +64,7 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
 
       <div className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12">
         <section className="mt-2 grid gap-6 md:grid-cols-[1fr_.95fr]">
-          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-[0_8px_30px_-12px_rgba(5,45,29,0.14),0_2px_8px_-4px_rgba(5,45,29,0.06)]">
             <h2 className="font-sans text-lg font-semibold text-deep-green">
               Avis des investisseurs
             </h2>
@@ -129,7 +129,7 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-[0_8px_30px_-12px_rgba(5,45,29,0.14),0_2px_8px_-4px_rgba(5,45,29,0.06)]">
             <h2 className="font-sans text-lg font-semibold text-deep-green">
               Ajoutez votre avis
             </h2>

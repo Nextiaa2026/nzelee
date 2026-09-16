@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { differenceInCalendarDays } from "date-fns";
 import { Check, MapPin, Medal, User } from "lucide-react";
 
@@ -10,8 +11,8 @@ import {
   CampaignDisplayCurrencyProvider,
   useCampaignDisplayCurrency,
 } from "@/components/campaigns/campaign-currency-toggle";
+import { GalleryLightbox } from "@/components/campaigns/gallery-lightbox";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { formatDateRange } from "@/lib/format/date";
 import type { PublicCampaignInvestorRow } from "@/lib/services/public-campaigns";
@@ -40,6 +41,25 @@ export type CampaignDetailsClientPayload = {
   investors: PublicCampaignInvestorRow[];
 };
 
+type CampaignMediaItem = { url: string; alt: string };
+
+/** Cover + gallery from this campaign only — no placeholder stock. */
+function campaignMedia(campaign: CampaignDetailsClientPayload): CampaignMediaItem[] {
+  const seen = new Set<string>();
+  const out: CampaignMediaItem[] = [];
+  const push = (url: string | null | undefined, alt: string) => {
+    const trimmed = url?.trim();
+    if (!trimmed || seen.has(trimmed)) return;
+    seen.add(trimmed);
+    out.push({ url: trimmed, alt });
+  };
+  push(campaign.coverImageUrl, campaign.title);
+  for (const [i, image] of campaign.galleryImages.entries()) {
+    push(image.url, image.alt?.trim() || `${campaign.title} — ${i + 1}`);
+  }
+  return out;
+}
+
 function rankBubbleClass(rank: number) {
   if (rank === 1) return "bg-mint text-deep-green";
   if (rank === 2) return "bg-deep-green/15 text-deep-green";
@@ -55,10 +75,7 @@ function medalClass(rank: number) {
 }
 
 function heroImageUrl(campaign: CampaignDetailsClientPayload) {
-  const cover = campaign.coverImageUrl?.trim();
-  if (cover) return cover;
-  const first = campaign.galleryImages[0]?.url?.trim();
-  return first || null;
+  return campaignMedia(campaign)[0]?.url ?? null;
 }
 
 function sectorBadgeLabel(sector: string | null) {
@@ -84,13 +101,13 @@ function fundingProgress(campaign: CampaignDetailsClientPayload) {
 }
 
 function statusBadgeLabel(status: string, endsAt: string | null) {
+  if (status === "FUNDED") return "Financé";
+  if (status === "DRAFT") return "Brouillon";
   if (endsAt) {
     const days = differenceInCalendarDays(new Date(endsAt), new Date());
     if (days < 0) return "Terminé";
   }
   if (status === "LIVE") return "En direct";
-  if (status === "FUNDED") return "Financé";
-  if (status === "DRAFT") return "Brouillon";
   return status;
 }
 
@@ -319,7 +336,11 @@ function InvestorRows({
                     : "border-deep-green/15 bg-deep-green/5 text-deep-green/70",
                 )}
               >
-                {inv.status}
+                {inv.status === "PAID"
+                  ? "Payé"
+                  : inv.status === "PENDING"
+                    ? "En attente"
+                    : inv.status}
               </span>
             </div>
           </div>
@@ -332,83 +353,108 @@ function InvestorRows({
   );
 }
 
+const detailCardClass =
+  "rounded-2xl border border-deep-green/10 bg-white shadow-sm";
+
 function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) {
   const { convertFromBase, formatInDisplay } = useCampaignDisplayCurrency();
   const progress = fundingProgress(campaign);
-  const raised = convertFromBase(campaign.raisedAmount);
-  const investors = campaign.investors.length;
+  const goal = convertFromBase(campaign.goalAmount);
+  const remaining = Math.max(
+    0,
+    convertFromBase(campaign.goalAmount - campaign.raisedAmount),
+  );
   const minInvestment =
     campaign.minimumInvestmentAmount != null
       ? formatInDisplay(convertFromBase(campaign.minimumInvestmentAmount))
       : null;
 
   return (
-    <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
-      <div className="flex items-end justify-between gap-4">
-        <p className="font-sans text-5xl font-bold leading-none text-deep-green md:text-6xl">
-          {progress}%
-        </p>
-        <p className="pb-1 text-right text-sm text-deep-green/60">
-          <span className="font-semibold text-deep-green">{investors}</span>{" "}
-          investisseur{investors !== 1 ? "s" : ""}
-        </p>
-      </div>
-      <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-neutral-200">
-        <div
-          className="h-full rounded-full bg-mint"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      <p className="mt-2 text-xs text-deep-green/50">
-        {formatInDisplay(raised)} collectés
-      </p>
-
-      <div className="mt-6 grid grid-cols-1 gap-3 text-sm">
-        <div className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4">
-          <p className="text-xs font-medium text-deep-green/50">
-            Montant minimum
+    <div className="space-y-5">
+      <div className={cn(detailCardClass, "p-6 sm:p-7")}>
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
+            Progression
           </p>
-          <p className="mt-1 font-semibold text-deep-green">
-            {minInvestment ?? "N/A"}
+          <div className="mt-3 flex items-end justify-between gap-3">
+            <p className="font-sans text-4xl font-bold leading-none text-deep-green">
+              {progress}%
+            </p>
+            <p className="pb-0.5 text-right text-xs text-deep-green/55">
+              Objectif {formatInDisplay(goal)}
+            </p>
+          </div>
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-neutral-200">
+            <div
+              className="h-full rounded-full bg-mint transition-[width]"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          {remaining > 0 ? (
+            <p className="mt-2 text-xs text-deep-green/50">
+              Il reste {formatInDisplay(remaining)} à financer
+            </p>
+          ) : (
+            <p className="mt-2 text-xs font-medium text-deep-green">
+              Objectif atteint
+            </p>
+          )}
+        </div>
+
+        <div className="my-7 border-t border-deep-green/10" />
+
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
+            Conditions
+          </p>
+          <dl className="mt-4 space-y-0 divide-y divide-deep-green/10">
+            <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
+              <dt className="text-sm text-deep-green/55">Minimum</dt>
+              <dd className="text-sm font-semibold text-deep-green">
+                {minInvestment ?? "—"}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <dt className="text-sm text-deep-green/55">Rendement visé</dt>
+              <dd className="text-sm font-semibold text-deep-green">
+                {campaign.targetReturnRate != null
+                  ? `${campaign.targetReturnRate}% / an`
+                  : "—"}
+              </dd>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3 last:pb-0">
+              <dt className="text-sm text-deep-green/55">Durée</dt>
+              <dd className="text-sm font-semibold text-deep-green">
+                {campaign.durationMonths != null
+                  ? `${campaign.durationMonths} mois`
+                  : "—"}
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <div className="mt-7">
+          <Button
+            asChild
+            className="w-full rounded-full bg-deep-green py-6 text-base font-semibold text-white shadow-sm hover:bg-deep-green/90"
+          >
+            <Link href={`/campaigns/${campaign.slug}/invest`}>
+              Investir maintenant
+            </Link>
+          </Button>
+          <p className="mt-3 text-center text-[11px] text-deep-green/45">
+            Transaction sécurisée
           </p>
         </div>
-        <div className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4">
-          <p className="text-xs font-medium text-deep-green/50">
-            Rendement visé
-          </p>
-          <p className="mt-1 font-semibold text-deep-green">
-            {campaign.targetReturnRate != null
-              ? `${campaign.targetReturnRate}% / an`
-              : "N/A"}
-          </p>
-        </div>
-        <div className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4">
-          <p className="text-xs font-medium text-deep-green/50">Durée</p>
-          <p className="mt-1 font-semibold text-deep-green">
-            {campaign.durationMonths != null
-              ? `${campaign.durationMonths} mois`
-              : "N/A"}
-          </p>
-        </div>
       </div>
 
-      <Button
-        asChild
-        className="mt-6 w-full rounded-xl bg-deep-green py-6 text-base font-semibold text-white hover:bg-deep-green/90"
-      >
-        <Link href={`/campaigns/${campaign.slug}/invest`}>
-          Investir maintenant
-        </Link>
-      </Button>
-      <p className="mt-2 text-center text-[11px] text-deep-green/45">
-        Transaction sécurisée
-      </p>
-
-      <div className="mt-8 border-t border-deep-green/10 pt-6">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-deep-green/50">
+      <div className={cn(detailCardClass, "p-6 sm:p-7")}>
+        <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
           Classement des investisseurs
         </p>
-        <InvestorRows campaign={campaign} />
+        <div className="mt-4">
+          <InvestorRows campaign={campaign} />
+        </div>
       </div>
     </div>
   );
@@ -416,98 +462,152 @@ function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) 
 
 function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
   const windowLabel = formatDateRange(campaign.startsAt, campaign.endsAt);
-  const hasGallery = campaign.galleryImages.length > 0;
+  const media = useMemo(() => campaignMedia(campaign), [campaign]);
   const impact = campaign.impactPoints.filter(Boolean);
-
-  const tabTriggerClass =
-    "h-9 flex-none rounded-full border-0 bg-transparent px-4 py-2 text-sm font-medium text-deep-green/55 shadow-none after:hidden hover:text-deep-green data-[state=active]:bg-deep-green data-[state=active]:text-white data-[state=active]:shadow-sm";
+  const tabs = useMemo(() => {
+    const items: Array<{ id: "about" | "impact" | "gallery"; label: string }> = [
+      { id: "about", label: "À propos" },
+      { id: "impact", label: "Impact" },
+    ];
+    if (media.length > 0) items.push({ id: "gallery", label: "Galerie" });
+    return items;
+  }, [media.length]);
+  const [activeTab, setActiveTab] = useState<"about" | "impact" | "gallery">(
+    "about",
+  );
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const current = tabs.some((t) => t.id === activeTab) ? activeTab : "about";
 
   return (
-    <Tabs defaultValue="about" className="w-full gap-5">
-      <TabsList className="mb-0 h-auto w-full min-w-0 flex-wrap justify-start gap-1 rounded-full border border-deep-green/10 bg-white p-1 shadow-sm sm:w-fit">
-        <TabsTrigger value="about" className={tabTriggerClass}>
-          À propos
-        </TabsTrigger>
-        <TabsTrigger value="impact" className={tabTriggerClass}>
-          Impact
-        </TabsTrigger>
-        {hasGallery ? (
-          <TabsTrigger value="gallery" className={tabTriggerClass}>
-            Galerie
-          </TabsTrigger>
-        ) : null}
-      </TabsList>
+    <div className="w-full space-y-6">
+      <div
+        role="tablist"
+        aria-label="Sections de la campagne"
+        className="flex flex-wrap gap-6 border-b border-deep-green/10"
+      >
+        {tabs.map((tab) => {
+          const selected = current === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "-mb-px border-b-2 px-0.5 pb-3 text-sm font-semibold transition-colors",
+                selected
+                  ? "border-deep-green text-deep-green"
+                  : "border-transparent text-deep-green/45 hover:text-deep-green/75",
+              )}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
 
-      <TabsContent value="about" className="mt-0 space-y-6 text-sm text-deep-green/75">
-        <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm md:p-8">
-          <p className="leading-relaxed whitespace-pre-wrap">
+      {current === "about" ? (
+        <div
+          role="tabpanel"
+          className={cn(
+            detailCardClass,
+            "space-y-6 p-6 text-sm text-deep-green/75 md:p-8",
+          )}
+        >
+          <p className="text-base leading-relaxed whitespace-pre-wrap text-deep-green/85">
             {campaign.description}
           </p>
-          <div className="mt-6 grid gap-3 border-t border-deep-green/10 pt-6 sm:grid-cols-2">
-            <p>
-              <span className="font-medium text-deep-green">Devise (base)</span>
-              <br />
-              {campaign.currency}
-            </p>
-            <p>
-              <span className="font-medium text-deep-green">Fenêtre</span>
-              <br />
-              {windowLabel}
-            </p>
+          <div className="grid gap-4 border-t border-deep-green/10 pt-6 sm:grid-cols-2">
+            <div className="rounded-xl bg-neutral-50 p-4">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
+                Devise (base)
+              </p>
+              <p className="mt-1 font-semibold text-deep-green">
+                {campaign.currency}
+              </p>
+            </div>
+            <div className="rounded-xl bg-neutral-50 p-4">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
+                Fenêtre
+              </p>
+              <p className="mt-1 font-semibold text-deep-green">{windowLabel}</p>
+            </div>
           </div>
         </div>
-      </TabsContent>
-
-      <TabsContent value="impact" className="mt-0">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-deep-green/50">
-              Impact attendu
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-deep-green/80">
-              {impact[0] ??
-                "Le financement accélère l'équipement local et la production durable."}
-            </p>
-          </div>
-          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-deep-green/50">
-              Exécution
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-deep-green/80">
-              {impact[1] ??
-                "Les fonds sont débloqués suivant des jalons de projet vérifiés."}
-            </p>
-          </div>
-        </div>
-        {impact.length > 2 ? (
-          <ul className="mt-4 list-inside list-disc space-y-2 text-sm text-deep-green/70">
-            {impact.slice(2).map((pt) => (
-              <li key={pt}>{pt}</li>
-            ))}
-          </ul>
-        ) : null}
-      </TabsContent>
-
-      {hasGallery ? (
-        <TabsContent value="gallery" className="mt-0">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {campaign.galleryImages.slice(0, 9).map((image, idx) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={`${image.url}-${idx}`}
-                src={image.url}
-                alt={image.alt || `${campaign.title} — ${idx + 1}`}
-                className={cn(
-                  "aspect-[4/3] w-full rounded-xl border border-deep-green/10 object-cover",
-                  idx === 0 &&
-                    "col-span-2 row-span-2 aspect-auto min-h-[220px] sm:min-h-[280px]",
-                )}
-              />
-            ))}
-          </div>
-        </TabsContent>
       ) : null}
-    </Tabs>
+
+      {current === "impact" ? (
+        <div role="tabpanel" className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className={cn(detailCardClass, "p-6")}>
+              <p className="text-xs font-semibold uppercase tracking-wide text-deep-green/50">
+                Impact attendu
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-deep-green/80">
+                {impact[0] ??
+                  "Le financement accélère l'équipement local et la production durable."}
+              </p>
+            </div>
+            <div className={cn(detailCardClass, "p-6")}>
+              <p className="text-xs font-semibold uppercase tracking-wide text-deep-green/50">
+                Exécution
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-deep-green/80">
+                {impact[1] ??
+                  "Les fonds sont débloqués suivant des jalons de projet vérifiés."}
+              </p>
+            </div>
+          </div>
+          {impact.length > 2 ? (
+            <ul className="list-inside list-disc space-y-2 text-sm text-deep-green/70">
+              {impact.slice(2).map((pt) => (
+                <li key={pt}>{pt}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
+      {current === "gallery" && media.length > 0 ? (
+        <div
+          role="tabpanel"
+          className={cn(detailCardClass, "overflow-hidden p-3 sm:p-4")}
+        >
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+            {media.map((image, idx) => (
+              <button
+                key={`${image.url}-${idx}`}
+                type="button"
+                onClick={() => setLightboxIndex(idx)}
+                className={cn(
+                  "group relative overflow-hidden rounded-xl text-left shadow-sm ring-1 ring-deep-green/10 transition hover:ring-deep-green/30",
+                  idx === 0 && "col-span-2 row-span-2",
+                )}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image.url}
+                  alt={image.alt}
+                  loading={idx === 0 ? "eager" : "lazy"}
+                  className={cn(
+                    "aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-[1.03]",
+                    idx === 0 &&
+                      "aspect-auto min-h-[240px] sm:min-h-[320px]",
+                  )}
+                />
+                <span className="pointer-events-none absolute inset-0 bg-black/0 transition group-hover:bg-black/15" />
+              </button>
+            ))}
+          </div>
+          <GalleryLightbox
+            images={media}
+            openIndex={lightboxIndex}
+            onOpenChange={setLightboxIndex}
+          />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
