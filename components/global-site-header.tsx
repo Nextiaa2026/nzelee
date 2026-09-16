@@ -115,7 +115,7 @@ export function GlobalSiteHeader() {
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="center"
-          className="min-w-44 rounded-xl border border-deep-green/15 bg-mint p-1.5 text-deep-green shadow-lg ring-0"
+          className="min-w-44 rounded-xl border border-deep-green/15 bg-mint p-1.5 text-deep-green shadow-sm ring-0"
         >
           <DropdownMenuItem
             asChild
@@ -284,7 +284,7 @@ export function GlobalSiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 bg-transparent px-4 py-4 transition-[padding] duration-300 md:py-5">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-center">
-        <div className="flex min-h-14 w-full items-center justify-between rounded-full border border-white/10 bg-deep-green px-4 py-3 text-white shadow-xl ring-1 ring-black/10 transition-all duration-300 md:min-h-16 md:px-8 md:py-3.5 lg:px-10">
+        <div className="flex min-h-14 w-full items-center justify-between rounded-full border border-white/10 bg-deep-green px-4 py-3 text-white shadow-sm ring-1 ring-black/10 transition-all duration-300 md:min-h-16 md:px-8 md:py-3.5 lg:px-10">
 
           {brand}
           {nav}

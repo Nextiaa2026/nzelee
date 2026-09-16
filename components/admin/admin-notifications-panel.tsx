@@ -13,10 +13,6 @@ import { toast } from "sonner";
 
 import { AdminDataTable } from "@/components/admin-data-table";
 import { MockQueryPlaceholder } from "@/components/mock-query-placeholder";
-import {
-  FullTopSheet,
-  FullTopSheetCancelButton,
-} from "@/components/ui/full-top-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +32,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SearchInput } from "@/components/ui/search-input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   useAdminNotifications,
   useAdminNotificationTargets,
@@ -260,7 +264,7 @@ export function AdminNotificationsPanel() {
           onClick={() => setSheetOpen(true)}
         >
           <BellPlusIcon className="size-4" />
-          Create notification
+          Créer une notification
         </Button>
       </div>
       <MockQueryPlaceholder
@@ -301,17 +305,147 @@ export function AdminNotificationsPanel() {
         </div>
       ) : null}
 
-      <FullTopSheet
-        open={sheetOpen}
-        onOpenChange={setSheetOpen}
-        title="Create notification"
-        description="Send a notification to one user or broadcast to all users."
-        bodyClassName="gap-4"
-        footer={
-          <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
-              Cancel
-            </FullTopSheetCancelButton>
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 bg-white p-0 sm:max-w-md"
+        >
+          <SheetHeader className="border-b px-6 py-4 text-left">
+            <SheetTitle>Créer une notification</SheetTitle>
+            <SheetDescription>
+              Envoyez une notification à un utilisateur ou à tous les comptes.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex-1 space-y-4 overflow-y-auto px-6 py-4">
+            <div className="grid gap-2">
+              <Label>Portée</Label>
+              <Select
+                value={scope}
+                onValueChange={(v) => setScope(v as "USER" | "BROADCAST")}
+              >
+                <SelectTrigger className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USER">Un utilisateur</SelectItem>
+                  <SelectItem value="BROADCAST">
+                    Diffusion à tous les utilisateurs
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {scope === "USER" ? (
+              <div className="grid gap-3">
+                <div className="grid gap-2">
+                  <Label htmlFor="notif-search">Rechercher un utilisateur</Label>
+                  <Input
+                    id="notif-search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Nom ou email"
+                    className="h-11"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Destinataire</Label>
+                  <Select value={userId} onValueChange={setUserId}>
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Sélectionner un destinataire" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {targets.map((target) => (
+                        <SelectItem key={target.id} value={target.id}>
+                          {target.name
+                            ? `${target.name} (${target.email})`
+                            : target.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedUser ? (
+                    <p className="text-xs text-muted-foreground">
+                      Sélectionné : {selectedUser.name ?? "Sans nom"} —{" "}
+                      {selectedUser.email}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            ) : (
+              <p className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
+                La diffusion envoie cette notification à tous les comptes.
+              </p>
+            )}
+
+            <div className="grid gap-2">
+              <Label>Type</Label>
+              <Select
+                value={type}
+                onValueChange={(v) =>
+                  setType(
+                    v as
+                      | "SYSTEM"
+                      | "KYC"
+                      | "INVESTMENT"
+                      | "WITHDRAWAL"
+                      | "GENERAL",
+                  )
+                }
+              >
+                <SelectTrigger className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="GENERAL">GENERAL</SelectItem>
+                  <SelectItem value="SYSTEM">SYSTEM</SelectItem>
+                  <SelectItem value="KYC">KYC</SelectItem>
+                  <SelectItem value="INVESTMENT">INVESTMENT</SelectItem>
+                  <SelectItem value="WITHDRAWAL">WITHDRAWAL</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="notif-title">Titre</Label>
+              <Input
+                id="notif-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Titre de la notification"
+                className="h-11"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="notif-body">Corps (optionnel)</Label>
+              <Input
+                id="notif-body"
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                placeholder="Message complémentaire"
+                className="h-11"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="notif-href">Lien (optionnel)</Label>
+              <Input
+                id="notif-href"
+                value={href}
+                onChange={(e) => setHref(e.target.value)}
+                placeholder="/dashboard/notifications"
+                className="h-11"
+              />
+            </div>
+          </div>
+          <SheetFooter className="border-t px-6 py-4 sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSheetOpen(false)}
+            >
+              Annuler
+            </Button>
             <Button
               type="button"
               disabled={
@@ -319,134 +453,11 @@ export function AdminNotificationsPanel() {
               }
               onClick={() => mut.mutate()}
             >
-              {mut.isPending ? "Sending..." : "Send notification"}
+              {mut.isPending ? "Envoi…" : "Envoyer"}
             </Button>
-          </div>
-        }
-      >
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label>Send scope</Label>
-            <Select
-              value={scope}
-              onValueChange={(v) => setScope(v as "USER" | "BROADCAST")}
-            >
-              <SelectTrigger className="h-11 max-w-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USER">Single user</SelectItem>
-                <SelectItem value="BROADCAST">
-                  Broadcast to all users
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {scope === "USER" ? (
-            <div className="grid gap-3">
-              <div className="grid gap-2">
-                <Label htmlFor="notif-search">Search user</Label>
-                <Input
-                  id="notif-search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Type name or email"
-                  className="h-11 max-w-md"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>Recipient</Label>
-                <Select value={userId} onValueChange={setUserId}>
-                  <SelectTrigger className="h-11 max-w-xl">
-                    <SelectValue placeholder="Select recipient" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {targets.map((target) => (
-                      <SelectItem key={target.id} value={target.id}>
-                        {target.name
-                          ? `${target.name} (${target.email})`
-                          : target.email}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {selectedUser ? (
-                  <p className="text-xs text-muted-foreground">
-                    Selected: {selectedUser.name ?? "Unnamed user"} -{" "}
-                    {selectedUser.email}
-                  </p>
-                ) : null}
-              </div>
-            </div>
-          ) : (
-            <p className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-              Broadcast sends this notification to every account in the system.
-            </p>
-          )}
-
-          <div className="grid gap-2">
-            <Label>Type</Label>
-            <Select
-              value={type}
-              onValueChange={(v) =>
-                setType(
-                  v as
-                    | "SYSTEM"
-                    | "KYC"
-                    | "INVESTMENT"
-                    | "WITHDRAWAL"
-                    | "GENERAL",
-                )
-              }
-            >
-              <SelectTrigger className="h-11 max-w-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="GENERAL">GENERAL</SelectItem>
-                <SelectItem value="SYSTEM">SYSTEM</SelectItem>
-                <SelectItem value="KYC">KYC</SelectItem>
-                <SelectItem value="INVESTMENT">INVESTMENT</SelectItem>
-                <SelectItem value="WITHDRAWAL">WITHDRAWAL</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="notif-title">Title</Label>
-            <Input
-              id="notif-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Notification title"
-              className="h-11 max-w-2xl"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="notif-body">Body (optional)</Label>
-            <Input
-              id="notif-body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Additional message"
-              className="h-11 max-w-2xl"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="notif-href">Link (optional)</Label>
-            <Input
-              id="notif-href"
-              value={href}
-              onChange={(e) => setHref(e.target.value)}
-              placeholder="/dashboard/notifications"
-              className="h-11 max-w-2xl"
-            />
-          </div>
-        </div>
-      </FullTopSheet>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

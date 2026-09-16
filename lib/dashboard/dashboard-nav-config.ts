@@ -19,7 +19,7 @@ export type DashboardNavItem = {
   exact?: boolean;
 };
 
-/** Primary sidebar / mobile sheet routes (single source of truth). */
+/** Primary investor top-nav / mobile sheet routes (single source of truth). */
 export function getDashboardNavItems(): DashboardNavItem[] {
   return [
     { href: "/dashboard", label: "Aperçu", icon: LayoutDashboard, exact: true },

@@ -40,24 +40,17 @@ export type CampaignDetailsClientPayload = {
   investors: PublicCampaignInvestorRow[];
 };
 
-const RANK_BUBBLE: Record<number, string> = {
-  1: "bg-mint text-mint-foreground",
-  2: "bg-amber-200 text-foreground",
-  3: "bg-rose-200 text-foreground",
-  4: "bg-emerald-200 text-foreground",
-  5: "bg-sky-200 text-foreground",
-  6: "bg-violet-200 text-foreground",
-  7: "bg-orange-200 text-foreground",
-};
-
 function rankBubbleClass(rank: number) {
-  return RANK_BUBBLE[rank] ?? "bg-teal-200 text-foreground";
+  if (rank === 1) return "bg-mint text-deep-green";
+  if (rank === 2) return "bg-deep-green/15 text-deep-green";
+  if (rank === 3) return "bg-deep-green/10 text-deep-green";
+  return "bg-neutral-200 text-deep-green";
 }
 
 function medalClass(rank: number) {
-  if (rank === 1) return "text-amber-500";
-  if (rank === 2) return "text-slate-400";
-  if (rank === 3) return "text-amber-800";
+  if (rank === 1) return "text-mint";
+  if (rank === 2) return "text-neutral-400";
+  if (rank === 3) return "text-deep-green/50";
   return "";
 }
 
@@ -90,13 +83,26 @@ function fundingProgress(campaign: CampaignDetailsClientPayload) {
   );
 }
 
+function statusBadgeLabel(status: string, endsAt: string | null) {
+  if (endsAt) {
+    const days = differenceInCalendarDays(new Date(endsAt), new Date());
+    if (days < 0) return "Terminé";
+  }
+  if (status === "LIVE") return "En direct";
+  if (status === "FUNDED") return "Financé";
+  if (status === "DRAFT") return "Brouillon";
+  return status;
+}
+
 function FullBleedHero({ campaign }: { campaign: CampaignDetailsClientPayload }) {
   const src = heroImageUrl(campaign);
   const progress = fundingProgress(campaign);
   const sector = sectorBadgeLabel(campaign.activitySector);
+  const statusLabel = statusBadgeLabel(campaign.status, campaign.endsAt);
+  const isEnded = statusLabel === "Terminé";
 
   return (
-    <section className="relative w-full min-h-[min(58vh,560px)] md:min-h-[min(64vh,640px)]">
+    <section className="relative w-full min-h-[min(52vh,520px)] md:min-h-[min(58vh,580px)]">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -106,64 +112,61 @@ function FullBleedHero({ campaign }: { campaign: CampaignDetailsClientPayload })
           decoding="async"
         />
       ) : (
-        <div
-          className="absolute inset-0 bg-deep-green"
-          aria-hidden
-        />
+        <div className="absolute inset-0 bg-deep-green" aria-hidden />
       )}
+      {/* Base dim + bottom/left scrims so white copy stays readable on bright photos */}
+      <div className="absolute inset-0 bg-black/45" aria-hidden />
       <div
-        className="absolute inset-0 bg-gradient-to-t from-black/88 via-black/45 to-black/25"
+        className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/25"
         aria-hidden
       />
-      <div className="relative z-10 flex min-h-[min(58vh,560px)] flex-col md:min-h-[min(64vh,640px)]">
-        <div className="flex flex-col gap-4 px-4 pb-4 pt-28 sm:flex-row sm:items-start sm:justify-between md:px-8 md:pt-32 lg:px-12">
-          <div className="[&_a]:text-white/85 [&_a:hover]:text-white [&_nav]:text-white/90 [&_svg]:text-white/70">
-            <AppBreadcrumb className="text-xs sm:text-sm" />
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent"
+        aria-hidden
+      />
+      <div className="relative z-10 flex min-h-[min(52vh,520px)] flex-col justify-between gap-8 md:min-h-[min(58vh,580px)]">
+        <div className="px-4 pb-2 pt-24 md:px-8 md:pt-28 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <AppBreadcrumb tone="dark" className="text-xs sm:text-sm" />
           </div>
-          <nav className="flex flex-wrap justify-end gap-x-4 gap-y-1 text-[11px] font-medium text-white/75 sm:text-xs">
-            <Link href="/privacy-policy" className="hover:text-white">
-              Politique de confidentialité
-            </Link>
-            <Link href="/terms-of-service" className="hover:text-white">
-              Conditions d&apos;utilisation
-            </Link>
-            <Link href="/contact" className="hover:text-white">
-              Contact
-            </Link>
-          </nav>
         </div>
 
-        <div className="mt-auto px-4 pb-10 md:px-8 lg:px-12">
+        <div className="px-4 pb-10 md:px-8 lg:px-12">
           <div className="mx-auto max-w-6xl space-y-5">
             <div className="flex flex-wrap items-center gap-2">
               {sector ? (
-                <span className="inline-flex rounded-full bg-amber-300 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-950">
+                <span className="inline-flex rounded-full bg-mint px-3 py-1 text-xs font-bold uppercase tracking-wide text-deep-green shadow-sm">
                   {sector}
                 </span>
               ) : null}
               {campaign.isVerified ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-mint/95 px-3 py-1 text-xs font-semibold text-deep-green">
+                <span className="inline-flex items-center gap-1 rounded-full bg-white px-3 py-1 text-xs font-semibold text-deep-green shadow-sm">
                   <Check className="size-3.5 shrink-0" strokeWidth={2.5} />
                   Vérifié
                 </span>
               ) : null}
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-mint pulse" />
-                {campaign.status}
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-black/35 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                <span
+                  className={cn(
+                    "h-1.5 w-1.5 rounded-full",
+                    isEnded ? "bg-white/70" : "bg-mint",
+                  )}
+                />
+                {statusLabel}
               </span>
             </div>
 
-            <h1 className="max-w-4xl font-display text-3xl font-semibold leading-[1.12] tracking-tight text-white text-glow sm:text-4xl md:text-5xl">
+            <h1 className="max-w-4xl font-sans text-3xl font-semibold leading-[1.12] tracking-tight text-white sm:text-4xl md:text-5xl">
               {campaign.title}
             </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">
+            <p className="max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
               {campaign.summary}
             </p>
 
             <div className="flex flex-col gap-3 text-sm text-white/90 sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
               {campaign.projectOwner?.trim() ? (
                 <span className="inline-flex items-center gap-2">
-                  <User className="size-4 shrink-0 opacity-80" aria-hidden />
+                  <User className="size-4 shrink-0 opacity-90" aria-hidden />
                   <span>
                     Par{" "}
                     <span className="font-semibold text-white">
@@ -174,33 +177,31 @@ function FullBleedHero({ campaign }: { campaign: CampaignDetailsClientPayload })
               ) : null}
               {campaign.locationLabel ? (
                 <span className="inline-flex items-center gap-2">
-                  <MapPin className="size-4 shrink-0 opacity-80" aria-hidden />
+                  <MapPin className="size-4 shrink-0 opacity-90" aria-hidden />
                   <span className="font-medium">{campaign.locationLabel}</span>
                 </span>
               ) : null}
             </div>
 
-            <div className="flex max-w-xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex max-w-xl flex-col gap-3">
               <CampaignCurrencyToggle tone="dark" />
-              <div className="hidden h-2 flex-1 overflow-hidden rounded-full bg-white/15 sm:block sm:max-w-xs">
-                <div
-                  className="h-full rounded-full bg-mint"
-                  style={{ width: `${progress}%` }}
-                />
+              <div className="flex items-center gap-3">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/40 ring-1 ring-white/15">
+                  <div
+                    className="h-full rounded-full bg-mint"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <span className="shrink-0 text-xs font-semibold tabular-nums text-white">
+                  {progress}%
+                </span>
               </div>
-            </div>
-
-            <div className="h-2 max-w-xl overflow-hidden rounded-full bg-white/15 sm:hidden">
-              <div
-                className="h-full rounded-full bg-mint"
-                style={{ width: `${progress}%` }}
-              />
             </div>
 
             <div className="flex flex-wrap gap-3 pt-1">
               <Button
                 asChild
-                className="rounded-full bg-mint px-8 font-semibold text-deep-green shadow-lg hover:bg-mint/90"
+                className="rounded-full bg-mint px-8 font-semibold text-deep-green shadow-sm hover:bg-mint/90"
               >
                 <Link href={`/campaigns/${campaign.slug}/invest`}>
                   Investir maintenant
@@ -209,7 +210,7 @@ function FullBleedHero({ campaign }: { campaign: CampaignDetailsClientPayload })
               <Button
                 variant="outline"
                 asChild
-                className="rounded-full border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/15"
+                className="rounded-full border-white/50 bg-black/30 text-white shadow-sm backdrop-blur hover:bg-black/45 hover:text-white"
               >
                 <Link href="/campaigns">Toutes les campagnes</Link>
               </Button>
@@ -229,47 +230,35 @@ function StatsStrip({ campaign }: { campaign: CampaignDetailsClientPayload }) {
   const timeLeft = timeRemainingLabel(campaign.endsAt);
 
   return (
-    <div className="border-b border-black/10 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+    <div className="border-b border-deep-green/10 bg-white">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-6 md:grid-cols-4 md:gap-8 md:px-8 lg:px-12">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-black/45">
-            Collecté
-          </p>
-          <p className="mt-1 font-display text-lg font-semibold text-deep-green sm:text-xl">
-            {formatInDisplay(raised)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-black/45">
-            Objectif
-          </p>
-          <p className="mt-1 font-display text-lg font-semibold text-deep-green sm:text-xl">
-            {formatInDisplay(goal)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-black/45">
-            Investisseurs
-          </p>
-          <p className="mt-1 font-display text-lg font-semibold text-deep-green sm:text-xl">
-            {investors}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-black/45">
-            Temps restant
-          </p>
-          <p
-            className={cn(
-              "mt-1 font-display text-lg font-semibold sm:text-xl",
+        {[
+          { label: "Collecté", value: formatInDisplay(raised) },
+          { label: "Objectif", value: formatInDisplay(goal) },
+          { label: "Investisseurs", value: String(investors) },
+          {
+            label: "Temps restant",
+            value: timeLeft,
+            accent:
               timeLeft !== "Terminé" && campaign.endsAt
-                ? "text-orange-600"
+                ? "text-deep-green"
                 : "text-deep-green",
-            )}
-          >
-            {timeLeft}
-          </p>
-        </div>
+          },
+        ].map((stat) => (
+          <div key={stat.label}>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-deep-green/45">
+              {stat.label}
+            </p>
+            <p
+              className={cn(
+                "mt-1 font-sans text-lg font-semibold text-deep-green sm:text-xl",
+                stat.accent,
+              )}
+            >
+              {stat.value}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -284,7 +273,7 @@ function InvestorRows({
 
   if (!campaign.investors.length) {
     return (
-      <p className="text-sm text-black/60">
+      <p className="text-sm text-deep-green/60">
         Pas encore d&apos;investissements. Soyez le premier.
       </p>
     );
@@ -295,7 +284,7 @@ function InvestorRows({
       {campaign.investors.map((inv) => (
         <div
           key={inv.userId}
-          className="flex items-center justify-between rounded-xl border border-black/10 bg-slate-50/90 px-3 py-2.5"
+          className="flex items-center justify-between rounded-xl border border-deep-green/10 bg-neutral-50 px-3 py-2.5"
         >
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -319,22 +308,22 @@ function InvestorRows({
               ) : null}
             </div>
             <div>
-              <p className="text-sm font-medium text-black/90">
+              <p className="text-sm font-medium text-deep-green">
                 #{inv.rank} {inv.name}
               </p>
               <span
                 className={cn(
                   "mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
                   inv.status === "PAID"
-                    ? "border-mint/30 bg-mint/15 text-mint"
-                    : "border-amber-300/50 bg-amber-100 text-amber-900",
+                    ? "border-mint/40 bg-mint/20 text-deep-green"
+                    : "border-deep-green/15 bg-deep-green/5 text-deep-green/70",
                 )}
               >
                 {inv.status}
               </span>
             </div>
           </div>
-          <p className="font-display text-sm font-semibold text-black/85">
+          <p className="font-sans text-sm font-semibold text-deep-green">
             {formatInDisplay(convertFromBase(inv.amount))}
           </p>
         </div>
@@ -348,48 +337,54 @@ function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) 
   const progress = fundingProgress(campaign);
   const raised = convertFromBase(campaign.raisedAmount);
   const investors = campaign.investors.length;
+  const minInvestment =
+    campaign.minimumInvestmentAmount != null
+      ? formatInDisplay(convertFromBase(campaign.minimumInvestmentAmount))
+      : null;
 
   return (
-    <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-[0_8px_40px_rgba(0,0,0,0.06)]">
+    <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
       <div className="flex items-end justify-between gap-4">
-        <p className="font-display text-5xl font-bold leading-none text-deep-green md:text-6xl">
+        <p className="font-sans text-5xl font-bold leading-none text-deep-green md:text-6xl">
           {progress}%
         </p>
-        <p className="pb-1 text-right text-sm text-black/60">
-          <span className="font-semibold text-black/85">{investors}</span>{" "}
+        <p className="pb-1 text-right text-sm text-deep-green/60">
+          <span className="font-semibold text-deep-green">{investors}</span>{" "}
           investisseur{investors !== 1 ? "s" : ""}
         </p>
       </div>
-      <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-black/10">
+      <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-neutral-200">
         <div
           className="h-full rounded-full bg-mint"
           style={{ width: `${progress}%` }}
         />
       </div>
-      <p className="mt-2 text-xs text-black/50">
+      <p className="mt-2 text-xs text-deep-green/50">
         {formatInDisplay(raised)} collectés
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-3 text-sm">
-        <div className="rounded-2xl border border-black/10 bg-slate-50/90 p-4">
-          <p className="text-xs font-medium text-black/50">Montant minimum</p>
-          <p className="mt-1 font-semibold text-black/90">
-            {campaign.minimumInvestmentAmount != null
-              ? `${campaign.minimumInvestmentAmount.toLocaleString()} ${campaign.currency}`
-              : "N/A"}
+        <div className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4">
+          <p className="text-xs font-medium text-deep-green/50">
+            Montant minimum
+          </p>
+          <p className="mt-1 font-semibold text-deep-green">
+            {minInvestment ?? "N/A"}
           </p>
         </div>
-        <div className="rounded-2xl border border-black/10 bg-slate-50/90 p-4">
-          <p className="text-xs font-medium text-black/50">Rendement visé</p>
-          <p className="mt-1 font-semibold text-mint">
+        <div className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4">
+          <p className="text-xs font-medium text-deep-green/50">
+            Rendement visé
+          </p>
+          <p className="mt-1 font-semibold text-deep-green">
             {campaign.targetReturnRate != null
               ? `${campaign.targetReturnRate}% / an`
               : "N/A"}
           </p>
         </div>
-        <div className="rounded-2xl border border-black/10 bg-slate-50/90 p-4">
-          <p className="text-xs font-medium text-black/50">Durée</p>
-          <p className="mt-1 font-semibold text-black/90">
+        <div className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4">
+          <p className="text-xs font-medium text-deep-green/50">Durée</p>
+          <p className="mt-1 font-semibold text-deep-green">
             {campaign.durationMonths != null
               ? `${campaign.durationMonths} mois`
               : "N/A"}
@@ -399,18 +394,18 @@ function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) 
 
       <Button
         asChild
-        className="mt-6 w-full rounded-2xl bg-deep-green py-6 text-base font-semibold text-white hover:bg-deep-green/90"
+        className="mt-6 w-full rounded-xl bg-deep-green py-6 text-base font-semibold text-white hover:bg-deep-green/90"
       >
         <Link href={`/campaigns/${campaign.slug}/invest`}>
           Investir maintenant
         </Link>
       </Button>
-      <p className="mt-2 text-center text-[11px] text-black/45">
+      <p className="mt-2 text-center text-[11px] text-deep-green/45">
         Transaction sécurisée
       </p>
 
-      <div className="mt-8 border-t border-black/10 pt-6">
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-black/50">
+      <div className="mt-8 border-t border-deep-green/10 pt-6">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-deep-green/50">
           Classement des investisseurs
         </p>
         <InvestorRows campaign={campaign} />
@@ -424,36 +419,38 @@ function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
   const hasGallery = campaign.galleryImages.length > 0;
   const impact = campaign.impactPoints.filter(Boolean);
 
+  const tabTriggerClass =
+    "h-9 flex-none rounded-full border-0 bg-transparent px-4 py-2 text-sm font-medium text-deep-green/55 shadow-none after:hidden hover:text-deep-green data-[state=active]:bg-deep-green data-[state=active]:text-white data-[state=active]:shadow-sm";
+
   return (
-    <Tabs defaultValue="about" className="w-full">
-      <TabsList
-        variant="line"
-        className="mb-6 h-auto w-full min-w-0 flex-wrap justify-start gap-x-8 gap-y-2 rounded-none border-0 bg-transparent p-0"
-      >
-        <TabsTrigger value="about" className="rounded-none px-0 py-2 text-sm data-active:after:opacity-100">
+    <Tabs defaultValue="about" className="w-full gap-5">
+      <TabsList className="mb-0 h-auto w-full min-w-0 flex-wrap justify-start gap-1 rounded-full border border-deep-green/10 bg-white p-1 shadow-sm sm:w-fit">
+        <TabsTrigger value="about" className={tabTriggerClass}>
           À propos
         </TabsTrigger>
-        <TabsTrigger value="impact" className="rounded-none px-0 py-2 text-sm data-active:after:opacity-100">
+        <TabsTrigger value="impact" className={tabTriggerClass}>
           Impact
         </TabsTrigger>
         {hasGallery ? (
-          <TabsTrigger value="gallery" className="rounded-none px-0 py-2 text-sm data-active:after:opacity-100">
+          <TabsTrigger value="gallery" className={tabTriggerClass}>
             Galerie
           </TabsTrigger>
         ) : null}
       </TabsList>
 
-      <TabsContent value="about" className="space-y-6 text-sm text-black/75">
-        <div className="rounded-3xl border border-black/10 bg-white p-6 shadow-sm md:p-8">
-          <p className="leading-relaxed whitespace-pre-wrap">{campaign.description}</p>
-          <div className="mt-6 grid gap-3 border-t border-black/10 pt-6 sm:grid-cols-2">
+      <TabsContent value="about" className="mt-0 space-y-6 text-sm text-deep-green/75">
+        <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm md:p-8">
+          <p className="leading-relaxed whitespace-pre-wrap">
+            {campaign.description}
+          </p>
+          <div className="mt-6 grid gap-3 border-t border-deep-green/10 pt-6 sm:grid-cols-2">
             <p>
-              <span className="font-medium text-black/90">Devise (base)</span>
+              <span className="font-medium text-deep-green">Devise (base)</span>
               <br />
               {campaign.currency}
             </p>
             <p>
-              <span className="font-medium text-black/90">Fenêtre</span>
+              <span className="font-medium text-deep-green">Fenêtre</span>
               <br />
               {windowLabel}
             </p>
@@ -461,29 +458,29 @@ function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
         </div>
       </TabsContent>
 
-      <TabsContent value="impact">
+      <TabsContent value="impact" className="mt-0">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-3xl border border-emerald-100 bg-emerald-50/70 p-6">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-deep-green/50">
               Impact attendu
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-emerald-950/80">
+            <p className="mt-2 text-sm leading-relaxed text-deep-green/80">
               {impact[0] ??
                 "Le financement accélère l'équipement local et la production durable."}
             </p>
           </div>
-          <div className="rounded-3xl border border-sky-100 bg-sky-50/70 p-6">
-            <p className="text-xs font-semibold uppercase tracking-wide text-sky-800">
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-deep-green/50">
               Exécution
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-sky-950/80">
+            <p className="mt-2 text-sm leading-relaxed text-deep-green/80">
               {impact[1] ??
                 "Les fonds sont débloqués suivant des jalons de projet vérifiés."}
             </p>
           </div>
         </div>
         {impact.length > 2 ? (
-          <ul className="mt-4 list-inside list-disc space-y-2 text-sm text-black/70">
+          <ul className="mt-4 list-inside list-disc space-y-2 text-sm text-deep-green/70">
             {impact.slice(2).map((pt) => (
               <li key={pt}>{pt}</li>
             ))}
@@ -492,7 +489,7 @@ function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
       </TabsContent>
 
       {hasGallery ? (
-        <TabsContent value="gallery">
+        <TabsContent value="gallery" className="mt-0">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {campaign.galleryImages.slice(0, 9).map((image, idx) => (
               // eslint-disable-next-line @next/next/no-img-element
@@ -501,8 +498,9 @@ function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
                 src={image.url}
                 alt={image.alt || `${campaign.title} — ${idx + 1}`}
                 className={cn(
-                  "aspect-[4/3] w-full rounded-2xl border border-black/10 object-cover",
-                  idx === 0 && "col-span-2 row-span-2 aspect-auto min-h-[220px] sm:min-h-[280px]",
+                  "aspect-[4/3] w-full rounded-xl border border-deep-green/10 object-cover",
+                  idx === 0 &&
+                    "col-span-2 row-span-2 aspect-auto min-h-[220px] sm:min-h-[280px]",
                 )}
               />
             ))}
@@ -527,7 +525,7 @@ export function CampaignDetailsPublicBlock({
     >
       <FullBleedHero campaign={campaign} />
       <StatsStrip campaign={campaign} />
-      <div className="bg-zinc-50/80">
+      <div className="bg-neutral-100">
         <div className="mx-auto max-w-6xl px-4 py-10 md:px-8 lg:px-12">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(280px,400px)] lg:items-start lg:gap-12">
             <div className="min-w-0">

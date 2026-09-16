@@ -78,7 +78,7 @@ function FullTopSheet({
                 onClick={() => onOpenChange?.(false)}
               >
                 <XIcon className="size-5" />
-                <span className="sr-only">Close</span>
+                <span className="sr-only">Fermer</span>
               </Button>
             </div>
 

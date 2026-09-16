@@ -848,7 +848,7 @@ export function AdminCampaignsPanel() {
                       setWizardStep((step) => Math.min(2, step + 1));
                     }}
                   >
-                    Next
+                    Suivant
                   </Button>
                 ) : (
                   <Button
@@ -910,7 +910,7 @@ export function AdminCampaignsPanel() {
             className="flex flex-1 flex-col gap-4 overflow-y-auto pb-4"
           >
             <div className="flex items-center gap-2 rounded-lg border bg-black/3 p-2 text-xs">
-              {["Basics", "Finance", "Media & publish"].map((label, idx) => (
+              {["Bases", "Finance", "Médias & publication"].map((label, idx) => (
                 <button
                   key={label}
                   type="button"

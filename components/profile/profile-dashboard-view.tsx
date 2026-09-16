@@ -18,7 +18,6 @@ import {
   Clock,
   XCircle,
   Save,
-  X
 } from "lucide-react";
 
 import Link from "next/link";
@@ -38,14 +37,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetDescription,
-  SheetClose
-} from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 type ProfileDashboardViewProps = {
@@ -570,99 +569,94 @@ export function ProfileDashboardView({
         </div>
       </motion.div>
 
-      {/* Edit Profile Sheet */}
-      <Sheet open={isEditing} onOpenChange={setIsEditing}>
-        <SheetContent side="bottom" className="h-[90vh] rounded-t-[2.5rem] border-0 p-0 overflow-hidden bg-white/95 backdrop-blur-2xl">
-          <div className="mx-auto max-w-2xl h-full flex flex-col p-8">
-            <div className="flex justify-center mb-4">
-              <div className="h-1.5 w-12 rounded-full bg-foreground/10" />
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="flex max-h-[90vh] w-[calc(100%-2rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-xl p-0">
+          <DialogHeader className="border-b px-6 py-4 text-left">
+            <DialogTitle>Modifier le profil</DialogTitle>
+            <DialogDescription>
+              Gardez vos informations personnelles à jour.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            id="profile-edit-form"
+            onSubmit={handleUpdateProfile}
+            className="space-y-4 overflow-y-auto px-6 py-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="profile-display-name">Nom d&apos;affichage</Label>
+              <Input
+                id="profile-display-name"
+                value={formData.displayName}
+                onChange={(e) =>
+                  setFormData({ ...formData, displayName: e.target.value })
+                }
+                placeholder="Nom complet"
+                required
+              />
             </div>
-            
-            <SheetHeader className="text-left mb-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <SheetTitle className="font-display text-3xl font-bold">Modifier le Profil</SheetTitle>
-                  <SheetDescription className="text-sm text-foreground/50 font-medium mt-1">
-                    Gardez vos informations personnelles à jour.
-                  </SheetDescription>
-                </div>
-                <SheetClose asChild>
-                  <Button variant="ghost" size="icon-sm" className="rounded-full bg-foreground/5 h-10 w-10">
-                    <X className="h-5 w-5" />
-                  </Button>
-                </SheetClose>
-              </div>
-            </SheetHeader>
-
-            <form onSubmit={handleUpdateProfile} className="flex-1 space-y-8 overflow-y-auto pr-2 custom-scrollbar">
-              <div className="space-y-6">
-                <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Nom d&apos;affichage</Label>
-                  <Input 
-                    value={formData.displayName}
-                    onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                    className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="Nom complet"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Adresse Email</Label>
-                  <Input 
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="nom@exemple.com"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Numéro de téléphone</Label>
-                  <Input 
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="+221 00 000 00 00"
-                  />
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label className="text-xs font-bold uppercase tracking-[0.1em] text-foreground/40 px-1">Organisation</Label>
-                  <Input 
-                    value={formData.organization}
-                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                    className="h-14 rounded-2xl border-foreground/10 bg-white/50 px-5 font-medium focus-visible:ring-deep-green/20"
-                    placeholder="Entreprise ou Individu"
-                  />
-                </div>
-              </div>
-
-              <div className="pt-4 pb-12">
-                <Button 
-                  type="submit" 
-                  disabled={isUpdating}
-                  className="h-14 w-full rounded-2xl bg-deep-green text-lg font-bold text-white shadow-xl shadow-deep-green/20 hover:bg-deep-green/90 active:scale-95 transition-all disabled:opacity-50"
-                >
-                  {isUpdating ? (
-                    <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Enregistrement...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <Save className="h-5 w-5" />
-                      Enregistrer
-                    </div>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </SheetContent>
-      </Sheet>
+            <div className="space-y-2">
+              <Label htmlFor="profile-email">Adresse email</Label>
+              <Input
+                id="profile-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                placeholder="nom@exemple.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="profile-phone">Numéro de téléphone</Label>
+              <Input
+                id="profile-phone"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                placeholder="+221 00 000 00 00"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="profile-org">Organisation</Label>
+              <Input
+                id="profile-org"
+                value={formData.organization}
+                onChange={(e) =>
+                  setFormData({ ...formData, organization: e.target.value })
+                }
+                placeholder="Entreprise ou Individu"
+              />
+            </div>
+          </form>
+          <DialogFooter className="border-t px-6 py-4 sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsEditing(false)}
+              disabled={isUpdating}
+            >
+              Annuler
+            </Button>
+            <Button
+              type="submit"
+              form="profile-edit-form"
+              disabled={isUpdating}
+              className="bg-deep-green hover:bg-deep-green/90"
+            >
+              {isUpdating ? (
+                "Enregistrement…"
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Enregistrer
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -12,7 +12,10 @@ export default async function CampaignsBrowsePage() {
         eyebrow="Place de marché"
         title={
           <>
-            Découvrez les <span className="text-mint">campagnes</span>
+            Découvrez les{" "}
+            <span className="text-mint drop-shadow-[0_1px_8px_rgba(0,0,0,0.35)]">
+              campagnes
+            </span>
           </>
         }
         subtitle="Collectes de fonds en cours et financées que vous pouvez suivre ou sauvegarder sur votre compte. Parcourez des campagnes vérifiées du monde entier."

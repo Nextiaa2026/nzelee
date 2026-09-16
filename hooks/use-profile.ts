@@ -1,12 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { userQueryKeys } from "@/lib/query-keys/user";
+import type { z } from "zod";
 
-export interface UpdateProfileParams {
-  displayName: string;
-  organization?: string;
-  country?: string;
-  dateOfBirth?: string;
-}
+import { userQueryKeys } from "@/lib/query-keys/user";
+import { profileSettingsSchema } from "@/lib/validations/marketing-forms";
+
+export type UpdateProfileParams = z.infer<typeof profileSettingsSchema>;
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
@@ -30,7 +28,6 @@ export function useUpdateProfile() {
       return result.data;
     },
     onSuccess: () => {
-      // Invalidate all user-related queries
       queryClient.invalidateQueries({ queryKey: userQueryKeys.all });
     },
   });

@@ -4,13 +4,6 @@ import { Star } from "lucide-react";
 
 import { CampaignReviewForm } from "@/components/campaigns/campaign-review-form";
 import { CampaignDetailsPublicBlock } from "@/components/campaigns/campaign-details-public-block";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { formatDateLong } from "@/lib/format/date";
 import { cn } from "@/lib/utils";
 import { getUsdRates } from "@/lib/services/exchange-rate";
@@ -66,83 +59,89 @@ export default async function CampaignDetailsPage({ params }: PageProps) {
   };
 
   return (
-    <main className="min-h-svh pb-20 pt-0">
+    <main className="min-h-svh bg-neutral-100 pb-20 pt-0">
       <CampaignDetailsPublicBlock campaign={clientPayload} rates={rates} />
 
-      <div className="mx-auto max-w-6xl px-4 md:px-6">
-      <section className="mt-10 grid gap-6 md:grid-cols-[1fr_.95fr]">
-        <Card className="border-0 shadow-none">
-          <CardHeader>
-            <CardTitle>Avis des investisseurs</CardTitle>
-            <CardDescription>
+      <div className="mx-auto max-w-6xl px-4 md:px-8 lg:px-12">
+        <section className="mt-2 grid gap-6 md:grid-cols-[1fr_.95fr]">
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
+            <h2 className="font-sans text-lg font-semibold text-deep-green">
+              Avis des investisseurs
+            </h2>
+            <p className="mt-1 text-sm text-deep-green/60">
               Retours réels des utilisateurs ayant évalué cette campagne.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {campaign.reviews.length ? (
-              <div className="space-y-3">
-                {campaign.reviews.map((review) => (
-                  <div
-                    key={review.id}
-                    className="rounded-xl border border-black/10 bg-white/70 p-3"
-                  >
-                    <div className="mb-2 flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mint text-xs font-semibold text-mint-foreground">
-                          {(review.userName ?? "U")
-                            .split(" ")
-                            .map((p) => p[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
+            </p>
+            <div className="mt-5">
+              {campaign.reviews.length ? (
+                <div className="space-y-3">
+                  {campaign.reviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="rounded-xl border border-deep-green/10 bg-neutral-50 p-4"
+                    >
+                      <div className="mb-2 flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-mint text-xs font-semibold text-deep-green">
+                            {(review.userName ?? "U")
+                              .split(" ")
+                              .map((p) => p[0])
+                              .join("")
+                              .slice(0, 2)
+                              .toUpperCase()}
+                          </div>
+                          <p className="text-sm font-medium text-deep-green">
+                            {review.userName}
+                          </p>
                         </div>
-                        <p className="text-sm font-medium text-black/90">
-                          {review.userName}
+                        <p className="shrink-0 text-xs text-deep-green/50">
+                          {formatDateLong(review.createdAt)}
                         </p>
                       </div>
-                      <p className="shrink-0 text-xs text-black/60">
-                        {formatDateLong(review.createdAt)}
+                      <div
+                        className="mb-2 flex gap-0.5"
+                        aria-label={`${review.rating} sur 5 étoiles`}
+                      >
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={cn(
+                              "size-4",
+                              i < review.rating
+                                ? "fill-mint text-mint"
+                                : "text-deep-green/20",
+                            )}
+                            strokeWidth={i < review.rating ? 0 : 1.25}
+                            aria-hidden
+                          />
+                        ))}
+                      </div>
+                      <p className="text-sm text-deep-green/75">
+                        {review.comment}
                       </p>
                     </div>
-                    <div
-                      className="mb-2 flex gap-0.5"
-                      aria-label={`${review.rating} sur 5 étoiles`}
-                    >
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={cn(
-                            "size-4",
-                            i < review.rating
-                              ? "fill-amber-500 text-amber-500"
-                              : "text-amber-500/25",
-                          )}
-                          strokeWidth={i < review.rating ? 0 : 1.25}
-                          aria-hidden
-                        />
-                      ))}
-                    </div>
-                    <p className="text-sm text-black/75">{review.comment}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-black/60">Pas encore d&apos;avis.</p>
-            )}
-          </CardContent>
-        </Card>
-        <Card className="border-0 shadow-none">
-          <CardHeader>
-            <CardTitle>Ajoutez votre avis</CardTitle>
-            <CardDescription>
-              Les utilisateurs connectés peuvent noter et commenter cette campagne.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CampaignReviewForm slug={campaign.slug} />
-          </CardContent>
-        </Card>
-      </section>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-deep-green/60">
+                  Pas encore d&apos;avis.
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm">
+            <h2 className="font-sans text-lg font-semibold text-deep-green">
+              Ajoutez votre avis
+            </h2>
+            <p className="mt-1 text-sm text-deep-green/60">
+              Les utilisateurs connectés peuvent noter et commenter cette
+              campagne.
+            </p>
+            <div className="mt-5">
+              <CampaignReviewForm slug={campaign.slug} />
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

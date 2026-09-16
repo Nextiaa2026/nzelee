@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
+import { formatMinorCurrency } from "@/lib/money";
 import { PropertyListingCard, type PropertyListing } from "./property-listing-card";
 
 const fadeUp = {
@@ -35,15 +36,6 @@ type CampaignApiRow = {
   isFeatured: boolean;
   status: string;
 };
-
-function formatMoney(amountMinor: number, currency: string) {
-  const major = amountMinor / 100;
-  return major.toLocaleString(undefined, {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  });
-}
 
 function toTag(status: string, isFeatured: boolean) {
   if (isFeatured) return "À la une";
@@ -86,8 +78,8 @@ export function CampaignsShowcase() {
           name: row.title,
           status: row.status,
           currency: row.currency,
-          raised: formatMoney(row.raisedAmount, row.currency),
-          goal: formatMoney(row.goalAmount, row.currency),
+          raised: formatMinorCurrency(row.raisedAmount, row.currency),
+          goal: formatMinorCurrency(row.goalAmount, row.currency),
           funded,
           tag: toTag(row.status, row.isFeatured),
         };

@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function CampaignsLayout({ children }: { children: React.ReactNode }) {
-  return <div className="bg-white text-foreground">{children}</div>;
+  return <div className="min-h-svh bg-neutral-100 text-foreground">{children}</div>;
 }

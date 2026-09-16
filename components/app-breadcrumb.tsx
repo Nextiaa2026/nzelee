@@ -11,6 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { cn } from "@/lib/utils";
 
 const labelMap: Record<string, string> = {
   admin: "Admin",
@@ -31,19 +32,43 @@ const labelMap: Record<string, string> = {
 };
 
 function toLabel(segment: string) {
-  return labelMap[segment] ?? segment.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  return (
+    labelMap[segment] ??
+    segment.replace(/-/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase())
+  );
 }
 
-export function AppBreadcrumb({ className }: { className?: string }) {
+export function AppBreadcrumb({
+  className,
+  tone = "light",
+}: {
+  className?: string;
+  tone?: "light" | "dark";
+}) {
   const pathname = usePathname() ?? "/";
   const parts = pathname.split("/").filter(Boolean);
+  const isDark = tone === "dark";
+
+  const listClass = cn(
+    "inline-flex rounded-full px-3.5 py-1.5 text-xs shadow-sm",
+    isDark
+      ? "border border-white/25 bg-black/35 text-white/90 backdrop-blur-sm"
+      : "border border-black/15 bg-black/5 text-black/70",
+  );
+  const linkClass = isDark
+    ? "text-white/85 hover:text-white"
+    : "text-black/70 hover:text-black/90";
+  const pageClass = isDark
+    ? "font-medium text-white"
+    : "font-medium text-black/90";
+  const sepClass = isDark ? "text-white/50" : "text-black/45";
 
   if (parts.length === 0) {
     return (
       <Breadcrumb className={className}>
-        <BreadcrumbList>
+        <BreadcrumbList className={listClass}>
           <BreadcrumbItem>
-            <BreadcrumbPage>Accueil</BreadcrumbPage>
+            <BreadcrumbPage className={pageClass}>Accueil</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -52,9 +77,9 @@ export function AppBreadcrumb({ className }: { className?: string }) {
 
   return (
     <Breadcrumb className={className}>
-      <BreadcrumbList className="inline-flex rounded-full border border-black/15 bg-black/5 px-3.5 py-1.5 text-xs text-black/70">
+      <BreadcrumbList className={listClass}>
         <BreadcrumbItem>
-          <BreadcrumbLink asChild className="text-black/70 hover:text-black/90">
+          <BreadcrumbLink asChild className={linkClass}>
             <Link href="/">Accueil</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -64,11 +89,11 @@ export function AppBreadcrumb({ className }: { className?: string }) {
           const label = toLabel(segment);
           return (
             <BreadcrumbItem key={href}>
-              <BreadcrumbSeparator className="text-black/45">/</BreadcrumbSeparator>
+              <BreadcrumbSeparator className={sepClass}>/</BreadcrumbSeparator>
               {isLast ? (
-                <BreadcrumbPage className="font-medium text-black/90">{label}</BreadcrumbPage>
+                <BreadcrumbPage className={pageClass}>{label}</BreadcrumbPage>
               ) : (
-                <BreadcrumbLink asChild className="text-black/70 hover:text-black/90">
+                <BreadcrumbLink asChild className={linkClass}>
                   <Link href={href}>{label}</Link>
                 </BreadcrumbLink>
               )}

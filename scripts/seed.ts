@@ -15,6 +15,7 @@ import {
   rewardTiers,
   users,
 } from "../lib/db/schema";
+import { landingImages } from "../lib/landing-images";
 import { hashPassword } from "../lib/security/password";
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@nexiaa.local";
@@ -415,10 +416,17 @@ const SEED_CAMPAIGNS = [
   },
 ] as const;
 
+const DEFAULT_COVERS = [
+  landingImages.property1,
+  landingImages.property2,
+  landingImages.property3,
+  landingImages.property4,
+] as const;
+
 const DEFAULT_GALLERY = [
-  "https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg",
-  "https://res.cloudinary.com/demo/image/upload/v1312461204/park.jpg",
-  "https://res.cloudinary.com/demo/image/upload/v1312461204/landscape.jpg",
+  landingImages.property1,
+  landingImages.property2,
+  landingImages.property3,
 ] as const;
 
 function structuredCampaignFields(
@@ -432,6 +440,7 @@ function structuredCampaignFields(
     `Create local impact through ${c.title.toLowerCase()}.`,
     "Deploy funding in verified milestones with transparent reporting.",
   ];
+  const coverImageUrl = DEFAULT_COVERS[index % DEFAULT_COVERS.length];
   const galleryImages = DEFAULT_GALLERY.map((url, i) => ({
     url,
     alt: `${c.title} gallery image ${i + 1}`,
@@ -441,6 +450,7 @@ function structuredCampaignFields(
     { name: "Financial Projections", url: "https://example.com/docs/projections.pdf" },
   ];
   return {
+    coverImageUrl,
     locationLabel: "Nakuru County, Kenya",
     isVerified: c.status !== "DRAFT",
     minimumInvestmentAmount: minAmount,

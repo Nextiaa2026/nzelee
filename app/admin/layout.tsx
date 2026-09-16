@@ -39,7 +39,7 @@ export default async function AdminLayout({
   } as React.CSSProperties;
 
   return (
-    <DashboardProviders style={style}>
+    <DashboardProviders style={style} defaultOpen={false}>
       <AppSidebar
         user={{
           name: session.user.name ?? "Admin",
@@ -47,9 +47,9 @@ export default async function AdminLayout({
           avatar: session.user.image ?? "",
         }}
       />
-      <SidebarInset className="bg-[#f7fcf8] flex flex-col min-h-screen">
+      <SidebarInset className="flex min-h-screen flex-col bg-neutral-100">
         <SiteHeader />
-        <div className="flex flex-1 flex-col bg-[#f7fcf8] p-6">{children}</div>
+        <div className="flex flex-1 flex-col bg-neutral-100 p-6">{children}</div>
       </SidebarInset>
     </DashboardProviders>
   );

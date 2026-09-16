@@ -6,9 +6,13 @@ import { useState } from "react";
 import { WithdrawalRequestForm } from "@/components/forms/withdrawal-request-form";
 import { Button } from "@/components/ui/button";
 import {
-  FullTopSheet,
-  FullTopSheetCancelButton,
-} from "@/components/ui/full-top-sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { userWalletQueryKeys } from "@/lib/query-keys/user-wallet";
 import { userWithdrawalsQueryKeys } from "@/lib/query-keys/user-withdrawals";
 
@@ -24,39 +28,46 @@ export function WithdrawalRequestSheet() {
       <Button type="button" variant="default" onClick={() => setOpen(true)}>
         Demander un retrait
       </Button>
-      <FullTopSheet
-        open={open}
-        onOpenChange={setOpen}
-        title="Demander un retrait"
-        description="Soumettez une demande de paiement. Seul un administrateur peut l'approuver, la rejeter ou la finaliser."
-        bodyClassName="gap-4"
-        bodyInnerClassName="max-w-2xl"
-        footer={
-          <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <FullTopSheetCancelButton onClick={() => setOpen(false)} disabled={formBusy}>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="flex max-h-[90vh] w-[calc(100%-2rem)] max-w-lg flex-col gap-0 overflow-hidden rounded-xl p-0 sm:max-w-lg">
+          <DialogHeader className="border-b px-6 py-4 text-left">
+            <DialogTitle>Demander un retrait</DialogTitle>
+            <DialogDescription>
+              Soumettez une demande de paiement. Seul un administrateur peut
+              l&apos;approuver, la rejeter ou la finaliser.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-y-auto px-6 py-4">
+            <WithdrawalRequestForm
+              formId={WITHDRAWAL_FORM_ID}
+              submitPlacement="footer"
+              onPendingChange={setFormBusy}
+              onSuccess={() => {
+                setOpen(false);
+                void queryClient.invalidateQueries({
+                  queryKey: userWalletQueryKeys.snapshot(),
+                });
+                void queryClient.invalidateQueries({
+                  queryKey: userWithdrawalsQueryKeys.list(),
+                });
+              }}
+            />
+          </div>
+          <DialogFooter className="border-t px-6 py-4 sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={formBusy}
+            >
               Annuler
-            </FullTopSheetCancelButton>
+            </Button>
             <Button type="submit" form={WITHDRAWAL_FORM_ID} disabled={formBusy}>
               {formBusy ? "Envoi en cours…" : "Demander le retrait"}
             </Button>
-          </div>
-        }
-      >
-        <WithdrawalRequestForm
-          formId={WITHDRAWAL_FORM_ID}
-          submitPlacement="footer"
-          onPendingChange={setFormBusy}
-          onSuccess={() => {
-            setOpen(false);
-            void queryClient.invalidateQueries({
-              queryKey: userWalletQueryKeys.snapshot(),
-            });
-            void queryClient.invalidateQueries({
-              queryKey: userWithdrawalsQueryKeys.list(),
-            });
-          }}
-        />
-      </FullTopSheet>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,18 +1,21 @@
 "use client";
 
 import * as React from "react";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { formatMinorCurrency } from "@/lib/money";
 import {
   convertMinor,
   currencyMinorExponent,
 } from "@/lib/services/exchange-rate";
+import { cn } from "@/lib/utils";
 
 export const CAMPAIGN_DISPLAY_CCY_STORAGE_KEY = "campaign-display-ccy";
 
@@ -37,17 +40,13 @@ export type CampaignDisplayCurrency =
 function formatMinorIntl(amountMinor: number, currency: string): string {
   const ccy = currency.toUpperCase();
   const exp = currencyMinorExponent(ccy);
-  const major = amountMinor / 10 ** exp;
-  try {
-    return major.toLocaleString(undefined, {
-      style: "currency",
-      currency: ccy.length === 3 ? ccy : "USD",
-      maximumFractionDigits: exp === 0 ? 0 : 2,
-      minimumFractionDigits: 0,
-    });
-  } catch {
-    return `${major.toFixed(exp)} ${ccy}`;
-  }
+  // Amounts here are already in the display currency's minor units.
+  // Scale into "cent-like" units expected by formatMinorCurrency (÷100).
+  const asCents =
+    exp === 2 ? amountMinor : Math.round((amountMinor / 10 ** exp) * 100);
+  return formatMinorCurrency(asCents, ccy, {
+    maximumFractionDigits: exp === 0 ? 0 : 2,
+  });
 }
 
 type CampaignCurrencyContextValue = {
@@ -197,30 +196,52 @@ export function CampaignCurrencyToggle({
       <p
         className={
           isDark
-            ? "mb-1.5 text-[11px] font-medium uppercase tracking-wider text-white/55"
-            : "mb-1.5 text-[11px] font-medium uppercase tracking-wider text-deep-green-foreground/55"
+            ? "mb-1.5 text-[11px] font-medium uppercase tracking-wider text-white/85"
+            : "mb-1.5 text-[11px] font-medium uppercase tracking-wider text-deep-green/55"
         }
       >
-        Display currency
+        Devise affichée
       </p>
-      <Select value={displayCurrency} onValueChange={setDisplayCurrency}>
-        <SelectTrigger
-          className={
-            isDark
-              ? "h-10 w-[min(100%,240px)] rounded-xl border-white/20 bg-white/95 text-sm text-foreground shadow-none"
-              : "h-9 w-[min(100%,220px)] rounded-xl border-mint/25 bg-white/80 text-sm"
-          }
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            className={cn(
+              "h-10 w-[min(100%,240px)] justify-between rounded-xl border px-3 text-sm font-medium shadow-sm",
+              isDark
+                ? "border-white/25 bg-white text-deep-green hover:bg-white/95 hover:text-deep-green"
+                : "border-deep-green/15 bg-white text-deep-green hover:bg-neutral-50",
+            )}
+          >
+            <span>{displayCurrency}</span>
+            <ChevronDownIcon className="size-4 opacity-60" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="start"
+          className="min-w-[min(100%,240px)] rounded-xl border border-deep-green/10 bg-white p-1 text-deep-green shadow-sm"
         >
-          <SelectValue placeholder={displayCurrency} />
-        </SelectTrigger>
-        <SelectContent>
-          {currencyOptions.map((code) => (
-            <SelectItem key={code} value={code}>
-              {code}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          {currencyOptions.map((code) => {
+            const selected = code === displayCurrency;
+            return (
+              <DropdownMenuItem
+                key={code}
+                className={cn(
+                  "cursor-pointer rounded-lg px-3 py-2 focus:bg-mint/20 focus:text-deep-green",
+                  selected && "bg-mint/15 font-semibold",
+                )}
+                onSelect={() => setDisplayCurrency(code)}
+              >
+                <span className="flex-1">{code}</span>
+                {selected ? (
+                  <CheckIcon className="size-4 text-deep-green" />
+                ) : null}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

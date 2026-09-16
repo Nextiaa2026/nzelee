@@ -2,15 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AuthHeroPanel } from "@/components/auth-hero-panel";
 import { CompanyBrandMark } from "@/components/company-brand-mark";
 import { SITE_NAME } from "@/lib/brand";
 
 type AuthMeta = {
   title: string;
   subtitle?: string;
-  /** Form column on the left on large screens */
-  side?: "left" | "right";
   footer?: React.ReactNode;
 };
 
@@ -20,7 +17,6 @@ function metaForPath(pathname: string): AuthMeta {
       title: "Vérifiez vos emails",
       subtitle:
         "Saisissez le code à 6 chiffres que nous vous avons envoyé pour terminer la création de votre compte.",
-      side: "right",
       footer: (
         <>
           <Link
@@ -44,7 +40,6 @@ function metaForPath(pathname: string): AuthMeta {
     return {
       title: "Créez votre compte",
       subtitle: `Rejoignez ${SITE_NAME} pour explorer les offres et gérer vos engagements en un seul endroit.`,
-      side: "right",
       footer: (
         <>
           Vous avez déjà un compte ?{" "}
@@ -63,7 +58,6 @@ function metaForPath(pathname: string): AuthMeta {
       title: "Réinitialisez votre mot de passe",
       subtitle:
         "Nous vous enverrons un lien sécurisé par email pour choisir un nouveau mot de passe si un compte existe pour cette adresse.",
-      side: "right",
       footer: (
         <>
           Vous vous en souvenez ?{" "}
@@ -82,7 +76,6 @@ function metaForPath(pathname: string): AuthMeta {
       title: "Choisissez un nouveau mot de passe",
       subtitle:
         "Utilisez au moins 8 caractères et une combinaison que vous n'utilisez pas sur d'autres sites.",
-      side: "right",
       footer: (
         <>
           <Link
@@ -100,7 +93,6 @@ function metaForPath(pathname: string): AuthMeta {
       title: "Vérification de l'email",
       subtitle:
         "Saisissez le code reçu dans votre boîte de réception, ou renvoyez-le depuis la connexion avec le même email.",
-      side: "right",
       footer: (
         <>
           <Link
@@ -124,7 +116,6 @@ function metaForPath(pathname: string): AuthMeta {
     title: "Bon retour parmi nous",
     subtitle:
       "Continuez avec Google ou votre email et mot de passe pour accéder à votre compte.",
-    side: "right",
     footer: (
       <>
         Nouveau ici ?{" "}
@@ -141,56 +132,40 @@ function metaForPath(pathname: string): AuthMeta {
 
 export function AuthRouteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/login";
-  const { title, subtitle, side = "right", footer } = metaForPath(pathname);
-
-  const formPanel = (
-    <div className="flex min-h-svh w-full flex-col bg-white px-6 py-10 sm:px-10 lg:w-[46%] lg:border-r lg:border-border lg:px-12 xl:px-16 dark:bg-card">
-      <div className="mb-10 flex items-center justify-between gap-4">
-        <CompanyBrandMark variant="horizontalLightBg" href="/" priority />
-        <Link
-          href="/"
-          className="text-sm text-black/55 transition hover:text-black/90 dark:text-white/55 dark:hover:text-white/90"
-        >
-          Retour au site
-        </Link>
-      </div>
-
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center">
-        <header className="mb-6 space-y-1.5 sm:mb-8 sm:space-y-2">
-          <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            {title}
-          </h1>
-          {subtitle ? (
-            <p className="max-w-prose text-sm leading-relaxed text-black/60 sm:text-[15px] dark:text-white/65">
-              {subtitle}
-            </p>
-          ) : null}
-        </header>
-        {children}
-        {footer ? (
-          <p className="mt-8 text-sm text-black/55 dark:text-white/60">
-            {footer}
-          </p>
-        ) : null}
-      </div>
-    </div>
-  );
-
-  const hero = <AuthHeroPanel />;
+  const { title, subtitle, footer } = metaForPath(pathname);
 
   return (
-    <div className="hero-glow relative flex min-h-svh w-full flex-col overflow-hidden bg-hero-bg lg:flex-row">
-      {side === "left" ? (
-        <>
-          {hero}
-          {formPanel}
-        </>
-      ) : (
-        <>
-          {formPanel}
-          {hero}
-        </>
-      )}
+    <div className="flex min-h-svh w-full flex-col bg-neutral-100 font-sans antialiased">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-8 sm:px-6 sm:py-12">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <CompanyBrandMark variant="horizontalLightBg" href="/" priority />
+          <Link
+            href="/"
+            className="text-sm font-medium text-black/55 transition hover:text-black/90"
+          >
+            Retour au site
+          </Link>
+        </div>
+
+        <div className="flex flex-1 flex-col justify-center">
+          <div className="rounded-2xl border border-deep-green/10 bg-white p-6 shadow-sm sm:p-8">
+            <header className="mb-6 space-y-1.5 sm:mb-8 sm:space-y-2">
+              <h1 className="font-sans text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                {title}
+              </h1>
+              {subtitle ? (
+                <p className="max-w-prose text-sm leading-relaxed text-black/60 sm:text-[15px]">
+                  {subtitle}
+                </p>
+              ) : null}
+            </header>
+            {children}
+            {footer ? (
+              <p className="mt-8 text-center text-sm text-black/55">{footer}</p>
+            ) : null}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

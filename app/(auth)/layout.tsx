@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-svh w-full [--radius:0.625rem]">
+    <div className="min-h-svh w-full font-sans antialiased [--radius:0.625rem]">
       <AuthRouteShell>{children}</AuthRouteShell>
     </div>
   );

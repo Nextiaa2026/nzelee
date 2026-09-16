@@ -17,9 +17,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  FullTopSheet,
-  FullTopSheetCancelButton,
-} from "@/components/ui/full-top-sheet";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { isApiSuccess } from "@/lib/http/api-result";
@@ -234,7 +238,7 @@ export function AdminKycSubmissionsTable({
   return (
     <>
       <AdminDataTable columns={columns} data={data} />
-      <FullTopSheet
+      <Sheet
         open={!!reviewing}
         onOpenChange={(open) => {
           if (!open) {
@@ -242,24 +246,116 @@ export function AdminKycSubmissionsTable({
             setRejectReason("");
           }
         }}
-        title="Examen KYC"
-        description={
-          reviewing
-            ? `${reviewing.userEmail} · ${reviewing.documentType} · ${reviewing.status}`
-            : undefined
-        }
-        bodyClassName="gap-4"
-        bodyInnerClassName="max-w-3xl"
-        footer={
-          <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <FullTopSheetCancelButton
+      >
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 overflow-y-auto bg-white p-0 sm:max-w-xl"
+        >
+          <SheetHeader className="border-b px-6 py-4 text-left">
+            <SheetTitle>Examen KYC</SheetTitle>
+            <SheetDescription>
+              {reviewing
+                ? `${reviewing.userEmail} · ${reviewing.documentType} · ${reviewing.status}`
+                : undefined}
+            </SheetDescription>
+          </SheetHeader>
+          {reviewing ? (
+            <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-6 py-4">
+              <div className="grid gap-3 rounded-lg border bg-muted/30 p-4">
+                <h3 className="text-sm font-semibold">
+                  Informations de l&apos;utilisateur
+                </h3>
+                <div className="grid gap-2 text-sm">
+                  <p>
+                    <span className="text-muted-foreground">Nom:</span>{" "}
+                    <span className="font-medium">
+                      {reviewing.userName ?? "—"}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Email:</span>{" "}
+                    <span className="font-medium">{reviewing.userEmail}</span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Pays:</span>{" "}
+                    <span className="font-medium">
+                      {reviewing.userCountry ?? "—"}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">
+                      Date de naissance:
+                    </span>{" "}
+                    <span className="font-medium">
+                      {formatDateLong(reviewing.userDateOfBirth) || "—"}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Organisation:</span>{" "}
+                    <span className="font-medium">
+                      {reviewing.userOrganization ?? "—"}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">
+                      Onboarding terminé:
+                    </span>{" "}
+                    <span className="font-medium">
+                      {formatDateLong(reviewing.userOnboardingCompletedAt) ||
+                        "Non terminé"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div className="grid gap-2 text-sm">
+                <p>
+                  <span className="text-muted-foreground">Soumis:</span>{" "}
+                  {formatDateLong(reviewing.submittedAt)}
+                </p>
+                {reviewing.rejectionReason ? (
+                  <p className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs">
+                    <span className="font-semibold">
+                      Dernier motif de rejet:
+                    </span>{" "}
+                    {reviewing.rejectionReason}
+                  </p>
+                ) : null}
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <KycImagePreview
+                  label="Document recto"
+                  url={reviewing.documentFrontUrl}
+                />
+                <KycImagePreview
+                  label="Document verso"
+                  url={reviewing.documentBackUrl}
+                />
+                <KycImagePreview label="Selfie" url={reviewing.selfieUrl} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="kyc-reject-reason">
+                  Motif du rejet (requis pour rejeter)
+                </Label>
+                <Input
+                  id="kyc-reject-reason"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Affiché au demandeur dans sa notification"
+                />
+              </div>
+            </div>
+          ) : null}
+          <SheetFooter className="flex-col gap-2 border-t px-6 py-4 sm:flex-row sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => {
                 setReviewing(null);
                 setRejectReason("");
               }}
             >
               Fermer
-            </FullTopSheetCancelButton>
+            </Button>
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
@@ -274,7 +370,7 @@ export function AdminKycSubmissionsTable({
                   });
                 }}
               >
-                Mark under review
+                En examen
               </Button>
               <Button
                 type="button"
@@ -290,7 +386,7 @@ export function AdminKycSubmissionsTable({
                   });
                 }}
               >
-                Verify (approve)
+                Approuver
               </Button>
               <Button
                 type="button"
@@ -301,7 +397,7 @@ export function AdminKycSubmissionsTable({
                   const trimmed = rejectReason.trim();
                   if (trimmed.length < 3) {
                     toast.error(
-                      "Add a short rejection reason (at least 3 characters).",
+                      "Ajoutez un motif de rejet (au moins 3 caractères).",
                     );
                     return;
                   }
@@ -315,91 +411,9 @@ export function AdminKycSubmissionsTable({
                 Rejeter
               </Button>
             </div>
-          </div>
-        }
-      >
-        {reviewing ? (
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-3 rounded-lg border bg-muted/30 p-4">
-              <h3 className="font-semibold text-sm">Informations de l&apos;utilisateur</h3>
-              <div className="grid gap-2 text-sm">
-                <p>
-                  <span className="text-muted-foreground">Nom:</span>{" "}
-                  <span className="font-medium">
-                    {reviewing.userName ?? "—"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-muted-foreground">Email:</span>{" "}
-                  <span className="font-medium">{reviewing.userEmail}</span>
-                </p>
-                <p>
-                  <span className="text-muted-foreground">Pays:</span>{" "}
-                  <span className="font-medium">
-                    {reviewing.userCountry ?? "—"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-muted-foreground">Date de naissance:</span>{" "}
-                  <span className="font-medium">
-                    {formatDateLong(reviewing.userDateOfBirth) || "—"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-muted-foreground">Organisation:</span>{" "}
-                  <span className="font-medium">
-                    {reviewing.userOrganization ?? "—"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-muted-foreground">
-                    Onboarding terminé:
-                  </span>{" "}
-                  <span className="font-medium">
-                    {formatDateLong(reviewing.userOnboardingCompletedAt) ||
-                      "Non terminé"}
-                  </span>
-                </p>
-              </div>
-            </div>
-            <div className="grid gap-2 text-sm">
-              <p>
-                <span className="text-muted-foreground">Soumis:</span>{" "}
-                {formatDateLong(reviewing.submittedAt)}
-              </p>
-              {reviewing.rejectionReason ? (
-                <p className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs">
-                  <span className="font-semibold">Dernier motif de rejet:</span>{" "}
-                  {reviewing.rejectionReason}
-                </p>
-              ) : null}
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <KycImagePreview
-                label="Document front"
-                url={reviewing.documentFrontUrl}
-              />
-              <KycImagePreview
-                label="Document back"
-                url={reviewing.documentBackUrl}
-              />
-              <KycImagePreview label="Selfie" url={reviewing.selfieUrl} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="kyc-reject-reason">
-                Motif du rejet (requis pour rejeter)
-              </Label>
-              <Input
-                id="kyc-reject-reason"
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="Affiché au demandeur dans sa notification"
-                className="max-w-xl"
-              />
-            </div>
-          </div>
-        ) : null}
-      </FullTopSheet>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

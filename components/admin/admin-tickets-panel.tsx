@@ -32,9 +32,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  FullTopSheet,
-  FullTopSheetCancelButton,
-} from "@/components/ui/full-top-sheet";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
@@ -363,165 +367,180 @@ export function AdminTicketsPanel() {
         </>
       ) : null}
 
-      <FullTopSheet
+      <Sheet
         open={sheetOpen}
         onOpenChange={(open) => {
           setSheetOpen(open);
           if (!open) setViewingTicket(null);
         }}
-        title={`Ticket #${viewingTicket?.id.slice(0, 8) ?? ""}`}
-        description="View ticket details and update status, priority, or add admin notes."
-        bodyClassName="gap-6"
-        footer={
-          <div className="flex w-full flex-wrap items-center justify-between gap-2">
-            <FullTopSheetCancelButton onClick={() => setSheetOpen(false)}>
-              Close
-            </FullTopSheetCancelButton>
+      >
+        <SheetContent
+          side="right"
+          className="flex w-full flex-col gap-0 overflow-y-auto bg-white p-0 sm:max-w-lg"
+        >
+          <SheetHeader className="border-b px-6 py-4 text-left">
+            <SheetTitle>
+              Ticket #{viewingTicket?.id.slice(0, 8) ?? ""}
+            </SheetTitle>
+            <SheetDescription>
+              Consultez le ticket et mettez à jour le statut, la priorité ou les
+              notes admin.
+            </SheetDescription>
+          </SheetHeader>
+          {viewingTicket && (
+            <div className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
+              <div className="rounded-lg border bg-card p-4">
+                <div className="mb-4 flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="text-base font-semibold">Informations</h3>
+                    <p className="text-sm text-muted-foreground">
+                      ID: {viewingTicket.id}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge
+                      variant="outline"
+                      className={statusColors[viewingTicket.status]}
+                    >
+                      {viewingTicket.status.replace("_", " ")}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className={priorityColors[viewingTicket.priority]}
+                    >
+                      {viewingTicket.priority}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Nom
+                    </Label>
+                    <p className="mt-1">{viewingTicket.name}</p>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Email
+                    </Label>
+                    <p className="mt-1">
+                      <a
+                        href={`mailto:${viewingTicket.email}`}
+                        className="text-deep-green hover:underline"
+                      >
+                        {viewingTicket.email}
+                      </a>
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium text-muted-foreground">
+                      Message
+                    </Label>
+                    <p className="mt-1 whitespace-pre-wrap rounded-md bg-muted/50 p-3">
+                      {viewingTicket.message}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Créé
+                      </Label>
+                      <p className="mt-1">
+                        {formatDateLong(viewingTicket.createdAt)}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-muted-foreground">
+                        Mis à jour
+                      </Label>
+                      <p className="mt-1">
+                        {formatDateLong(viewingTicket.updatedAt)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-lg border bg-card p-4">
+                <h3 className="mb-4 text-base font-semibold">
+                  Mettre à jour
+                </h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="status">Statut</Label>
+                    <Select
+                      value={editStatus}
+                      onValueChange={(value) =>
+                        setEditStatus(value as TicketStatus)
+                      }
+                    >
+                      <SelectTrigger id="status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="OPEN">Ouvert</SelectItem>
+                        <SelectItem value="IN_PROGRESS">En cours</SelectItem>
+                        <SelectItem value="RESOLVED">Résolu</SelectItem>
+                        <SelectItem value="CLOSED">Fermé</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="priority">Priorité</Label>
+                    <Select
+                      value={editPriority}
+                      onValueChange={(value) =>
+                        setEditPriority(value as TicketPriority)
+                      }
+                    >
+                      <SelectTrigger id="priority">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="LOW">Basse</SelectItem>
+                        <SelectItem value="MEDIUM">Moyenne</SelectItem>
+                        <SelectItem value="HIGH">Haute</SelectItem>
+                        <SelectItem value="URGENT">Urgente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="adminNotes">Notes admin</Label>
+                    <textarea
+                      id="adminNotes"
+                      value={editAdminNotes}
+                      onChange={(e) => setEditAdminNotes(e.target.value)}
+                      className="min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="Notes internes sur ce ticket…"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <SheetFooter className="border-t px-6 py-4 sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSheetOpen(false)}
+            >
+              Fermer
+            </Button>
             <Button
               onClick={handleSave}
               disabled={!hasChanges || updateMutation.isPending}
             >
-              {updateMutation.isPending ? "Saving..." : "Save Changes"}
+              {updateMutation.isPending ? "Enregistrement…" : "Enregistrer"}
             </Button>
-          </div>
-        }
-      >
-        {viewingTicket && (
-          <div className="space-y-6">
-            <div className="rounded-lg border bg-card p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold">Ticket Information</h3>
-                  <p className="text-sm text-muted-foreground">
-                    ID: {viewingTicket.id}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Badge
-                    variant="outline"
-                    className={statusColors[viewingTicket.status]}
-                  >
-                    {viewingTicket.status.replace("_", " ")}
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className={priorityColors[viewingTicket.priority]}
-                  >
-                    {viewingTicket.priority}
-                  </Badge>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
-                    Name
-                  </Label>
-                  <p className="mt-1">{viewingTicket.name}</p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
-                    Email
-                  </Label>
-                  <p className="mt-1">
-                    <a
-                      href={`mailto:${viewingTicket.email}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {viewingTicket.email}
-                    </a>
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium text-muted-foreground">
-                    Message
-                  </Label>
-                  <p className="mt-1 whitespace-pre-wrap rounded-md bg-muted/50 p-3">
-                    {viewingTicket.message}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      Created
-                    </Label>
-                    <p className="mt-1">
-                      {formatDateLong(viewingTicket.createdAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      Updated
-                    </Label>
-                    <p className="mt-1">
-                      {formatDateLong(viewingTicket.updatedAt)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-lg border bg-card p-6">
-              <h3 className="mb-4 text-lg font-semibold">Update Ticket</h3>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    value={editStatus}
-                    onValueChange={(value) =>
-                      setEditStatus(value as TicketStatus)
-                    }
-                  >
-                    <SelectTrigger id="status">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="OPEN">Open</SelectItem>
-                      <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                      <SelectItem value="RESOLVED">Resolved</SelectItem>
-                      <SelectItem value="CLOSED">Closed</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="priority">Priority</Label>
-                  <Select
-                    value={editPriority}
-                    onValueChange={(value) =>
-                      setEditPriority(value as TicketPriority)
-                    }
-                  >
-                    <SelectTrigger id="priority">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LOW">Low</SelectItem>
-                      <SelectItem value="MEDIUM">Medium</SelectItem>
-                      <SelectItem value="HIGH">High</SelectItem>
-                      <SelectItem value="URGENT">Urgent</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="adminNotes">Admin Notes</Label>
-                  <textarea
-                    id="adminNotes"
-                    value={editAdminNotes}
-                    onChange={(e) => setEditAdminNotes(e.target.value)}
-                    className="min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Add internal notes about this ticket..."
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </FullTopSheet>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

@@ -7,10 +7,10 @@
  * screenshots). Regenerate with `bun run icons:generate` or `npm run icons:generate`.
  */
 export const BRAND_LOGOS = {
-  /** Main nav on deep green or dark bars (light marks). */
-  headerOnDark: "/png/logo_A_horizontal_clair.png",
-  /** Nav on white / mint / very light backgrounds. */
-  headerOnLight: "/png/logo_A_horizontal_sombre.png",
+  /** Main nav on deep green or dark bars (light marks, transparent bg). */
+  headerOnDark: "/png/logo_A_horizontal_on_dark.png",
+  /** Nav on white / mint / very light backgrounds (dark marks, transparent bg). */
+  headerOnLight: "/png/logo_A_horizontal_on_light.png",
   /** Marketing accent on warm gold backgrounds. */
   headerAccent: "/png/logo_A_horizontal_or.png",
   /** Default PWA / maskable / favicon source (filled square, dark). */

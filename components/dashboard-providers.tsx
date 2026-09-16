@@ -6,13 +6,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 export function DashboardProviders({
   children,
   style,
+  defaultOpen = true,
 }: {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  defaultOpen?: boolean;
 }) {
   return (
     <TooltipProvider>
-      <SidebarProvider style={style}>{children}</SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen} style={style}>
+        {children}
+      </SidebarProvider>
     </TooltipProvider>
   );
 }
