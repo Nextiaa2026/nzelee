@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 import { AdminTicketDetailView } from "@/components/admin/admin-ticket-detail-view";
-import { serverAppOrigin } from "@/lib/server-app-origin";
+import { MockQueryPlaceholder } from "@/components/mock-query-placeholder";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
 type TicketPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
@@ -20,37 +23,26 @@ type Ticket = {
   updatedAt: string;
 };
 
-async function getTicket(id: string): Promise<Ticket | null> {
-  try {
-    const res = await fetch(
-      `${serverAppOrigin()}/api/v1/admin/tickets/${id}`,
-      {
-        cache: "no-store",
-        credentials: "include",
-      },
-    );
-
-    if (!res.ok) {
-      return null;
-    }
-
-    const json = await res.json();
-    return json.ok && json.data ? json.data : null;
-  } catch {
-    return null;
+async function fetchTicket(ticketId: string): Promise<Ticket> {
+  const res = await fetch(`/api/v1/admin/tickets/${ticketId}`, {
+    credentials: "include",
+  });
+  const json = await res.json();
+  if (json.ok && json.data) {
+    return json.data as Ticket;
   }
+  throw new Error(json.error?.message ?? "Failed to fetch ticket");
 }
 
-export default async function AdminTicketDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const ticket = await getTicket(params.id);
+export default function AdminTicketDetailPage() {
+  const params = useParams<{ id: string }>();
+  const ticketId = params.id;
 
-  if (!ticket) {
-    notFound();
-  }
+  const { data: ticket, isPending, isError, refetch } = useQuery({
+    queryKey: ["admin", "ticket", ticketId],
+    queryFn: () => fetchTicket(ticketId),
+    enabled: Boolean(ticketId),
+  });
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 py-4 md:py-6 lg:px-6">
@@ -63,9 +55,22 @@ export default async function AdminTicketDetailPage({
         </Link>
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">
-        Ticket de support #{ticket.id.slice(0, 8)}
+        Ticket de support
+        {ticket ? ` #${ticket.id.slice(0, 8)}` : null}
       </h1>
-      <AdminTicketDetailView ticket={ticket} />
+
+      <MockQueryPlaceholder
+        isPending={isPending}
+        isError={isError}
+        onRetry={() => void refetch()}
+      />
+
+      {!isPending && !isError && ticket ? (
+        <AdminTicketDetailView
+          key={`${ticket.id}-${ticket.updatedAt}`}
+          ticket={ticket}
+        />
+      ) : null}
     </div>
   );
 }
