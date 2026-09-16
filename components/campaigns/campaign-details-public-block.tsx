@@ -248,30 +248,18 @@ function StatsStrip({ campaign }: { campaign: CampaignDetailsClientPayload }) {
 
   return (
     <div className="border-b border-deep-green/10 bg-white">
-      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-6 md:grid-cols-4 md:gap-8 md:px-8 lg:px-12">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-7 md:grid-cols-4 md:gap-8 md:px-8 md:py-8 lg:px-12">
         {[
           { label: "Collecté", value: formatInDisplay(raised) },
           { label: "Objectif", value: formatInDisplay(goal) },
           { label: "Investisseurs", value: String(investors) },
-          {
-            label: "Temps restant",
-            value: timeLeft,
-            accent:
-              timeLeft !== "Terminé" && campaign.endsAt
-                ? "text-deep-green"
-                : "text-deep-green",
-          },
+          { label: "Temps restant", value: timeLeft },
         ].map((stat) => (
           <div key={stat.label}>
             <p className="text-[10px] font-bold uppercase tracking-widest text-deep-green/45">
               {stat.label}
             </p>
-            <p
-              className={cn(
-                "mt-1 font-sans text-lg font-semibold text-deep-green sm:text-xl",
-                stat.accent,
-              )}
-            >
+            <p className="mt-1.5 font-sans text-2xl font-bold tracking-tight text-deep-green sm:text-3xl">
               {stat.value}
             </p>
           </div>
@@ -344,7 +332,7 @@ function InvestorRows({
               </span>
             </div>
           </div>
-          <p className="font-sans text-sm font-semibold text-deep-green">
+          <p className="font-sans text-base font-bold tabular-nums text-deep-green">
             {formatInDisplay(convertFromBase(inv.amount))}
           </p>
         </div>
@@ -354,7 +342,7 @@ function InvestorRows({
 }
 
 const detailCardClass =
-  "rounded-2xl border border-deep-green/10 bg-white shadow-sm";
+  "rounded-2xl border border-deep-green/10 bg-white shadow-[0_8px_30px_-12px_rgba(5,45,29,0.14),0_2px_8px_-4px_rgba(5,45,29,0.06)]";
 
 function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) {
   const { convertFromBase, formatInDisplay } = useCampaignDisplayCurrency();
@@ -377,25 +365,25 @@ function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) 
             Progression
           </p>
           <div className="mt-3 flex items-end justify-between gap-3">
-            <p className="font-sans text-4xl font-bold leading-none text-deep-green">
+            <p className="font-sans text-5xl font-bold leading-none tracking-tight text-deep-green sm:text-6xl">
               {progress}%
             </p>
-            <p className="pb-0.5 text-right text-xs text-deep-green/55">
+            <p className="pb-1 text-right text-sm font-semibold text-deep-green/70">
               Objectif {formatInDisplay(goal)}
             </p>
           </div>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-neutral-200">
+          <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-neutral-200">
             <div
               className="h-full rounded-full bg-mint transition-[width]"
               style={{ width: `${progress}%` }}
             />
           </div>
           {remaining > 0 ? (
-            <p className="mt-2 text-xs text-deep-green/50">
+            <p className="mt-2.5 text-sm font-medium text-deep-green/55">
               Il reste {formatInDisplay(remaining)} à financer
             </p>
           ) : (
-            <p className="mt-2 text-xs font-medium text-deep-green">
+            <p className="mt-2.5 text-sm font-bold text-deep-green">
               Objectif atteint
             </p>
           )}
@@ -408,23 +396,23 @@ function FundingAside({ campaign }: { campaign: CampaignDetailsClientPayload }) 
             Conditions
           </p>
           <dl className="mt-4 space-y-0 divide-y divide-deep-green/10">
-            <div className="flex items-center justify-between gap-3 py-3 first:pt-0">
+            <div className="flex items-center justify-between gap-3 py-3.5 first:pt-0">
               <dt className="text-sm text-deep-green/55">Minimum</dt>
-              <dd className="text-sm font-semibold text-deep-green">
+              <dd className="text-base font-bold tabular-nums text-deep-green">
                 {minInvestment ?? "—"}
               </dd>
             </div>
-            <div className="flex items-center justify-between gap-3 py-3">
+            <div className="flex items-center justify-between gap-3 py-3.5">
               <dt className="text-sm text-deep-green/55">Rendement visé</dt>
-              <dd className="text-sm font-semibold text-deep-green">
+              <dd className="text-base font-bold tabular-nums text-deep-green">
                 {campaign.targetReturnRate != null
                   ? `${campaign.targetReturnRate}% / an`
                   : "—"}
               </dd>
             </div>
-            <div className="flex items-center justify-between gap-3 py-3 last:pb-0">
+            <div className="flex items-center justify-between gap-3 py-3.5 last:pb-0">
               <dt className="text-sm text-deep-green/55">Durée</dt>
-              <dd className="text-sm font-semibold text-deep-green">
+              <dd className="text-base font-bold tabular-nums text-deep-green">
                 {campaign.durationMonths != null
                   ? `${campaign.durationMonths} mois`
                   : "—"}
@@ -523,7 +511,7 @@ function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
               <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
                 Devise (base)
               </p>
-              <p className="mt-1 font-semibold text-deep-green">
+              <p className="mt-1.5 text-lg font-bold text-deep-green">
                 {campaign.currency}
               </p>
             </div>
@@ -531,7 +519,9 @@ function StoryTabs({ campaign }: { campaign: CampaignDetailsClientPayload }) {
               <p className="text-[11px] font-bold uppercase tracking-widest text-deep-green/45">
                 Fenêtre
               </p>
-              <p className="mt-1 font-semibold text-deep-green">{windowLabel}</p>
+              <p className="mt-1.5 text-lg font-bold text-deep-green">
+                {windowLabel}
+              </p>
             </div>
           </div>
         </div>

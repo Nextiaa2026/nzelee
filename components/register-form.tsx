@@ -40,7 +40,6 @@ export function RegisterForm({
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
@@ -48,9 +47,11 @@ export function RegisterForm({
     setSubmitError(null);
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { acceptTerms, ...payload } = values;
-      const result = await registerAccount(payload);
+      const result = await registerAccount({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
       if (!isApiSuccess(result)) {
         setSubmitError(result.error.message);
         toast.error(result.error.message);
@@ -103,19 +104,6 @@ export function RegisterForm({
             />
             {errors.password ? (
               <p className="text-xs text-destructive">{errors.password.message}</p>
-            ) : null}
-          </div>
-          <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-            <PasswordInput
-              id="confirmPassword"
-              autoComplete="new-password"
-              {...register("confirmPassword")}
-            />
-            {errors.confirmPassword ? (
-              <p className="text-xs text-destructive">
-                {errors.confirmPassword.message}
-              </p>
             ) : null}
           </div>
 

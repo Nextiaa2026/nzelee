@@ -15,14 +15,14 @@ export default function ServicesPage() {
         subtitle="Des outils pour découvrir les opportunités, mener votre diligence et gérer votre portefeuille au fil du temps."
       />
 
-      <section className="mx-auto -mt-16 max-w-3xl px-4 pb-24">
+      <section className="relative z-10 mx-auto -mt-16 max-w-3xl px-4 pb-24">
         <motion.article
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="neumorph prose prose-sm max-w-none space-y-5 p-8 text-foreground/80 md:p-12
-            [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-foreground [&_h2]:mt-8 [&_h2]:mb-3
+            [&_h2]:font-display [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-foreground [&_h2]:mt-8 [&_h2]:mb-3 [&_h2]:first:mt-0
             [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_li]:text-sm"
         >
           <h2>Pour les investisseurs</h2>

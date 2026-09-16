@@ -12,17 +12,11 @@ export const loginSchema = z.object({
 });
 
 /** Request body for `POST /auth/register` (no UI-only fields). */
-export const registerSchema = z
-  .object({
-    name: z.string().trim().min(2, "Le nom doit contenir au moins 2 caractères"),
-    email,
-    password,
-    confirmPassword: z.string(),
-  })
-  .refine((values) => values.password === values.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Les mots de passe ne correspondent pas",
-  });
+export const registerSchema = z.object({
+  name: z.string().trim().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email,
+  password,
+});
 
 /** Sign-up form: same fields plus required terms acceptance. */
 export const registerFormSchema = registerSchema.and(
@@ -49,16 +43,10 @@ export const verifyEmailOtpSchema = z.object({
     .regex(/^\d{6}$/, "Le code doit contenir 6 chiffres"),
 });
 
-export const resetPasswordSchema = z
-  .object({
-    token: z.string().min(1, "Le jeton de réinitialisation est manquant"),
-    password,
-    confirmPassword: z.string(),
-  })
-  .refine((values) => values.password === values.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Les mots de passe ne correspondent pas",
-  });
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Le jeton de réinitialisation est manquant"),
+  password,
+});
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;

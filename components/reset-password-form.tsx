@@ -34,7 +34,6 @@ export function ResetPasswordForm({
     defaultValues: {
       token,
       password: "",
-      confirmPassword: "",
     },
   });
 
@@ -71,19 +70,6 @@ export function ResetPasswordForm({
             />
             {errors.password ? (
               <p className="text-xs text-destructive">{errors.password.message}</p>
-            ) : null}
-          </div>
-          <div className="space-y-1.5 sm:space-y-2">
-            <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
-            <PasswordInput
-              id="confirmPassword"
-              autoComplete="new-password"
-              {...register("confirmPassword")}
-            />
-            {errors.confirmPassword ? (
-              <p className="text-xs text-destructive">
-                {errors.confirmPassword.message}
-              </p>
             ) : null}
           </div>
 
