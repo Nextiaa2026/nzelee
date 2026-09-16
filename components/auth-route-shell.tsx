@@ -124,7 +124,7 @@ function metaForPath(pathname: string): AuthMeta {
 
 function AuthAside() {
   return (
-    <aside className="relative hidden border-l border-deep-green/10 bg-white lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
+    <aside className="relative hidden border-r border-deep-green/10 bg-white lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
       <CompanyBrandMark variant="horizontalLightBg" href="/" priority />
 
       <div className="max-w-sm space-y-4">
@@ -149,7 +149,9 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
   const { title, footer } = metaForPath(pathname);
 
   return (
-    <div className="grid min-h-svh w-full bg-neutral-100 font-sans antialiased lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+    <div className="grid min-h-svh w-full bg-neutral-100 font-sans antialiased lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
+      <AuthAside />
+
       <div className="flex min-h-svh flex-col px-4 py-6 sm:px-8 sm:py-8 lg:px-12 lg:py-10">
         <div className="mb-8 flex items-center justify-between gap-4 lg:mb-10">
           <div className="lg:hidden">
@@ -167,7 +169,7 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
         <div className="flex flex-1 flex-col justify-center">
           <div className={`mx-auto w-full max-w-lg ${authCardClass}`}>
             <header className="mb-7 sm:mb-8">
-              <h1 className="font-sans text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              <h1 className="font-sans text-3xl font-light tracking-tight text-foreground sm:text-4xl">
                 {title}
               </h1>
             </header>
@@ -178,8 +180,6 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-
-      <AuthAside />
     </div>
   );
 }
