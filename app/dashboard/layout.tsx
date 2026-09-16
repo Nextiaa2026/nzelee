@@ -31,7 +31,7 @@ export default async function UserDashboardLayout({
           }}
           isAdmin={session.user.role === "ADMIN"}
         />
-        <div className="flex flex-1 flex-col bg-neutral-100 p-4 md:p-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 md:px-6 md:py-8 lg:px-8">
           {children}
         </div>
       </div>

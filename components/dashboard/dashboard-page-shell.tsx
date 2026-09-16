@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-/** Flat panel used across dashboard content — brand-aligned with admin */
+/** Soft elevated panel — aligned with next-vote ice shadow, branded for Nzelee */
 export const dashboardPanelClass =
-  "rounded-xl border border-deep-green/10 bg-white shadow-sm";
+  "rounded-3xl border-0 bg-white shadow-[0_10px_36px_-12px_rgba(5,45,29,0.12),0_2px_8px_rgba(5,45,29,0.06)]";
 
 /**
  * One surface card: title + description + actions on the first row, then page body.

@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth";
-import { SAMPLE_PLEDGE_CAMPAIGNS } from "@/lib/dashboard/sample-pledge-campaigns";
 import { DashboardHomeOverview } from "@/components/dashboard/dashboard-home-overview";
 import { getUserAccountSummary } from "@/lib/services/user-account-summary";
 import { getUserWalletSnapshot } from "@/lib/services/user-wallet-snapshot";
@@ -33,19 +32,15 @@ export default async function UserDashboardPage() {
   ]);
 
   const featuredOnly = allCampaigns.filter((c) => c.isFeatured);
-  let displayCampaigns =
+  const displayCampaigns =
     featuredOnly.length > 0
       ? featuredOnly.slice(0, 3)
       : allCampaigns.slice(0, 3);
-  const usingSamplePledges = displayCampaigns.length === 0;
-  if (usingSamplePledges) {
-    displayCampaigns = SAMPLE_PLEDGE_CAMPAIGNS;
-  }
   const campaignsSectionTitle = featuredOnly.length
     ? "Campagnes à la une"
     : allCampaigns.length > 0
       ? "Campagnes pour vous"
-      : "Exemples de campagnes";
+      : "Campagnes";
 
   const campaignCards = displayCampaigns.map((c) => ({
     id: c.id,
@@ -58,7 +53,6 @@ export default async function UserDashboardPage() {
     currency: c.currency,
     status: c.status,
     isFeatured: c.isFeatured,
-    isDemo: usingSamplePledges,
   }));
 
   return (
@@ -75,7 +69,6 @@ export default async function UserDashboardPage() {
       }}
       campaigns={campaignCards}
       campaignsSectionTitle={campaignsSectionTitle}
-      usingSamplePledges={usingSamplePledges}
       browseableCampaignCount={allCampaigns.length}
     />
   );

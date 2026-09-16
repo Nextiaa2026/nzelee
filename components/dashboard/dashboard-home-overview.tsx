@@ -29,6 +29,35 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
+const tones = {
+  mint: {
+    card: "bg-mint text-deep-green",
+    muted: "text-deep-green/65",
+    icon: "bg-deep-green/10 text-deep-green",
+    glow: "bg-white/35",
+  },
+  deep: {
+    card: "bg-deep-green text-white",
+    muted: "text-white/65",
+    icon: "bg-white/10 text-mint",
+    glow: "bg-mint/20",
+  },
+  white: {
+    card: "bg-white text-deep-green ring-1 ring-deep-green/10",
+    muted: "text-deep-green/55",
+    icon: "bg-deep-green/8 text-deep-green",
+    glow: "bg-mint/25",
+  },
+  soft: {
+    card: "bg-neutral-100 text-deep-green",
+    muted: "text-deep-green/50",
+    icon: "bg-white text-deep-green",
+    glow: "bg-deep-green/5",
+  },
+} as const;
+
+type StatTone = keyof typeof tones;
+
 export type DashboardHomeOverviewProps = {
   userName: string | null;
   isAdmin: boolean;
@@ -48,19 +77,74 @@ export type DashboardHomeOverviewProps = {
   };
   campaigns: CampaignCardProps[];
   campaignsSectionTitle: string;
-  usingSamplePledges: boolean;
   /** Total browseable campaigns (not just the preview slice). */
   browseableCampaignCount: number;
 };
 
+function StatCard({
+  label,
+  value,
+  hint,
+  icon: Icon,
+  href,
+  tone,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  icon: typeof Briefcase;
+  href: string;
+  tone: StatTone;
+}) {
+  const palette = tones[tone];
+
+  return (
+    <Link
+      href={href}
+      className="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint/50 focus-visible:ring-offset-2"
+    >
+      <article
+        className={cn(
+          "group relative flex h-full flex-col overflow-hidden rounded-2xl p-5 transition duration-300 hover:-translate-y-1 sm:p-6",
+          palette.card,
+        )}
+      >
+        <div
+          className={cn(
+            "pointer-events-none absolute -right-8 -top-10 size-32 rounded-full blur-2xl",
+            palette.glow,
+          )}
+        />
+        <div className="relative flex items-start justify-between gap-3">
+          <p className={cn("text-sm font-medium", palette.muted)}>{label}</p>
+          <span
+            className={cn(
+              "flex size-11 shrink-0 items-center justify-center rounded-2xl",
+              palette.icon,
+            )}
+          >
+            <Icon className="size-5" />
+          </span>
+        </div>
+        <p className="font-display relative mt-8 text-3xl font-semibold tracking-tight sm:text-4xl">
+          {value}
+        </p>
+        <p className={cn("relative mt-2 text-xs leading-relaxed", palette.muted)}>
+          {hint}
+        </p>
+      </article>
+    </Link>
+  );
+}
+
 export function DashboardHomeOverview({
   userName,
   isAdmin,
+  kycStatus,
   summary,
   wallet,
   campaigns,
   campaignsSectionTitle,
-  usingSamplePledges,
   browseableCampaignCount,
 }: DashboardHomeOverviewProps) {
   const first = userName?.trim()?.split(/\s+/)[0] ?? "là";
@@ -71,60 +155,91 @@ export function DashboardHomeOverview({
       maximumFractionDigits: 2,
     });
 
-  const stats = [
+  const stats: Array<{
+    label: string;
+    value: string;
+    hint: string;
+    icon: typeof Briefcase;
+    href: string;
+    tone: StatTone;
+  }> = [
     ...(isAdmin
       ? [
           {
             label: "Vos annonces",
             value: String(summary.campaigns),
-            sub: "Campagnes que vous publiez",
+            hint:
+              summary.campaigns === 1
+                ? "1 campagne que vous publiez"
+                : `${summary.campaigns} campagnes que vous publiez`,
             icon: Briefcase,
-            href: "/dashboard/projects" as const,
+            href: "/dashboard/projects",
+            tone: "mint" as const,
           },
         ]
       : [
           {
             label: "Marchés",
             value: String(browseableCampaignCount),
-            sub: "Campagnes ouvertes aux investisseurs",
+            hint: "Campagnes ouvertes aux investisseurs",
             icon: Compass,
-            href: "/dashboard/markets" as const,
+            href: "/dashboard/markets",
+            tone: "mint" as const,
           },
         ]),
     {
       label: "Investissements",
       value: String(summary.investments),
-      sub: "Engagements actifs",
+      hint:
+        summary.pendingWithdrawals > 0
+          ? `${summary.pendingWithdrawals} retrait${summary.pendingWithdrawals > 1 ? "s" : ""} en attente`
+          : "Engagements sur votre compte",
       icon: TrendingUp,
-      href: "/dashboard/investments" as const,
+      href: "/dashboard/investments",
+      tone: "deep",
     },
     {
       label: "Disponible",
       value: fmt(wallet.availableCents, wallet.currency),
-      sub: `${fmt(wallet.pendingWithdrawalCents, wallet.currency)} retrait en attente`,
+      hint: `${fmt(wallet.pendingWithdrawalCents, wallet.currency)} en retrait en attente`,
       icon: Wallet2,
-      href: "/dashboard/wallet" as const,
+      href: "/dashboard/wallet",
+      tone: "white",
     },
     {
       label: "Total investi",
       value: fmt(summary.investedAmount, wallet.currency),
-      sub: "Toutes campagnes confondues",
+      hint: "Somme de vos engagements",
       icon: CircleDollarSign,
-      href: "/dashboard/investments" as const,
+      href: "/dashboard/investments",
+      tone: "soft",
     },
     ...(isAdmin
       ? [
           {
             label: "Administration",
             value: "Gérer",
-            sub: "Panneau d'administration",
+            hint: "Panneau d'administration",
             icon: ShieldCheck,
-            href: "/admin" as const,
-            valueColor: "text-deep-green",
+            href: "/admin",
+            tone: "deep" as const,
           },
         ]
       : []),
-  ] as const;
+  ];
+
+  const pulseTotal =
+    wallet.availableCents + wallet.pendingWithdrawalCents || 1;
+  const availablePct = Math.round(
+    (wallet.availableCents / pulseTotal) * 100,
+  );
+  const pendingPct = Math.max(0, 100 - availablePct);
+  const kycLabel =
+    kycStatus === "APPROVED"
+      ? "KYC vérifié"
+      : kycStatus === "PENDING" || kycStatus === "UNDER_REVIEW"
+        ? "KYC en cours"
+        : "Vérification (KYC)";
 
   return (
     <div className="flex flex-col gap-8 pb-4">
@@ -133,7 +248,7 @@ export function DashboardHomeOverview({
         animate="show"
         variants={fadeUp}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl bg-hero-bg p-6 text-deep-green-foreground md:p-8"
+        className="relative overflow-hidden rounded-[1.75rem] bg-deep-green p-6 text-deep-green-foreground shadow-[0_20px_50px_-28px_rgba(5,45,29,0.45)] md:p-8"
       >
         <motion.div
           className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full"
@@ -155,14 +270,18 @@ export function DashboardHomeOverview({
         />
         <div className="relative flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-widest text-mint">
+            <p className="text-xs font-bold uppercase tracking-widest text-mint">
               Aperçu
             </p>
-            <h1 className="font-display mt-2 text-3xl text-glow md:text-5xl">
+            <h1 className="font-display mt-2 text-3xl tracking-tight text-white md:text-5xl">
               Bonjour, {first}
             </h1>
-            <p className="mt-2 max-w-lg text-sm text-deep-green-foreground/75 md:text-base">
-              Votre centre de commande pour vos campagnes, le solde de votre portefeuille et vos engagements. Les données ci-dessous proviennent de votre compte réel.
+            <p className="mt-2 max-w-lg text-sm text-white/75 md:text-base">
+              Solde, engagements et campagnes — données en direct de votre
+              compte.
+              {summary.unreadNotifications > 0
+                ? ` ${summary.unreadNotifications} notification${summary.unreadNotifications > 1 ? "s" : ""} non lue${summary.unreadNotifications > 1 ? "s" : ""}.`
+                : null}
             </p>
           </div>
           <div className="flex flex-wrap gap-2 md:gap-3">
@@ -178,7 +297,7 @@ export function DashboardHomeOverview({
             <Button
               asChild
               variant="outline"
-              className="rounded-full border-deep-green-foreground/25 bg-deep-green/20 text-deep-green-foreground hover:bg-deep-green/35"
+              className="rounded-full border-white/35 bg-white/10 text-white hover:bg-white/20 hover:text-white"
             >
               <Link href="/dashboard/withdrawals" className="gap-1.5">
                 <Banknote className="size-4" />
@@ -193,40 +312,11 @@ export function DashboardHomeOverview({
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { staggerChildren: 0.06 } } }}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
       >
-        {stats.map((s, idx) => (
+        {stats.map((s) => (
           <motion.div key={s.label} variants={fadeUp} className="h-full">
-            <Link
-              href={s.href}
-              className="block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint/50 focus-visible:ring-offset-2"
-            >
-              <div className="flex h-full flex-col justify-between bg-mint p-6 rounded-2xl border border-mint/20 shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all hover:shadow-[0_15px_45px_rgb(0,0,0,0.1)] hover:scale-[1.02]">
-                <div className="flex items-start justify-between">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/30 text-deep-green">
-                    <s.icon className="size-5" />
-                  </div>
-                  {idx < 3 && (
-                    <span className="rounded-full bg-white/40 px-2 py-0.5 text-[10px] font-bold text-deep-green">
-                      +{((idx * 3.7 + 5) % 15 + 5).toFixed(1)}%
-                    </span>
-                  )}
-                </div>
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-deep-green/70">{s.label}</p>
-                  <p
-                    className={cn(
-                      "font-display mt-1 text-2xl font-bold tracking-tight",
-                      "valueColor" in s && typeof s.valueColor === "string"
-                        ? s.valueColor
-                        : "text-deep-green",
-                    )}
-                  >
-                    {s.value}
-                  </p>
-                </div>
-              </div>
-            </Link>
+            <StatCard {...s} />
           </motion.div>
         ))}
       </motion.section>
@@ -237,18 +327,15 @@ export function DashboardHomeOverview({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.45 }}
-          className={cn(
-            dashboardPanelClass,
-            "col-span-2 p-6 shadow-none md:p-7",
-          )}
+          className={cn(dashboardPanelClass, "col-span-2 p-6 md:p-7")}
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-foreground">
+              <p className="text-sm font-semibold text-deep-green">
                 Pouls du portefeuille
               </p>
-              <p className="text-xs text-foreground/50">
-                Portefeuille vs retraits en attente
+              <p className="text-xs text-deep-green/50">
+                Disponible vs retraits en attente
               </p>
             </div>
             <Link
@@ -258,58 +345,49 @@ export function DashboardHomeOverview({
               Détails du portefeuille
             </Link>
           </div>
-          <div className="mt-6 h-48 w-full rounded-2xl border border-foreground/5 bg-surface-muted/80 p-4">
-            <svg
-              viewBox="0 0 520 160"
-              className="h-full w-full text-deep-green/90"
-            >
-              <defs>
-                <linearGradient id="dash-hero-fill" x1="0" x2="0" y1="0" y2="1">
-                  <stop
-                    offset="0%"
-                    stopColor="var(--mint)"
-                    stopOpacity="0.35"
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor="var(--mint)"
-                    stopOpacity="0"
-                  />
-                </linearGradient>
-              </defs>
-              {[32, 64, 96, 128].map((y) => (
-                <line
-                  key={y}
-                  x1="0"
-                  x2="520"
-                  y1={y}
-                  y2={y}
-                  className="stroke-foreground/8"
-                  strokeWidth="1"
+
+          <div className="mt-6 space-y-5">
+            <div>
+              <div className="mb-2 flex items-center justify-between text-xs">
+                <span className="font-medium text-deep-green/60">
+                  Disponible
+                </span>
+                <span className="font-bold tabular-nums text-deep-green">
+                  {fmt(wallet.availableCents, wallet.currency)} · {availablePct}
+                  %
+                </span>
+              </div>
+              <div className="h-3 overflow-hidden rounded-full bg-neutral-100">
+                <div
+                  className="h-full rounded-full bg-mint transition-[width]"
+                  style={{ width: `${availablePct}%` }}
                 />
-              ))}
-              <motion.path
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 1.4, ease: "easeInOut" }}
-                d="M0,120 C80,100 120,130 180,88 C240,46 300,72 360,52 C420,32 460,48 520,28"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              />
-              <motion.path
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.9, duration: 0.5 }}
-                d="M0,120 C80,100 120,130 180,88 C240,46 300,72 360,52 C420,32 460,48 520,28 L520,160 L0,160 Z"
-                fill="url(#dash-hero-fill)"
-              />
-            </svg>
+              </div>
+            </div>
+            <div>
+              <div className="mb-2 flex items-center justify-between text-xs">
+                <span className="font-medium text-deep-green/60">
+                  Retraits en attente
+                </span>
+                <span className="font-bold tabular-nums text-deep-green">
+                  {fmt(wallet.pendingWithdrawalCents, wallet.currency)} ·{" "}
+                  {pendingPct}%
+                </span>
+              </div>
+              <div className="h-3 overflow-hidden rounded-full bg-neutral-100">
+                <div
+                  className="h-full rounded-full bg-deep-green/70 transition-[width]"
+                  style={{ width: `${pendingPct}%` }}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-deep-green/45">
+              Retiré à ce jour :{" "}
+              <span className="font-semibold text-deep-green/70">
+                {fmt(wallet.lifetimeWithdrawnCents, wallet.currency)}
+              </span>
+            </p>
           </div>
-          <p className="mt-3 text-center text-xs text-foreground/45">
-            Flux de trésorerie réel — les soldes et engagements utilisent les données de votre compte.
-          </p>
         </motion.div>
 
         <motion.div
@@ -317,32 +395,45 @@ export function DashboardHomeOverview({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.45 }}
-          className={cn(
-            dashboardPanelClass,
-            "flex flex-col gap-3 p-6 shadow-none",
-          )}
+          className={cn(dashboardPanelClass, "flex flex-col gap-2 p-6")}
         >
-          <p className="text-sm font-semibold">Raccourcis</p>
+          <p className="mb-1 text-sm font-semibold text-deep-green">
+            Raccourcis
+          </p>
           <Link
             href="/dashboard/transactions"
-            className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm text-foreground/80 transition hover:border-foreground/10 hover:bg-surface-muted"
+            className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-deep-green/80 transition hover:bg-neutral-50"
           >
             <History className="size-4 text-deep-green" />
             Transactions
           </Link>
           <Link
             href="/dashboard/saved"
-            className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm text-foreground/80 transition hover:border-foreground/10 hover:bg-surface-muted"
+            className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-deep-green/80 transition hover:bg-neutral-50"
           >
             <Bookmark className="size-4 text-deep-green" />
             Campagnes sauvegardées
           </Link>
           <Link
+            href="/dashboard/notifications"
+            className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm text-deep-green/80 transition hover:bg-neutral-50"
+          >
+            <span className="flex items-center gap-3">
+              <ShieldCheck className="size-4 text-deep-green" />
+              Notifications
+            </span>
+            {summary.unreadNotifications > 0 ? (
+              <span className="rounded-full bg-mint px-2 py-0.5 text-[10px] font-bold text-deep-green">
+                {summary.unreadNotifications}
+              </span>
+            ) : null}
+          </Link>
+          <Link
             href="/kyc"
-            className="flex items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-sm text-foreground/80 transition hover:border-foreground/10 hover:bg-surface-muted"
+            className="flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-deep-green/80 transition hover:bg-neutral-50"
           >
             <ShieldCheck className="size-4 text-deep-green" />
-            Vérification (KYC)
+            {kycLabel}
           </Link>
         </motion.div>
       </section>
@@ -350,30 +441,18 @@ export function DashboardHomeOverview({
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-foreground/45">
+            <p className="text-xs font-bold uppercase tracking-widest text-deep-green/45">
               Découvrir
             </p>
-            <h2 className="font-display text-xl tracking-tight text-foreground md:text-2xl">
+            <h2 className="font-display text-xl tracking-tight text-deep-green md:text-2xl">
               {campaignsSectionTitle}
             </h2>
-            {usingSamplePledges ? (
-              <p className="mt-1 max-w-2xl text-sm text-foreground/55">
-                Tours illustratifs jusqu&apos;à ce que des campagnes en direct soient disponibles.{" "}
-                <Link
-                  href="/dashboard/markets"
-                  className="font-medium text-deep-green underline-offset-2 hover:underline"
-                >
-                  Marchés ouverts
-                </Link>
-                .
-              </p>
-            ) : null}
           </div>
           <Button
             variant="ghost"
             size="sm"
             asChild
-            className="shrink-0 text-foreground/60 hover:text-foreground"
+            className="shrink-0 text-deep-green/60 hover:text-deep-green"
           >
             <Link href="/dashboard/markets" className="gap-1">
               Tout voir <ArrowUpRight className="size-4" />
@@ -381,11 +460,31 @@ export function DashboardHomeOverview({
           </Button>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {campaigns.map((c) => (
-            <CampaignCard key={c.id} {...c} />
-          ))}
-        </div>
+        {campaigns.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {campaigns.map((c) => (
+              <CampaignCard key={c.id} {...c} />
+            ))}
+          </div>
+        ) : (
+          <div
+            className={cn(
+              dashboardPanelClass,
+              "flex flex-col items-start gap-3 p-6 md:p-8",
+            )}
+          >
+            <p className="text-sm font-medium text-deep-green">
+              Aucune campagne à afficher pour le moment.
+            </p>
+            <p className="text-sm text-deep-green/55">
+              Parcourez les marchés ouverts dès que de nouvelles offres sont
+              publiées.
+            </p>
+            <Button asChild className="mt-1 rounded-full bg-deep-green text-white">
+              <Link href="/dashboard/markets">Voir les marchés</Link>
+            </Button>
+          </div>
+        )}
       </section>
     </div>
   );

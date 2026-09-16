@@ -13,44 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const adminSections = [
-  {
-    title: "Utilisateurs",
-    description: "Comptes, rôles et accès.",
-    href: "/admin/users",
-  },
-  {
-    title: "Annonces",
-    description: "Campagnes et projets investissables.",
-    href: "/admin/campaigns",
-  },
-  {
-    title: "Investissements",
-    description: "Engagements des investisseurs sur les annonces.",
-    href: "/admin/investments",
-  },
-  {
-    title: "Transactions",
-    description: "Prélèvements, remboursements, paiements et frais.",
-    href: "/admin/transactions",
-  },
-  {
-    title: "Retraits",
-    description: "Demandes de paiement et pipeline de retrait.",
-    href: "/admin/withdrawals",
-  },
-  {
-    title: "Vérifications KYC",
-    description: "Approuver ou rejeter les dossiers investisseurs.",
-    href: "/admin/kyc",
-  },
-  {
-    title: "Notifications",
-    description: "Envoyer des alertes à un utilisateur ou à tous.",
-    href: "/admin/notifications",
-  },
-];
-
 function formatMoney(amountMinor: number, currency: string) {
   return (amountMinor / 100).toLocaleString(undefined, {
     style: "currency",
@@ -155,24 +117,6 @@ export default async function AdminOverviewPage() {
                 </CardContent>
               </Card>
             )}
-          </div>
-          <div className="px-4 lg:px-6">
-            <h2 className="mb-3 text-lg font-medium">Répertoires admin</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {adminSections.map((section) => (
-                <Card key={section.href} className="shadow-none">
-                  <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
-                    <div className="space-y-1">
-                      <CardTitle className="text-base">{section.title}</CardTitle>
-                      <CardDescription>{section.description}</CardDescription>
-                    </div>
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={section.href}>Ouvrir</Link>
-                    </Button>
-                  </CardHeader>
-                </Card>
-              ))}
-            </div>
           </div>
         </div>
       </div>
