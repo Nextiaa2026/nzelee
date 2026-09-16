@@ -11,9 +11,6 @@ type AuthMeta = {
   footer?: React.ReactNode;
 };
 
-const authCardClass =
-  "rounded-2xl border border-deep-green/10 bg-white p-7 shadow-[0_8px_30px_-12px_rgba(5,45,29,0.14),0_2px_8px_-4px_rgba(5,45,29,0.06)] sm:p-9 md:p-10";
-
 function metaForPath(pathname: string): AuthMeta {
   if (pathname.startsWith("/register/verification-sent")) {
     return {
@@ -124,20 +121,39 @@ function metaForPath(pathname: string): AuthMeta {
 
 function AuthAside() {
   return (
-    <aside className="relative hidden border-r border-deep-green/10 bg-white lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
-      <CompanyBrandMark variant="horizontalLightBg" href="/" priority />
+    <aside className="relative hidden overflow-hidden bg-deep-green lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-12">
+      <div
+        className="pointer-events-none absolute -left-24 top-16 h-[420px] w-[420px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, oklch(0.78 0.16 145 / 0.22), transparent 70%)",
+        }}
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -right-16 bottom-8 h-[320px] w-[320px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, oklch(0.78 0.16 145 / 0.14), transparent 70%)",
+        }}
+        aria-hidden
+      />
 
-      <div className="max-w-sm space-y-4">
-        <p className="font-sans text-3xl font-light leading-tight tracking-tight text-deep-green xl:text-4xl">
+      <div className="relative">
+        <CompanyBrandMark variant="horizontalDarkBg" href="/" priority />
+      </div>
+
+      <div className="relative max-w-sm space-y-4">
+        <p className="font-sans text-3xl font-light leading-tight tracking-tight text-white xl:text-4xl">
           Investissez dans des projets vérifiés
         </p>
-        <p className="text-sm font-light leading-relaxed text-deep-green/65">
+        <p className="text-sm font-light leading-relaxed text-white/70">
           {SITE_NAME} regroupe des campagnes sélectionnées, un suivi clair et un
           parcours sécurisé — du premier engagement au retrait.
         </p>
       </div>
 
-      <p className="text-xs font-light uppercase tracking-widest text-deep-green/45">
+      <p className="relative text-xs font-light uppercase tracking-widest text-mint/75">
         Plateforme d&apos;investissement
       </p>
     </aside>
@@ -149,10 +165,10 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
   const { title, footer } = metaForPath(pathname);
 
   return (
-    <div className="grid min-h-svh w-full bg-neutral-100 font-sans antialiased lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
+    <div className="grid min-h-svh w-full bg-white font-sans antialiased lg:grid-cols-[minmax(280px,0.85fr)_minmax(0,1.15fr)]">
       <AuthAside />
 
-      <div className="flex min-h-svh flex-col px-4 py-6 sm:px-8 sm:py-8 lg:px-12 lg:py-10">
+      <div className="flex min-h-svh flex-col bg-white px-4 py-6 sm:px-8 sm:py-8 lg:px-12 lg:py-10">
         <div className="mb-8 flex items-center justify-between gap-4 lg:mb-10">
           <div className="lg:hidden">
             <CompanyBrandMark variant="horizontalLightBg" href="/" priority />
@@ -167,7 +183,7 @@ export function AuthRouteShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex flex-1 flex-col justify-center">
-          <div className={`mx-auto w-full max-w-lg ${authCardClass}`}>
+          <div className="mx-auto w-full max-w-md">
             <header className="mb-7 sm:mb-8">
               <h1 className="font-sans text-3xl font-light tracking-tight text-foreground sm:text-4xl">
                 {title}

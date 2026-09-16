@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AdminTicketDetailView } from "@/components/admin/admin-ticket-detail-view";
+import { serverAppOrigin } from "@/lib/server-app-origin";
 
 type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
 type TicketPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
@@ -22,7 +23,7 @@ type Ticket = {
 async function getTicket(id: string): Promise<Ticket | null> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/v1/admin/tickets/${id}`,
+      `${serverAppOrigin()}/api/v1/admin/tickets/${id}`,
       {
         cache: "no-store",
         credentials: "include",

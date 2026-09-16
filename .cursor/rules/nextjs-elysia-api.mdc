@@ -1,0 +1,34 @@
+---
+description: API must go through Next.js + Elysia under /api/v1
+alwaysApply: true
+---
+
+# Next.js + Elysia API
+
+This app does **not** run a separate public API server for app traffic.
+
+- **Elysia** owns route logic in `backend/` (`createApiApp()` in `backend/create-app.ts`).
+- **Next.js** mounts that app at `app/api/v1/[[...slugs]]/route.ts`.
+- Client/server HTTP to the product API must use **`/api/v1`** (via `NEXT_PUBLIC_API_URL`, default `/api/v1`).
+
+## Do
+
+- Add endpoints by extending Elysia controllers under `backend/controllers/` and wiring them in `createApiApp()`.
+- Call the API with relative `/api/v1/...` or `httpClient` (`lib/http/client.ts`).
+- On the **server**, build absolute URLs with `serverAppOrigin()` + `/api/v1/...` when `fetch` needs a full URL.
+- Keep NextAuth only at `app/api/auth/[...nextauth]/route.ts`.
+
+## Don't
+
+- Do not add parallel `app/api/*` handlers that duplicate Elysia routes.
+- Do not point clients at a standalone Elysia host (e.g. `localhost:3002`) for app API calls.
+- Do not invent a second API base path outside `/api/v1`.
+
+```ts
+// ✅ GOOD
+await httpClient.get("/public/platform-stats");
+// → /api/v1/public/platform-stats via Next
+
+// ❌ BAD
+await fetch("http://localhost:3002/api/v1/...");
+```

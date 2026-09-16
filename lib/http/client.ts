@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const httpClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3002/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "/api/v1",
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
